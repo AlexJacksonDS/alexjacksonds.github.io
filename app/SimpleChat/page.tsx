@@ -40,13 +40,11 @@ export default function SecondPage() {
     }
   });
 
-  const submitAnswer = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.code != 'Enter') return;
+  const submitAnswer = () => {
     if (!peer) {
       return;
     }
-    const answer = (e.target as HTMLInputElement).value;
-    peer.signal(JSON.parse(answer));
+    peer.signal(JSON.parse(answerString));
   }
 
   const chatOnKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -71,7 +69,8 @@ export default function SecondPage() {
           <Button className="form-control" onClick={copyOffer}>Copy</Button>
         </FormGroup>
         <FormGroup className="mb-3">
-          <FormControl as="textarea" value={answerString} onChange={e => setAnswerString(e.target.value)} placeholder="Paste JSON here and hit enter" onKeyUp={submitAnswer} />
+          <FormControl as="textarea" value={answerString} onChange={e => setAnswerString(e.target.value)} placeholder="Paste JSON here and hit enter" />
+          <Button className="form-control" onClick={submitAnswer}>Copy</Button>
         </FormGroup>
       </Container>
       <br />
