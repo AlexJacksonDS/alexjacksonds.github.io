@@ -19,6 +19,7 @@
     "react-dom": "^18",
     "sass": "^1.69.7",
     "simple-peer": "^9.11.1",
+    "simple-peer-wrapper": "^0.0.5",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
