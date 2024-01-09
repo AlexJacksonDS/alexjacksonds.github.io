@@ -25,7 +25,7 @@ export default function SecondPage() {
 
   useEffect(() => {
     if (!spw) {
-      const spWrapper = new SimplePeerWrapper({serverUrl: "https://ajj-test.azurewebsites.net", simplePeerOptions:{config:{iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:ajj-test.azurewebsites.net?transport=udp' }]}}});
+      const spWrapper = new SimplePeerWrapper({serverUrl: "https://ajj-test.azurewebsites.net", simplePeerOptions:{config:{iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:ajj-test.azurewebsites.net:8080' }]}}});
       spWrapper.on('connect', console.log("Connected"));
 
       spWrapper.on('data', (data: any) => {
