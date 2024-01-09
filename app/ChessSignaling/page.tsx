@@ -3,7 +3,6 @@
 import { Chess, Square } from "chess.js";
 import { useEffect, useState } from "react";
 import { Button, Container, FormControl, FormGroup } from "react-bootstrap";
-// import SimplePeer from "simple-peer";
 import { v4 as uuidv4 } from 'uuid';
 import ChessBoard from "../components/ChessBoard/ChessBoard";
 const SimplePeerWrapper = require('simple-peer-wrapper');
@@ -21,16 +20,12 @@ export default function SecondPage() {
   const isDraw = chess.isDraw();
   const isStaleMate = chess.isStalemate();
   const isCheckMate = chess.isCheckmate();
-  // const [offerString, setOfferString] = useState("");
-  // const [answerString, setAnswerString] = useState("");
-  // const [peer, setPeer] = useState<SimplePeer.Instance | null>(null);
-  // const [hideConnection, setHideConnection] = useState(false);
 
   const [spw, setSpw] = useState<any | null>(null);
 
   useEffect(() => {
     if (!spw) {
-      const spWrapper = new SimplePeerWrapper({serverUrl: "http://localhost:8081"});
+      const spWrapper = new SimplePeerWrapper({serverUrl: "http://10.11.90.43:8081"});
       spWrapper.on('connect', console.log("Connected"));
 
       spWrapper.on('data', (data: any) => {
@@ -47,17 +42,6 @@ export default function SecondPage() {
       spw.close();
     };
   });
-  
-  // const submitAnswer = () => {
-  //   if (!peer) {
-  //     return;
-  //   }
-  //   peer.signal(JSON.parse(answerString));
-  // }
-
-  // const copyOffer = () => {
-  //   navigator.clipboard.writeText(offerString)
-  // }
 
   function handleClick(clickedSquare?: Square) {
     if (isCheckMate || isDraw || isStaleMate || !clickedSquare) {
@@ -146,16 +130,6 @@ export default function SecondPage() {
         {isDraw ? <p>Game ended in draw</p> : null}
         {isStaleMate ? <p>Game ended in stalemate</p> : null}
       </Container>
-      {/* <Container hidden={hideConnection}>
-        <FormGroup className="mb-3">
-          <FormControl as="textarea" value={offerString} readOnly={true} />
-          <Button className="form-control" onClick={copyOffer}>Copy</Button>
-        </FormGroup>
-        <FormGroup className="mb-3">
-          <FormControl as="textarea" value={answerString} onChange={e => setAnswerString(e.target.value)} placeholder="Paste JSON here and hit submit" />
-          <Button className="form-control" onClick={submitAnswer}>Submit</Button>
-        </FormGroup>
-      </Container> */}
     </main>
   )
 }
