@@ -25,7 +25,7 @@ export default function SecondPage() {
 
   useEffect(() => {
     if (!spw) {
-      const spWrapper = new SimplePeerWrapper({serverUrl: "https://ajj-test.azurewebsites.net:8081"});
+      const spWrapper = new SimplePeerWrapper({serverUrl: "https://ajj-test.azurewebsites.net"});
       spWrapper.on('connect', console.log("Connected"));
 
       spWrapper.on('data', (data: any) => {
