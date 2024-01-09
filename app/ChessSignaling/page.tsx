@@ -25,7 +25,7 @@ export default function SecondPage() {
 
   useEffect(() => {
     if (!spw) {
-      const spWrapper = new SimplePeerWrapper({serverUrl: "http://10.11.90.43:8081"});
+      const spWrapper = new SimplePeerWrapper({serverUrl: "https://10.11.90.43:8081"});
       spWrapper.on('connect', console.log("Connected"));
 
       spWrapper.on('data', (data: any) => {
