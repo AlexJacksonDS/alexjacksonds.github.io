@@ -28,7 +28,7 @@ export default function Chess() {
 
   useEffect(() => {
     if (!socket) {
-      socket = io("http://localhost:8080");//io("https://ajj-test.azurewebsites.net");
+      socket = io("https://ajj-test.azurewebsites.net");
       socket.on('id', (id: string) => {
         setId(id);
         if (socket) {
