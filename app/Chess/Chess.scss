@@ -1,0 +1,47 @@
+.captured-pieces {
+    display: flex;
+    height: 100%;
+    font-size: 4vmin;
+    text-align: center;
+    background-color: beige;
+    max-height: 80vmin;
+}
+
+.bottom {
+    align-items: flex-end;
+}
+
+.light {
+    background-color: beige;
+}
+
+.dark {
+    background-color: rgb(139, 71, 21);
+}
+
+.w {
+    color: white;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.b {
+    color: black;
+}
+
+.faux-borders-thin {
+    aspect-ratio: 1 / 1;
+    width: 84vmin;
+    padding: 2%;
+    background-color: black;
+}
+
+.faux-borders-extra-thin {
+    height: 100%;
+    padding: 2vmin;
+    background-color: black;
+}
+
+.black-background {
+    font-size: xx-large;
+    background-color: black;
+}

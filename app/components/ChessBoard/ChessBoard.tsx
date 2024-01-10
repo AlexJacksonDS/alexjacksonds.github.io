@@ -13,6 +13,7 @@ export default function ChessBoard(props: {
     board: Board;
     possibleMoves: string[];
     selectedSquare?: string;
+    previousMove?: string;
     onClick: (clickedSquare?: Square) => void;
 }) {
     function isPossibleMove(squareCode: string, possibleMoves: string[], selectedSquare?: string) {
@@ -60,6 +61,7 @@ export default function ChessBoard(props: {
                                 onClick={() => props.onClick(squareCode as Square)}
                                 selected={props.selectedSquare === squareCode}
                                 moveCandidate={isPossibleMove(squareCode, props.possibleMoves, props.selectedSquare)}
+                                previousMove={props.previousMove?.includes(squareCode)}
                             />)
                     }
                     return (
@@ -70,6 +72,7 @@ export default function ChessBoard(props: {
                             onClick={() => props.onClick(squareCode as Square)}
                             selected={props.selectedSquare === squareCode}
                             moveCandidate={false}
+                            previousMove={props.previousMove?.includes(squareCode)}
                         />)
                 })
             })

@@ -2,20 +2,16 @@
     padding: 5%;
 }
 
-.light {
-    background-color: beige;
-}
-
-.dark {
-    background-color: rgb(139, 71, 21);
-}
-
 .selected {
     background-color: red;
 }
 
 .move {
     background-color: green;
+}
+
+.previous-move {
+    background-color: blue;
 }
 
 .gridsquare {
@@ -26,13 +22,4 @@
     text-align: center;
     align-items: center;
     max-height: 10vmin;
-}
-
-.w {
-    color: white;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-}
-
-.b {
-    color: black;
 }

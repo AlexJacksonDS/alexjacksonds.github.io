@@ -2,17 +2,20 @@
 
 import { Chess as ChessJS, Square } from "chess.js";
 import { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import ChessBoard from "../components/ChessBoard/ChessBoard";
 import { io, Socket } from "socket.io-client";
 import { useSearchParams } from "next/navigation";
+import { getPieceUnicodeFromString } from "../helpers/pieceUnicodeHelper";
+import './Chess.scss';
 
 export default function Chess() {
   const searchParams = useSearchParams();
   const gameId = searchParams?.get("id");
   const [id, setId] = useState("");
   const [chess, setChessJS] = useState(new ChessJS());
-  const [fen, setFen] = useState(new ChessJS().fen())
+  const [fen, setFen] = useState(new ChessJS().fen());
+  const [pgn, setPgn] = useState(new ChessJS().pgn());
   const [selectedSquare, setSelectedSquare] = useState<Square | undefined>();
   const [possibleMoves, setPossibleMoves] = useState<string[]>([]);
   const [myColour, setMyColour] = useState<string | undefined>();
@@ -25,17 +28,21 @@ export default function Chess() {
 
   useEffect(() => {
     if (!socket) {
-      socket = io("https://ajj-test.azurewebsites.net");
+      socket = io("http://localhost:8080");//io("https://ajj-test.azurewebsites.net");
       socket.on('id', (id: string) => {
         setId(id);
-        if (socket){
-          socket.emit('newGame', {gameId, fen, playerId: id});
+        if (socket) {
+          socket.emit('newGame', { gameId, fen: pgn, playerId: id });
         }
       });
-    
+
       socket.on('fen', (fen: string) => {
-        setFen(fen);
-        setChessJS(new ChessJS(fen));
+        // setFen(fen);
+        // setChessJS(new ChessJS(fen));
+        setPgn(fen);
+        const newChess = new ChessJS();
+        newChess.loadPgn(fen);
+        setChessJS(newChess);
       });
       setSocket(socket);
     }
@@ -67,8 +74,9 @@ export default function Chess() {
       setPossibleMoves([]);
       setMyColour(getMyColour());
       setFen(chess.fen());
-      if (socket){
-        socket.emit('sendFen', {gameId: gameId, playerId: id, fen: chess.fen()});
+      setPgn(chess.pgn());
+      if (socket) {
+        socket.emit('sendFen', { gameId: gameId, playerId: id, fen: chess.pgn() });
       }
     } else {
       var piece = chess.get(clickedSquare);
@@ -116,21 +124,54 @@ export default function Chess() {
     return piece;
   }
 
+  const whiteCaptures = chess
+    .history({ verbose: true })
+    .filter(move => move.captured && move.color === "w")
+    .map(move => getPieceUnicodeFromString(`${move.captured}b`))
+    .join(' ');
+  const blackCaptures = chess
+    .history({ verbose: true })
+    .filter(move => move.captured && move.color === "b")
+    .map(move => getPieceUnicodeFromString(`${move.captured}w`))
+    .join(' ');
+
   return (
     <main>
       <Container>
-        <ChessBoard board={chess.board()}
-          onClick={(clickedSquare) => handleClick(clickedSquare)}
-          selectedSquare={selectedSquare}
-          possibleMoves={possibleMoves} />
-      </Container>
-      <br/>
-      <Container className="text-center">
-        {!isCheckMate && !isDraw && !isStaleMate ? <p>{`It is currently ${chess.turn() === 'w' ? "White" : "Black"}'s turn`}</p> : null}
-        {isCheckMate ? <p>{`${chess.turn() === 'w' ? "Black" : "White"} wins`}</p> : null}
-        {isCheck && !isCheckMate ? <p>{`${chess.turn() === 'w' ? "White" : "Black"} is in check`}</p> : null}
-        {isDraw ? <p>Game ended in draw</p> : null}
-        {isStaleMate ? <p>Game ended in stalemate</p> : null}
+        <Row className="g-0-bottom">
+          <Col className="g-0">
+            <Container className="faux-borders-extra-thin">
+              <Container className="captured-pieces w dark">
+                {blackCaptures}
+              </Container>
+            </Container>
+          </Col>
+          <Col className="g-0">
+            <Container className="faux-borders-thin">
+              <ChessBoard board={chess.board()}
+                onClick={(clickedSquare) => handleClick(clickedSquare)}
+                selectedSquare={selectedSquare}
+                possibleMoves={possibleMoves}
+                previousMove={chess.history({ verbose: true }).length > 0 ? chess.history({ verbose: true }).at(-1)?.lan : ""} />
+            </Container>
+          </Col>
+          <Col className="g-0">
+            <Container className="faux-borders-extra-thin">
+              <Container className="captured-pieces b light bottom">
+                {whiteCaptures}
+              </Container>
+            </Container>
+          </Col>
+        </Row>
+        <Row className="black-background g-0-top text-center">
+          <Col>
+            {!isCheckMate && !isDraw && !isStaleMate ? <p>{`It is currently ${chess.turn() === 'w' ? "White" : "Black"}'s turn`}</p> : null}
+            {isCheckMate ? <p>{`${chess.turn() === 'w' ? "Black" : "White"} wins`}</p> : null}
+            {isCheck && !isCheckMate ? <p>{`${chess.turn() === 'w' ? "White" : "Black"} is in check`}</p> : null}
+            {isDraw ? <p>Game ended in draw</p> : null}
+            {isStaleMate ? <p>Game ended in stalemate</p> : null}
+          </Col>
+        </Row>
       </Container>
     </main>
   )
