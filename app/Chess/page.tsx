@@ -1,63 +1,49 @@
 'use client';
 
-import { Chess, Square } from "chess.js";
+import { Chess as ChessJS, Square } from "chess.js";
 import { useEffect, useState } from "react";
-import { Button, Container, FormControl, FormGroup } from "react-bootstrap";
-import SimplePeer from "simple-peer";
+import { Container } from "react-bootstrap";
 import ChessBoard from "../components/ChessBoard/ChessBoard";
+import { io, Socket } from "socket.io-client";
+import { useSearchParams } from "next/navigation";
 
-export default function SecondPage() {
-  const [chess, setChess] = useState(new Chess());
-  const [fen, setFen] = useState(new Chess().fen())
+export default function Chess() {
+  const searchParams = useSearchParams();
+  const gameId = searchParams?.get("id");
+  const [id, setId] = useState("");
+  const [chess, setChessJS] = useState(new ChessJS());
+  const [fen, setFen] = useState(new ChessJS().fen())
   const [selectedSquare, setSelectedSquare] = useState<Square | undefined>();
   const [possibleMoves, setPossibleMoves] = useState<string[]>([]);
   const [myColour, setMyColour] = useState<string | undefined>();
+  let [socket, setSocket] = useState<Socket<any, any> | null>(null);
 
   const isCheck = chess.isCheck();
   const isDraw = chess.isDraw();
   const isStaleMate = chess.isStalemate();
   const isCheckMate = chess.isCheckmate();
-  const [offerString, setOfferString] = useState("");
-  const [answerString, setAnswerString] = useState("");
-  const [peer, setPeer] = useState<SimplePeer.Instance | null>(null);
-  const [hideConnection, setHideConnection] = useState(false);
 
   useEffect(() => {
-    if (!peer) {
-      const p = new SimplePeer({
-        initiator: location.hash === '#1',
-        trickle: false
-      })
-      p.on('error', err => console.log('error', err))
-
-      p.on('signal', data => {
-        setOfferString(JSON.stringify(data));
-      })
-
-      p.on('connect', () => {
-        console.log('CONNECT');
-        setHideConnection(true);
-      })
-
-      p.on('data', data => {
-        const fen = new TextDecoder().decode(data);
+    if (!socket) {
+      socket = io("https://ajj-test.azurewebsites.net");
+      socket.on('id', (id: string) => {
+        setId(id);
+        if (socket){
+          socket.emit('newGame', {gameId, fen, playerId: id});
+        }
+      });
+    
+      socket.on('fen', (fen: string) => {
         setFen(fen);
-        setChess(new Chess(fen));
-      })
-      setPeer(p);
+        setChessJS(new ChessJS(fen));
+      });
+      setSocket(socket);
     }
-  });
 
-  const submitAnswer = () => {
-    if (!peer) {
-      return;
+    window.onbeforeunload = () => {
+      socket?.disconnect();
     }
-    peer.signal(JSON.parse(answerString));
-  }
-
-  const copyOffer = () => {
-    navigator.clipboard.writeText(offerString)
-  }
+  })
 
   function handleClick(clickedSquare?: Square) {
     if (isCheckMate || isDraw || isStaleMate || !clickedSquare) {
@@ -80,12 +66,9 @@ export default function SecondPage() {
       setSelectedSquare(undefined);
       setPossibleMoves([]);
       setMyColour(getMyColour());
-      if (!peer) {
-        return;
-      }
       setFen(chess.fen());
-      if (peer.connected) {
-        peer.send(chess.fen());
+      if (socket){
+        socket.emit('sendFen', {gameId: gameId, playerId: id, fen: chess.fen()});
       }
     } else {
       var piece = chess.get(clickedSquare);
@@ -148,16 +131,6 @@ export default function SecondPage() {
         {isCheck && !isCheckMate ? <p>{`${chess.turn() === 'w' ? "White" : "Black"} is in check`}</p> : null}
         {isDraw ? <p>Game ended in draw</p> : null}
         {isStaleMate ? <p>Game ended in stalemate</p> : null}
-      </Container>
-      <Container hidden={hideConnection}>
-        <FormGroup className="mb-3">
-          <FormControl as="textarea" value={offerString} readOnly={true} />
-          <Button className="form-control" onClick={copyOffer}>Copy</Button>
-        </FormGroup>
-        <FormGroup className="mb-3">
-          <FormControl as="textarea" value={answerString} onChange={e => setAnswerString(e.target.value)} placeholder="Paste JSON here and hit submit" />
-          <Button className="form-control" onClick={submitAnswer}>Submit</Button>
-        </FormGroup>
       </Container>
     </main>
   )
