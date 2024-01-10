@@ -1,7 +1,13 @@
+"use client";
+
+import { Container } from "react-bootstrap";
+
 export default function Home() {
   return (
     <main>
-      <h1>Homepage</h1>
+      <Container>
+        <h1>Homepage</h1>
+      </Container>
     </main>
   )
 }
