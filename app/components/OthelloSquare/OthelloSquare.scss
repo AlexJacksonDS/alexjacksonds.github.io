@@ -1,0 +1,53 @@
+.square {
+    background: #bdbdbd;
+    aspect-ratio: 1 / 1;
+    max-width: 10vmin;
+    display: grid;
+    font-size: 6vmin;
+    text-align: center;
+    align-items: center;
+    max-height: 10vmin;
+}
+
+.square .circle {
+    border-radius: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 8vmin;
+    margin: 1vmin;
+}
+
+// .move {
+//     box-sizing: border-box;
+//     border: 4px solid green;
+//     margin-right: 0px;
+//     margin-top: 0px;
+//     line-height: 24px;
+//     height: 52px;
+//     width: 52px;
+// }
+
+.faux-borders {
+    padding: 5%;
+    background: #bdbdbd;
+    border: 1px solid grey;
+}
+
+.move {
+    background-color: green;
+}
+
+.previous-move {
+    background-color: blue;
+}
+
+.none {
+    background: none;
+}
+
+.white {
+    background: white;
+}
+
+.black {
+    background: black;
+}
