@@ -8,7 +8,7 @@ import OthelloBoard from "../components/OthelloBoard/OthelloBoard";
 
 type Board = (0 | 1 | 2)[][];
 
-export default function Chess() {
+export default function Othello() {
   const searchParams = useSearchParams();
   const gameId = searchParams?.get("id");
   const [id, setId] = useState("");
@@ -200,12 +200,12 @@ export default function Chess() {
             {isBoardFull() ? (
               playerOneScore > playerTwoScore ? (
                 <div>White wins</div>
+              ) : playerOneScore === playerTwoScore ? (
+                <div>Draw</div>
               ) : (
                 <div>Black wins</div>
               )
-            ) : (
-              <div>Draw</div>
-            )}
+            ) : null}
           </Col>
         </Row>
       </Container>

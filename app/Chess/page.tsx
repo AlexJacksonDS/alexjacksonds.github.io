@@ -14,7 +14,6 @@ export default function Chess() {
   const gameId = searchParams?.get("id");
   const [id, setId] = useState("");
   const [chess, setChessJS] = useState(new ChessJS());
-  const [fen, setFen] = useState(new ChessJS().fen());
   const [pgn, setPgn] = useState(new ChessJS().pgn());
   const [selectedSquare, setSelectedSquare] = useState<Square | undefined>();
   const [possibleMoves, setPossibleMoves] = useState<string[]>([]);
@@ -28,7 +27,7 @@ export default function Chess() {
 
   useEffect(() => {
     if (!socket) {
-      socket = io("https://ajj-test.azurewebsites.net");
+      socket = io("http://localhost:8080"); //io("https://ajj-test.azurewebsites.net");
       socket.on('id', (id: string) => {
         setId(id);
         if (socket) {
@@ -37,8 +36,6 @@ export default function Chess() {
       });
 
       socket.on('fen', (fen: string) => {
-        // setFen(fen);
-        // setChessJS(new ChessJS(fen));
         setPgn(fen);
         const newChess = new ChessJS();
         newChess.loadPgn(fen);
@@ -56,8 +53,11 @@ export default function Chess() {
     if (isCheckMate || isDraw || isStaleMate || !clickedSquare) {
       return;
     }
+    console.log(selectedSquare);
+    console.log(possibleMoves);
+    console.log(clickedSquare);
     if (selectedSquare && possibleMoves && clickedSquare !== selectedSquare) {
-      if (!possibleMoves.find(pm => pm.includes(clickedSquare))) {
+      if (!possibleMoves.find(pm => pm.includes(clickedSquare)) && !isCastle(clickedSquare, possibleMoves, selectedSquare)) {
         setSelectedSquare(undefined);
         setPossibleMoves([]);
         return;
@@ -73,7 +73,6 @@ export default function Chess() {
       setSelectedSquare(undefined);
       setPossibleMoves([]);
       setMyColour(getMyColour());
-      setFen(chess.fen());
       setPgn(chess.pgn());
       if (socket) {
         socket.emit('sendFen', { gameId: gameId, playerId: id, fen: chess.pgn() });
@@ -87,6 +86,23 @@ export default function Chess() {
       }
     }
   }
+
+  function isCastle(squareCode: string, possibleMoves: string[], selectedSquare?: string) {
+    if (selectedSquare === 'e1') {
+        if (squareCode === 'g1') {
+            return possibleMoves.includes('O-O')
+        } else if (squareCode === 'c1') {
+            return possibleMoves.includes('O-O-O')
+        }
+    }
+    if (selectedSquare === 'e8') {
+        if (squareCode === 'g8') {
+            return possibleMoves.includes('O-O')
+        } else if (squareCode === 'c8') {
+            return possibleMoves.includes('O-O-O')
+        }
+    }
+}
 
   function getMyColour() {
     if (myColour) {
