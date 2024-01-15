@@ -1,0 +1,25 @@
+.faux-borders {
+    padding: 5%;
+}
+
+.selected {
+    background-color: red;
+}
+
+.move {
+    background-color: green;
+}
+
+.previous-move {
+    background-color: blue;
+}
+
+.gridsquare {
+    aspect-ratio: 1 / 1;
+    max-width: 10vmin;
+    display: grid;
+    font-size: 5vmin;
+    text-align: center;
+    align-items: center;
+    max-height: 10vmin;
+}
