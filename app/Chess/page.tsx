@@ -4,10 +4,11 @@ import { Chess as ChessJS, Square } from "chess.js";
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import ChessBoard from "../components/ChessBoard/ChessBoard";
-import { io, Socket } from "socket.io-client";
+import { Socket } from "socket.io-client";
 import { useSearchParams } from "next/navigation";
 import { getPieceUnicodeFromString } from "../helpers/pieceUnicodeHelper";
 import './Chess.scss';
+import getSocket from "../services/socket.service";
 
 export default function Chess() {
   const searchParams = useSearchParams();
@@ -27,27 +28,28 @@ export default function Chess() {
 
   useEffect(() => {
     if (!socket) {
-      socket = io("http://localhost:8080"); //io("https://ajj-test.azurewebsites.net");
-      socket.on('id', (id: string) => {
-        setId(id);
-        if (socket) {
-          socket.emit('newGame', { gameId, fen: pgn, playerId: id });
-        }
-      });
-
-      socket.on('fen', (fen: string) => {
-        setPgn(fen);
-        const newChess = new ChessJS();
-        newChess.loadPgn(fen);
-        setChessJS(newChess);
-      });
+      socket = getSocket({ idCallback: handleId, fenCallback: handleFen });
       setSocket(socket);
     }
 
     window.onbeforeunload = () => {
       socket?.disconnect();
+    };
+  });
+
+  const handleFen = (fen: string) => {
+    setPgn(fen);
+    const newChess = new ChessJS();
+    newChess.loadPgn(fen);
+    setChessJS(newChess);
+  };
+
+  const handleId = (id: string) => {
+    setId(id);
+    if (socket) {
+      socket.emit('newGame', { gameId, fen: pgn, playerId: id });
     }
-  })
+  };
 
   function handleClick(clickedSquare?: Square) {
     if (isCheckMate || isDraw || isStaleMate || !clickedSquare) {
