@@ -13,8 +13,8 @@ export default function DraughtsSquare(props: {
       0: "",
       1: "\u26C2",
       2: "\u26C0",
-      11: "\u26C3",
-      12: "\u26C1",
+      3: "\u26C3",
+      4: "\u26C1",
     }[piece];
   }
 
@@ -26,7 +26,7 @@ export default function DraughtsSquare(props: {
     >
       <div
         className={`gridsquare ${props.colour}${
-          props.value === 1 || props.value === 11 ? " b" : props.value === 2 || props.value === 12 ? " w" : "none"
+          props.value === 1 || props.value === 3 ? " b" : props.value === 2 || props.value === 4 ? " w" : "none"
         }`}
         onClick={props.onClick}
       >
