@@ -1,3 +1,4 @@
+import { getSquareCode, getSquareColour } from '../../helpers/squareHelper';
 import { Color, PieceSymbol, Square } from 'chess.js';
 import ChessSquare from '../ChessSquare/ChessSquare';
 import './ChessBoard.scss';
@@ -36,14 +37,6 @@ export default function ChessBoard(props: {
                 return possibleMoves.includes('O-O-O')
             }
         }
-    }
-
-    function getSquareColour(row: number, col: number) {
-        return (row + col) % 2 == 0 ? 'light' : 'dark';
-    }
-
-    function getSquareCode(row: number, col: number) {
-        return ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][col] + [8, 7, 6, 5, 4, 3, 2, 1][row]
     }
 
     return (
