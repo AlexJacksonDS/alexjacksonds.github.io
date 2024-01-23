@@ -29,7 +29,7 @@ function HorizontalCardsDisplay(props: { cardCount: number }) {
       {Array(props.cardCount)
         .fill("BLUE_BACK")
         .map((card, index) => (
-          <Col className={`card-display g-0${index > 0 ? " stack" : ""}`}>
+          <Col key={index} className={`card-display g-0${index > 0 ? " stack" : ""}`}>
             <PlayingCard cardValue={card} onClick={() => {}} />
           </Col>
         ))}
@@ -49,7 +49,7 @@ function VerticalCardsDisplay(props: { cardCount: number; isLeft: boolean }) {
   return Array(props.cardCount)
     .fill("BLUE_BACK_ROTATE")
     .map((card, index) => (
-      <Row
+      <Row key={index}
         style={{ zIndex: getZIndex(index) }}
         className={`card-display-side${shouldStack(index) ? " stack" : ""}${props.isLeft ? " top" : " bottom"}`}
       >
