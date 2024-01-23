@@ -13,8 +13,8 @@ export default function CardPlayer(props: { player: Player; cardsToHighlight: st
       </Row>
       <Row className="card-display-container">
         {props.player.hand
-          ? props.player.hand.map((card) => (
-              <Col className={`card-display g-0${props.cardsToHighlight.includes(card) ? " highlighted": ""}`}>
+          ? props.player.hand.map((card, index) => (
+              <Col key={index} className={`card-display g-0${props.cardsToHighlight.includes(card) ? " highlighted": ""}`}>
                 <PlayingCard cardValue={card} onClick={() => props.selectCard(card)} />
               </Col>
             ))
