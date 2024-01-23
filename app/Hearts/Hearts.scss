@@ -1,0 +1,19 @@
+.pass-details {
+  justify-content: center;
+}
+
+.pass-display {
+  align-items: center;
+  text-align: center;
+  display: flex;
+
+  &.button-visible {
+    justify-content: flex-end;
+    text-align: end;
+  }
+
+  &.button {
+    justify-content: flex-start;
+    text-align: start;
+  }
+}

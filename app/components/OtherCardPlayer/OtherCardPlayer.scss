@@ -1,0 +1,38 @@
+.card-display-container {
+  justify-content: center;
+}
+
+.card-display {
+  position: relative;
+  flex-grow: 0;
+
+  &.stack {
+    margin-left: -2vw;
+  }
+}
+
+.card-display-side {
+  position: relative;
+
+  &.stack {
+    &.top {
+      margin-top: -2vw;
+    }
+
+    &.bottom {
+      margin-bottom: -2vw;
+    }
+  }
+
+  & .card-display-col {
+    display: flex;
+
+    &.left {
+      justify-content: left;
+    }
+
+    &.right {
+      justify-content: right;
+    }
+  }
+}

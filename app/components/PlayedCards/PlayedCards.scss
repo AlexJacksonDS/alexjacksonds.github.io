@@ -1,0 +1,17 @@
+.play-area {
+  height: 100%;
+  display: flex;
+}
+
+.play-row {
+  flex: 1 0 0%;
+}
+
+.played {
+  justify-content: center;
+  display: flex;
+
+  img.normal {
+    max-width: 5vw;
+  }
+}

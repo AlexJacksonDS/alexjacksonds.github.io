@@ -1,0 +1,13 @@
+.playingCard {
+  object-fit: scale-down;
+
+  &.normal {
+    max-width: 3.5vw;
+    aspect-ratio: 28 / 39;
+  }
+  
+  &.side {
+    max-height: 3.5vw;
+    aspect-ratio: 39 / 28;
+  }
+}
