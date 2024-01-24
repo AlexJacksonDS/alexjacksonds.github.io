@@ -119,6 +119,11 @@ export default function Hearts() {
       if (player?.hand.some((c) => c.charAt(1) === leadSuit) && card.charAt(1) !== leadSuit) {
         return false;
       }
+
+      // Not points on the first trick
+      if (currentLead === "2C" && (card === "QS" || card.charAt(1) === "H")) {
+        return false
+      }
     } else {
       // Must not lead hearts unless forced
       if (!isHeartsBroken && card.charAt(1) === "H" && player?.hand.some((c) => c.charAt(1) !== "H")) {
