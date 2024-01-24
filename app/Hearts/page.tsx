@@ -44,6 +44,27 @@ export default function Hearts() {
         handleNewState(state);
       });
 
+      connectionRef.current.on("gameEnded", () => {
+        if (connectionRef.current) {
+          connectionRef.current.send("leaveGame", gameId);
+        }
+        setGameId("");
+        setGameIdDisabled(false);
+        setConnectedToGame(false);
+        setIsStartable(false);
+        setIsHeartsBroken(false);
+        setHasPassOccured(false);
+        setPassDirection("");
+        setCardsToPass([]);
+        setScores([]);
+        setCurrentPlayer("");
+        setCurrentLead("");
+        setPlayer(undefined);
+        setLeftPlayer(undefined);
+        setTopPlayer(undefined);
+        setRightPlayer(undefined);
+      });
+
       connectionRef.current.start().catch((err) => console.log(err));
     }
   });
@@ -122,7 +143,7 @@ export default function Hearts() {
 
       // Not points on the first trick
       if (currentLead === "2C" && (card === "QS" || card.charAt(1) === "H")) {
-        return false
+        return false;
       }
     } else {
       // Must not lead hearts unless forced
