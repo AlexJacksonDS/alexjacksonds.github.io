@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { Socket } from "socket.io-client";
 import { useSearchParams } from "next/navigation";
@@ -20,6 +20,8 @@ import { getSquareCode } from "../helpers/squareHelper";
 import getSocket from "../services/socket.service";
 
 export default function Draughts() {
+  const socketRef = useRef<Socket<any, any> | undefined>();
+
   const searchParams = useSearchParams();
   const gameId = searchParams?.get("id");
   const [id, setId] = useState("");
@@ -27,19 +29,17 @@ export default function Draughts() {
   const [board, setBoard] = useState<Board>(initialDraughtsBoard);
   const [fen, setFen] = useState(boardToString(board));
   const [currentTurn, setCurrentTurn] = useState<DraughtsTurn>(2);
-  let [socket, setSocket] = useState<Socket<any, any> | null>(null);
   const [selectedSquare, setSelectedSquare] = useState<string | undefined>();
   const [possibleMoves, setPossibleMoves] = useState<string[]>([]);
   const boardStatus = boardState(board);
 
   useEffect(() => {
-    if (!socket) {
-      socket = getSocket({ idCallback: handleId, fenCallback: handleFen });
-      setSocket(socket);
+    if (!socketRef.current) {
+      socketRef.current = getSocket({ idCallback: handleId, fenCallback: handleFen });
     }
 
     window.onbeforeunload = () => {
-      socket?.disconnect();
+      socketRef.current?.disconnect();
     };
   });
 
@@ -52,8 +52,8 @@ export default function Draughts() {
 
   const handleId = (id: string) => {
     setId(id);
-    if (socket) {
-      socket.emit("newGame", { gameId, fen: `${boardToString(board)} 2`, playerId: id });
+    if (socketRef.current) {
+      socketRef.current.emit("newGame", { gameId, fen: `${boardToString(board)} 2`, playerId: id });
     }
   };
 
@@ -73,8 +73,8 @@ export default function Draughts() {
           setMyColour(currentTurn);
         }
         setFen(boardToString(tempBoard));
-        if (socket) {
-          socket.emit("sendFen", { gameId: gameId, playerId: id, fen: `${boardToString(tempBoard)} ${nextTurn}` });
+        if (socketRef.current) {
+          socketRef.current.emit("sendFen", { gameId: gameId, playerId: id, fen: `${boardToString(tempBoard)} ${nextTurn}` });
         }
       }
     }

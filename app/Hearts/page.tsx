@@ -1,7 +1,7 @@
 "use client";
 
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-import { useEffect, useState, KeyboardEvent } from "react";
+import { useEffect, useState, KeyboardEvent, useRef } from "react";
 import { Col, Container, FormGroup, FormLabel, Row } from "react-bootstrap";
 import { OtherPlayer, Player, PlayerScore } from "../types/hearts";
 import ScoreBoard from "../components/ScoreBoard/ScoreBoard";
@@ -9,6 +9,8 @@ import CardPlayArea from "../components/CardPlayArea/CardPlayArea";
 import "./Hearts.scss";
 
 export default function Hearts() {
+  const connectionRef = useRef<HubConnection | undefined>();
+
   const [name, setName] = useState("");
   const [nameDisabled, setNameDisabled] = useState(false);
   const [gameId, setGameId] = useState("");
@@ -26,25 +28,23 @@ export default function Hearts() {
   const [leftPlayer, setLeftPlayer] = useState<OtherPlayer>();
   const [topPlayer, setTopPlayer] = useState<OtherPlayer>();
   const [rightPlayer, setRightPlayer] = useState<OtherPlayer>();
-  let [connection, setConnection] = useState<HubConnection | undefined>(undefined);
 
   useEffect(() => {
-    if (!connection) {
-      connection = new HubConnectionBuilder()
-        .withUrl("http://localhost:5101/hearts", { withCredentials: false })
+    if (!connectionRef.current) {
+      connectionRef.current = new HubConnectionBuilder()
+        .withUrl("https://ajj-sig-test.azurewebsites.net/hearts", { withCredentials: false })
         .build();
 
-      connection.on("joinFailed", () => {
+      connectionRef.current.on("joinFailed", () => {
         setGameId("");
         setGameIdDisabled(false);
       });
 
-      connection.on("state", (state: any) => {
+      connectionRef.current.on("state", (state: any) => {
         handleNewState(state);
       });
 
-      connection.start().catch((err) => console.log(err));
-      setConnection(connection);
+      connectionRef.current.start().catch((err) => console.log(err));
     }
   });
 
@@ -55,21 +55,21 @@ export default function Hearts() {
 
   const gameIdOnKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key != "Enter") return;
-    if (connection) {
-      connection.send("joinGame", name, gameId).then(() => setGameIdDisabled(true));
+    if (connectionRef.current) {
+      connectionRef.current.send("joinGame", name, gameId).then(() => setGameIdDisabled(true));
     }
   };
 
   const startGame = () => {
-    if (connection) {
-      connection.send("startGame", gameId).then(() => setIsStartable(false));
+    if (connectionRef.current) {
+      connectionRef.current.send("startGame", gameId).then(() => setIsStartable(false));
     }
   };
 
   const selectCard = (card: string) => {
     if (hasPassOccured && selectedCardIsValid(card)) {
-      if (connection) {
-        connection.send("takeTurn", gameId, card);
+      if (connectionRef.current) {
+        connectionRef.current.send("takeTurn", gameId, card);
       }
       return;
     }
@@ -86,8 +86,8 @@ export default function Hearts() {
 
   const passCards = () => {
     if (!hasPassOccured && cardsToPass.length === 3) {
-      if (connection) {
-        connection.send("passCards", gameId, cardsToPass);
+      if (connectionRef.current) {
+        connectionRef.current.send("passCards", gameId, cardsToPass);
         setCardsToPass([]);
       }
     }
@@ -225,7 +225,6 @@ export default function Hearts() {
   }
 
   function handleNewState(state: any) {
-    console.log(state);
     const myPlayerOrder: number = state.player.playerOrder;
     if (state.otherPlayerDetails.length === 2) {
       const otherPlayerPositions = otherPlayersThree.get(myPlayerOrder);

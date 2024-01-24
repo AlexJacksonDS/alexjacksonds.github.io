@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, KeyboardEvent } from "react";
+import { useEffect, useState, KeyboardEvent, useRef } from "react";
 import { Button, Container, FormControl, FormGroup } from "react-bootstrap";
 import SimplePeer from "simple-peer";
 import { v4 as uuidv4 } from 'uuid';
@@ -11,14 +11,15 @@ interface ChatMessage {
 }
 
 export default function SecondPage() {
+  const peerRef = useRef<SimplePeer.Instance | undefined>();
+
   const [offerString, setOfferString] = useState("");
   const [answerString, setAnswerString] = useState("");
-  const [peer, setPeer] = useState<SimplePeer.Instance | null>(null);
   const [chatInput, setChatInput] = useState('');
   const [chatArray, setChatArray] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
-    if (!peer) {
+    if (!peerRef.current) {
       const p = new SimplePeer({
         initiator: location.hash === '#1',
         trickle: false
@@ -36,25 +37,25 @@ export default function SecondPage() {
       p.on('data', data => {
         setChatArray(oldArray => [...oldArray, {id: uuidv4(), message: `> ${data}`}]);
       })
-      setPeer(p);
+      peerRef.current = p;
     }
   });
 
   const submitAnswer = () => {
-    if (!peer) {
+    if (!peerRef.current) {
       return;
     }
-    peer.signal(JSON.parse(answerString));
+    peerRef.current.signal(JSON.parse(answerString));
   }
 
   const chatOnKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.code != 'Enter') return;
-    if (!peer) {
+    if (!peerRef.current) {
       return;
     }
     const message = (e.target as HTMLInputElement).value;
     setChatArray(oldArray => [...oldArray, {id: uuidv4(), message}]);
-    peer.send(message);
+    peerRef.current.send(message);
   }
 
   const copyOffer = () => {
