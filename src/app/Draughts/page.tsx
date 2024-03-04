@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { Socket } from "socket.io-client";
 import { useSearchParams } from "next/navigation";
-import { DraughtsBoard as Board, DraughtsTurn } from "../types/draughts";
-import DraughtsBoard from "../components/DraughtsBoard/DraughtsBoard";
+import { DraughtsBoard as Board, DraughtsTurn } from "../../types/draughts";
+import DraughtsBoard from "../../components/DraughtsBoard/DraughtsBoard";
 import "./Draughts.scss";
 import {
   boardFromString,
@@ -15,9 +15,9 @@ import {
   initialDraughtsBoard,
   isPossibleMove,
   makeMove,
-} from "../services/draughts.service";
-import { getSquareCode } from "../helpers/squareHelper";
-import getSocket from "../services/socket.service";
+} from "../../services/draughts.service";
+import { getSquareCode } from "../../helpers/squareHelper";
+import getSocket from "../../services/socket.service";
 
 export default function Draughts() {
   const socketRef = useRef<Socket<any, any> | undefined>();

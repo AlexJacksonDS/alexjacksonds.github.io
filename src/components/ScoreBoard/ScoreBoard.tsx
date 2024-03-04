@@ -1,4 +1,4 @@
-import { PlayerScore } from "@/app/types/hearts";
+import { PlayerScore } from "@/types/hearts";
 import { Col, Container, Row } from "react-bootstrap";
 import "./ScoreBoard.scss";
 import { Fragment } from "react";

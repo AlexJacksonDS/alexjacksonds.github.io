@@ -3,9 +3,9 @@
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { useEffect, useState, KeyboardEvent, useRef } from "react";
 import { Col, Container, FormGroup, FormLabel, Row } from "react-bootstrap";
-import { OtherPlayer, Player, PlayerScore } from "../types/hearts";
-import ScoreBoard from "../components/ScoreBoard/ScoreBoard";
-import CardPlayArea from "../components/CardPlayArea/CardPlayArea";
+import { OtherPlayer, Player, PlayerScore } from "../../types/hearts";
+import ScoreBoard from "../../components/ScoreBoard/ScoreBoard";
+import CardPlayArea from "../../components/CardPlayArea/CardPlayArea";
 import "./Hearts.scss";
 
 export default function Hearts() {

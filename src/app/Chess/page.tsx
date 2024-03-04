@@ -3,12 +3,12 @@
 import { Chess as ChessJS, Square } from "chess.js";
 import { useEffect, useRef, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import ChessBoard from "../components/ChessBoard/ChessBoard";
+import ChessBoard from "../../components/ChessBoard/ChessBoard";
 import { Socket } from "socket.io-client";
 import { useSearchParams } from "next/navigation";
-import { getPieceUnicodeFromString } from "../helpers/pieceUnicodeHelper";
+import { getPieceUnicodeFromString } from "../../helpers/pieceUnicodeHelper";
 import "./Chess.scss";
-import getSocket from "../services/socket.service";
+import getSocket from "../../services/socket.service";
 
 export default function Chess() {
   const socketRef = useRef<Socket<any, any> | undefined>();

@@ -1,6 +1,6 @@
 import { Col, Container, Row } from "react-bootstrap";
 import PlayingCard from "../PlayingCard/PlayingCard";
-import { OtherPlayer } from "@/app/types/hearts";
+import { OtherPlayer } from "@/types/hearts";
 import "./OtherCardPlayer.scss";
 
 export default function OtherCardPlayer(props: {

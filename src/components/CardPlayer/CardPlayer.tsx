@@ -1,7 +1,7 @@
 import { Col, Container, Row } from "react-bootstrap";
 import PlayingCard from "../PlayingCard/PlayingCard";
-import { Player } from "@/app/types/hearts";
 import "./CardPlayer.scss";
+import { Player } from "@/types/hearts";
 
 export default function CardPlayer(props: { player: Player; cardsToHighlight: string[]; isTurn: boolean; selectCard: any }) {
   return (

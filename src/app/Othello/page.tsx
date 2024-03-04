@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { Socket } from "socket.io-client";
 import { useSearchParams } from "next/navigation";
-import OthelloBoard from "../components/OthelloBoard/OthelloBoard";
-import { isArrayInArray } from "../helpers/arrayHelper";
-import getSocket from "../services/socket.service";
+import OthelloBoard from "../../components/OthelloBoard/OthelloBoard";
+import { isArrayInArray } from "../../helpers/arrayHelper";
+import getSocket from "../../services/socket.service";
 import {
   boardFromString,
   boardState,
@@ -14,8 +14,8 @@ import {
   getPossibleMoves,
   initialOthelloBoard,
   performMove,
-} from "../services/othello.service";
-import { OthelloBoard as Board, OthelloTurn } from "../types/othello";
+} from "../../services/othello.service";
+import { OthelloBoard as Board, OthelloTurn } from "../../types/othello";
 
 export default function Othello() {
   const socketRef = useRef<Socket<any, any> | undefined>();
