@@ -13,10 +13,13 @@
     "@types/simple-peer": "^9.11.8",
     "bootstrap": "^5.3.2",
     "chess.js": "^1.0.0-beta.7",
+    "lodash": "^4.17.21",
     "next": "14.0.4",
     "node-cache": "^5.1.2",
     "react": "^18",
     "react-bootstrap": "^2.9.2",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18",
     "sass": "^1.69.7",
     "simple-peer": "^9.11.1",
@@ -25,6 +28,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.202",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

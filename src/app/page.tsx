@@ -1,5 +1,6 @@
 "use client";
 
+import SignInForm from "@/components/Authentication/SignInForm";
 import { Container } from "react-bootstrap";
 
 export default function Home() {
@@ -7,6 +8,8 @@ export default function Home() {
     <main>
       <Container>
         <h1>Homepage</h1>
+
+        <SignInForm />
       </Container>
     </main>
   )
