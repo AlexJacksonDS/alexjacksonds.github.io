@@ -3,7 +3,7 @@
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "@/types/solitaire";
 
-export function DroppableCardList({ dropZoneId, children }: { dropZoneId: string; children: React.ReactNode }) {
+export default function DroppableCardList({ dropZoneId, children }: { dropZoneId: string; children: React.ReactNode }) {
   const [, drop] = useDrop(
     () => ({
       accept: ItemTypes.STACK,

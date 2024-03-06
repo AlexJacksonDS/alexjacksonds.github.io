@@ -1,7 +1,7 @@
 import { Card, DropResult, ItemTypes } from "@/types/solitaire";
 import { useDrag, DragSourceMonitor } from "react-dnd";
 
-const Stack = function DraggableStack({
+export default function DraggableStack({
   stackId,
   cards,
   isDeck,
@@ -16,11 +16,11 @@ const Stack = function DraggableStack({
   const selfCard = allCards.shift();
   const id = `${stackId}|${cards.map((c) => c.id).join(",")}`;
 
-  const [{ isDragging }, drag] = useDrag(
+  const [, drag] = useDrag(
     () => ({
       type: ItemTypes.STACK,
       item: { id },
-      canDrag: isDeck ? !id.includes(',') : selfCard?.isFaceUp,
+      canDrag: isDeck ? !id.includes(",") : selfCard?.isFaceUp,
       end: (item, mon) => {
         const dropResult = mon.getDropResult<DropResult>();
         if (dropResult) {
@@ -46,17 +46,15 @@ const Stack = function DraggableStack({
       ) : null}
     </div>
   );
-};
+}
 
 function DisplayCard(props: { card: Card }) {
   return (
     <img
-      className="normal"
+      className={`normal${props.card.isFaceUp ? " draggable" : ""}`}
       src={`/cards/${props.card.isFaceUp ? props.card.id : "BLUE_BACK"}.svg`}
       alt={props.card.isFaceUp ? props.card.id : "BLUE_BACK"}
       draggable={false}
     />
   );
 }
-
-export default Stack;

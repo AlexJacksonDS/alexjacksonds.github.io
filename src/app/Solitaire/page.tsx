@@ -2,13 +2,14 @@
 
 import { Col, Container, Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import { dealSolitaire } from "@/services/solitaire.service";
+import { dealSolitaire, isMoveLegal, makeMove, turnThreeDeckCards } from "@/services/solitaire.service";
 import "./Solitaire.scss";
-import { Card, DropResult, GameState } from "@/types/solitaire";
+import { DropResult, GameState } from "@/types/solitaire";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import Stack from "@/components/Draggable/DraggableCardStack/DraggableCardStack";
-import { DroppableCardList } from "@/components/Draggable/DroppableCardList/DroppableCardList";
+import DroppableCardList from "@/components/Draggable/DroppableCardList/DroppableCardList";
+import DraggableStack from "@/components/Draggable/DraggableCardStack/DraggableCardStack";
+import Placeholder from "@/components/CardPlaceholder/Placeholder";
 
 export default function Solitaire() {
   const [isDealt, setIsDealt] = useState(false);
@@ -21,22 +22,9 @@ export default function Solitaire() {
     }
   });
 
-  const cardColumns = [
-    "column-one",
-    "column-two",
-    "column-three",
-    "column-four",
-    "column-five",
-    "column-six",
-    "column-seven",
-  ];
-
-  const cardPiles = ["pile-one", "pile-two", "pile-three", "pile-four"];
-
   function handleStackMove(dropResult: DropResult, stackId: string) {
     if (!gameState) return;
 
-    const newGameState: GameState = JSON.parse(JSON.stringify(gameState));
     const stackDetails = stackId.split("|");
     const sourceZone = stackDetails[0];
 
@@ -45,96 +33,17 @@ export default function Solitaire() {
     }
 
     const cardIds = stackDetails[1].split(",");
-    const cards = cardIds.map((id) => ({ id, isFaceUp: true }));
-    switch (dropResult.dropZoneId) {
-      case "column-one":
-        newGameState.columnOne = gameState.columnOne.concat(cards);
-        break;
-      case "column-two":
-        newGameState.columnTwo = gameState.columnTwo.concat(cards);
-        break;
-      case "column-three":
-        newGameState.columnThree = gameState.columnThree.concat(cards);
-        break;
-      case "column-four":
-        newGameState.columnFour = gameState.columnFour.concat(cards);
-        break;
-      case "column-five":
-        newGameState.columnFive = gameState.columnFive.concat(cards);
-        break;
-      case "column-six":
-        newGameState.columnSix = gameState.columnSix.concat(cards);
-        break;
-      case "column-seven":
-        newGameState.columnSeven = gameState.columnSeven.concat(cards);
-        break;
-      case "pile-one":
-        newGameState.pileOne = gameState.pileOne.concat(cards);
-        break;
-      case "pile-two":
-        newGameState.pileTwo = gameState.pileTwo.concat(cards);
-        break;
-      case "pile-three":
-        newGameState.pileThree = gameState.pileThree.concat(cards);
-        break;
-      case "pile-four":
-        newGameState.pileFour = gameState.pileFour.concat(cards);
-        break;
-      default:
-        return;
+
+    if (isMoveLegal(gameState, dropResult.dropZoneId, cardIds)) {
+      const newGameState = makeMove(gameState, sourceZone, dropResult.dropZoneId, cardIds);
+      setGameState(newGameState);
     }
-    switch (sourceZone) {
-      case "column-one":
-        newGameState.columnOne = gameState.columnOne
-          .filter((c) => !cardIds.includes(c.id))
-          .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
-        break;
-      case "column-two":
-        newGameState.columnTwo = gameState.columnTwo
-          .filter((c) => !cardIds.includes(c.id))
-          .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
-        break;
-      case "column-three":
-        newGameState.columnThree = gameState.columnThree
-          .filter((c) => !cardIds.includes(c.id))
-          .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
-        break;
-      case "column-four":
-        newGameState.columnFour = gameState.columnFour
-          .filter((c) => !cardIds.includes(c.id))
-          .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
-        break;
-      case "column-five":
-        newGameState.columnFive = gameState.columnFive
-          .filter((c) => !cardIds.includes(c.id))
-          .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
-        break;
-      case "column-six":
-        newGameState.columnSix = gameState.columnSix
-          .filter((c) => !cardIds.includes(c.id))
-          .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
-        break;
-      case "column-seven":
-        newGameState.columnSeven = gameState.columnSeven
-          .filter((c) => !cardIds.includes(c.id))
-          .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
-        break;
-      case "turnedDeck":
-        newGameState.turnedDeck = gameState.turnedDeck.filter((c) => !cardIds.includes(c.id));
-        break;
-      default:
-        return;
-    }
-    setGameState(newGameState);
   }
 
   function dealThree() {
     if (!gameState) return;
 
-    const newGameState: GameState = JSON.parse(JSON.stringify(gameState));
-    newGameState.turnedDeck = newGameState.turnedDeck
-      .concat([newGameState.deck.pop() as Card, newGameState.deck.pop() as Card, newGameState.deck.pop() as Card])
-      .map((c) => ({ id: c.id, isFaceUp: true }));
+    const newGameState = turnThreeDeckCards(gameState);
 
     setGameState(newGameState);
   }
@@ -151,21 +60,21 @@ export default function Solitaire() {
                     <Col className="deck" onClick={dealThree}>
                       <DroppableCardList dropZoneId="deck">
                         {gameState.deck.length !== 0 ? (
-                          <Stack
+                          <DraggableStack
                             cards={gameState.deck}
                             stackId="deck"
                             isDeck={true}
                             handleStackMove={handleStackMove}
                           />
                         ) : (
-                          <Placeholder />
+                          <Placeholder isResetDraw={true} />
                         )}
                       </DroppableCardList>
                     </Col>
                     <Col className="turned-deck">
                       <DroppableCardList dropZoneId="turnedDeck">
                         {gameState.turnedDeck.length !== 0 ? (
-                          <Stack
+                          <DraggableStack
                             cards={gameState.turnedDeck}
                             stackId="turnedDeck"
                             isDeck={true}
@@ -183,7 +92,7 @@ export default function Solitaire() {
                     <Col className="pile">
                       <DroppableCardList dropZoneId="pile-one">
                         {gameState.pileOne.length !== 0 ? (
-                          <Stack
+                          <DraggableStack
                             cards={gameState.pileOne}
                             stackId="pile-one"
                             isDeck={false}
@@ -197,7 +106,7 @@ export default function Solitaire() {
                     <Col className="pile">
                       <DroppableCardList dropZoneId="pile-two">
                         {gameState.pileTwo.length !== 0 ? (
-                          <Stack
+                          <DraggableStack
                             cards={gameState.pileTwo}
                             stackId="pile-two"
                             isDeck={false}
@@ -211,7 +120,7 @@ export default function Solitaire() {
                     <Col className="pile">
                       <DroppableCardList dropZoneId="pile-three">
                         {gameState.pileThree.length !== 0 ? (
-                          <Stack
+                          <DraggableStack
                             cards={gameState.pileThree}
                             stackId="pile-three"
                             isDeck={false}
@@ -225,7 +134,7 @@ export default function Solitaire() {
                     <Col className="pile">
                       <DroppableCardList dropZoneId="pile-four">
                         {gameState.pileFour.length !== 0 ? (
-                          <Stack
+                          <DraggableStack
                             cards={gameState.pileFour}
                             stackId="pile-four"
                             isDeck={false}
@@ -243,7 +152,7 @@ export default function Solitaire() {
                 <Col className="column">
                   <DroppableCardList dropZoneId="column-one">
                     {gameState.columnOne.length !== 0 ? (
-                      <Stack
+                      <DraggableStack
                         cards={gameState.columnOne}
                         stackId="column-one"
                         isDeck={false}
@@ -257,7 +166,7 @@ export default function Solitaire() {
                 <Col className="column">
                   <DroppableCardList dropZoneId="column-two">
                     {gameState.columnTwo.length !== 0 ? (
-                      <Stack
+                      <DraggableStack
                         cards={gameState.columnTwo}
                         stackId="column-two"
                         isDeck={false}
@@ -271,7 +180,7 @@ export default function Solitaire() {
                 <Col className="column">
                   <DroppableCardList dropZoneId="column-three">
                     {gameState.columnThree.length !== 0 ? (
-                      <Stack
+                      <DraggableStack
                         cards={gameState.columnThree}
                         stackId="column-three"
                         isDeck={false}
@@ -285,7 +194,7 @@ export default function Solitaire() {
                 <Col className="column">
                   <DroppableCardList dropZoneId="column-four">
                     {gameState.columnFour.length !== 0 ? (
-                      <Stack
+                      <DraggableStack
                         cards={gameState.columnFour}
                         stackId="column-four"
                         isDeck={false}
@@ -299,7 +208,7 @@ export default function Solitaire() {
                 <Col className="column">
                   <DroppableCardList dropZoneId="column-five">
                     {gameState.columnFive.length !== 0 ? (
-                      <Stack
+                      <DraggableStack
                         cards={gameState.columnFive}
                         stackId="column-five"
                         isDeck={false}
@@ -313,7 +222,7 @@ export default function Solitaire() {
                 <Col className="column">
                   <DroppableCardList dropZoneId="column-six">
                     {gameState.columnSix.length !== 0 ? (
-                      <Stack
+                      <DraggableStack
                         cards={gameState.columnSix}
                         stackId="column-six"
                         isDeck={false}
@@ -327,7 +236,7 @@ export default function Solitaire() {
                 <Col className="column">
                   <DroppableCardList dropZoneId="column-seven">
                     {gameState.columnSeven.length !== 0 ? (
-                      <Stack
+                      <DraggableStack
                         cards={gameState.columnSeven}
                         stackId="column-seven"
                         isDeck={false}
@@ -344,13 +253,5 @@ export default function Solitaire() {
         </DndProvider>
       </Container>
     </main>
-  );
-}
-
-function Placeholder() {
-  return (
-    <div className="card-list">
-      <div className="placeholder normal"></div>
-    </div>
   );
 }

@@ -13,7 +13,7 @@
     flex-grow: 0;
 
     & .card-list {
-      margin-left: -7.8vw;
+      margin-left: -6.8vw;
     }
   }
 }
@@ -25,7 +25,7 @@
     flex-grow: 0;
 
     & .card-list {
-      margin-left: -30px;
+      margin-left: -6.5vw;
     }
   }
 }
@@ -35,11 +35,13 @@
     position: relative;
     flex-grow: 0;
     & .card-list {
-      margin-top: calc(-8vw * calc(39 / 28));
+      margin-top: calc(-7vw * calc(39 / 28));
     }
   }
-  & .playingCard {
-    margin-left: -5vw;
+
+  & .normal {
+    width: 7vw;
+    aspect-ratio: 28 / 39;
   }
 }
 
@@ -53,21 +55,21 @@
     flex-grow: 0;
     margin-top: calc(-6vw * calc(39 / 28));
   }
-  & .playingCard {
-    margin-top: calc(-6vw * calc(39 / 28));
-  }
-}
-
-.playingCard {
-  object-fit: scale-down;
 }
 
 .normal {
-  width: 8vw;
+  width: 7vw;
   aspect-ratio: 28 / 39;
 }
 
+.draggable {
+  cursor: grab;
+}
+
 .placeholder {
+  display: flex;
   border: 1px dashed white;
   background-color: unset;
+  cursor: default;
+  align-items: center;
 }
