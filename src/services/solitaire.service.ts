@@ -75,6 +75,7 @@ export function turnThreeDeckCards(gameState: GameState) {
   } else {
     newGameState.turnedDeck = newGameState.turnedDeck
       .concat([newGameState.deck.pop() as Card, newGameState.deck.pop() as Card, newGameState.deck.pop() as Card])
+      .filter(c => c!== undefined)
       .map((c) => ({ id: c.id, isFaceUp: true }));
 
     console.log(newGameState.turnedDeck);
@@ -149,39 +150,25 @@ function removeCardFromSourceList(
 ) {
   switch (sourceZone) {
     case "column-one":
-      newGameState.columnOne = gameState.columnOne
-        .filter((c) => !cardIds.includes(c.id))
-        .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
+      newGameState.columnOne = removeCardsFromColumn(gameState.columnOne, cardIds);
       break;
     case "column-two":
-      newGameState.columnTwo = gameState.columnTwo
-        .filter((c) => !cardIds.includes(c.id))
-        .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
+      newGameState.columnTwo = removeCardsFromColumn(gameState.columnTwo, cardIds);
       break;
     case "column-three":
-      newGameState.columnThree = gameState.columnThree
-        .filter((c) => !cardIds.includes(c.id))
-        .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
+      newGameState.columnThree = removeCardsFromColumn(gameState.columnThree, cardIds);
       break;
     case "column-four":
-      newGameState.columnFour = gameState.columnFour
-        .filter((c) => !cardIds.includes(c.id))
-        .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
+      newGameState.columnFour = removeCardsFromColumn(gameState.columnFour, cardIds);
       break;
     case "column-five":
-      newGameState.columnFive = gameState.columnFive
-        .filter((c) => !cardIds.includes(c.id))
-        .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
+      newGameState.columnFive = removeCardsFromColumn(gameState.columnFive, cardIds);
       break;
     case "column-six":
-      newGameState.columnSix = gameState.columnSix
-        .filter((c) => !cardIds.includes(c.id))
-        .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
+      newGameState.columnSix = removeCardsFromColumn(gameState.columnSix, cardIds);
       break;
     case "column-seven":
-      newGameState.columnSeven = gameState.columnSeven
-        .filter((c) => !cardIds.includes(c.id))
-        .map((c, i, arr) => ({ id: c.id, isFaceUp: i === arr.length - 1 }));
+      newGameState.columnSeven = removeCardsFromColumn(gameState.columnSeven, cardIds);
       break;
     case "turnedDeck":
       newGameState.turnedDeck = gameState.turnedDeck.filter((c) => !cardIds.includes(c.id));
@@ -189,6 +176,12 @@ function removeCardFromSourceList(
     default:
       return;
   }
+}
+
+function removeCardsFromColumn(list: Card[], cardIds: string[]): Card[] {
+  return list
+    .filter((c) => !cardIds.includes(c.id))
+    .map((c, i, arr) => ({ id: c.id, isFaceUp: c.isFaceUp ? c.isFaceUp : i === arr.length - 1 }));
 }
 
 export function isMoveLegal(gameState: GameState, targetZone: string, cardIds: string[]) {
