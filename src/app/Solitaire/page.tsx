@@ -50,7 +50,7 @@ export default function Solitaire() {
 
   return (
     <main>
-      <Container style={{pointerEvents: "none"}}>
+      <Container>
         <DndProvider backend={HTML5Backend}>
           {isDealt && gameState ? (
             <>
