@@ -34,7 +34,7 @@ export default function Solitaire() {
 
     const cardIds = stackDetails[1].split(",");
 
-    if (isMoveLegal(gameState, dropResult.dropZoneId, cardIds)) {
+    if (isMoveLegal(gameState, dropResult.dropZoneId, sourceZone, cardIds)) {
       const newGameState = makeMove(gameState, sourceZone, dropResult.dropZoneId, cardIds);
       setGameState(newGameState);
     }

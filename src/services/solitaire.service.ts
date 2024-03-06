@@ -75,7 +75,7 @@ export function turnThreeDeckCards(gameState: GameState) {
   } else {
     newGameState.turnedDeck = newGameState.turnedDeck
       .concat([newGameState.deck.pop() as Card, newGameState.deck.pop() as Card, newGameState.deck.pop() as Card])
-      .filter(c => c!== undefined)
+      .filter((c) => c !== undefined)
       .map((c) => ({ id: c.id, isFaceUp: true }));
 
     console.log(newGameState.turnedDeck);
@@ -83,12 +83,7 @@ export function turnThreeDeckCards(gameState: GameState) {
   return newGameState;
 }
 
-export function makeMove(
-  gameState: GameState,
-  sourceZone: string,
-  targetZone: string,
-  cardIds: string[]
-): GameState {
+export function makeMove(gameState: GameState, sourceZone: string, targetZone: string, cardIds: string[]): GameState {
   const newGameState: GameState = JSON.parse(JSON.stringify(gameState));
   addCardsToTargetZone(gameState, targetZone, newGameState, cardIds);
   removeCardFromSourceList(gameState, sourceZone, newGameState, cardIds);
@@ -96,12 +91,7 @@ export function makeMove(
   return newGameState;
 }
 
-function addCardsToTargetZone(
-  gameState: GameState,
-  targetZone: string,
-  newGameState: GameState,
-  cardIds: string[]
-) {
+function addCardsToTargetZone(gameState: GameState, targetZone: string, newGameState: GameState, cardIds: string[]) {
   const cards = cardIds.map((id) => ({ id, isFaceUp: true }));
   switch (targetZone) {
     case "column-one":
@@ -184,7 +174,9 @@ function removeCardsFromColumn(list: Card[], cardIds: string[]): Card[] {
     .map((c, i, arr) => ({ id: c.id, isFaceUp: c.isFaceUp ? c.isFaceUp : i === arr.length - 1 }));
 }
 
-export function isMoveLegal(gameState: GameState, targetZone: string, cardIds: string[]) {
+export function isMoveLegal(gameState: GameState, targetZone: string, sourceZone: string, cardIds: string[]) {
+  if (cardPiles.includes(sourceZone)) return false;
+  
   if (cardPiles.includes(targetZone)) {
     if (cardIds.length !== 1) return false;
 
