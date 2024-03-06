@@ -12,5 +12,5 @@ export default function DroppableCardList({ dropZoneId, children }: { dropZoneId
     [dropZoneId]
   );
 
-  return <div ref={drop} className="droppable">{children}</div>;
+  return <div id={dropZoneId} ref={drop} className="droppable">{children}</div>;
 }

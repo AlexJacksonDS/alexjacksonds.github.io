@@ -73,3 +73,27 @@
   cursor: default;
   align-items: center;
 }
+
+.anisvg {
+  position: relative;
+  z-index: 50;
+}
+
+.animation-container {
+  position: absolute;
+  width: 800px;
+  height: 800px;
+  top: 0;
+  left: 0;
+}
+
+.animated-card {
+  z-index: 5;
+  position: absolute;
+  top: 0;
+  left: 0;
+  //offset-rotate: 0deg;
+  offset-path: path(
+    "M 0 100 Q 100 50 200 800 Q 300 200 400 800 Q 500 400 600 800 Q 700 600 800 800"
+  );
+}

@@ -51,6 +51,7 @@ export default function DraggableStack({
 function DisplayCard(props: { card: Card }) {
   return (
     <img
+      id={`${props.card.id}-img`}
       className={`normal${props.card.isFaceUp ? " draggable" : ""}`}
       src={`/cards/${props.card.isFaceUp ? props.card.id : "BLUE_BACK"}.svg`}
       alt={props.card.isFaceUp ? props.card.id : "BLUE_BACK"}

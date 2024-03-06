@@ -1,10 +1,10 @@
 "use client";
 
 import { Col, Container, Row } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { dealSolitaire, isMoveLegal, makeMove, turnThreeDeckCards } from "@/services/solitaire.service";
 import "./Solitaire.scss";
-import { DropResult, GameState } from "@/types/solitaire";
+import { Card, DropResult, GameState } from "@/types/solitaire";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DroppableCardList from "@/components/Draggable/DroppableCardList/DroppableCardList";
@@ -14,10 +14,12 @@ import Placeholder from "@/components/CardPlaceholder/Placeholder";
 export default function Solitaire() {
   const [isDealt, setIsDealt] = useState(false);
   const [gameState, setGameState] = useState<GameState | undefined>();
+  const [isWon, setIsWon] = useState(false);
 
   useEffect(() => {
     if (!isDealt) {
       setGameState(dealSolitaire());
+      setIsWon(false);
       setIsDealt(true);
     }
   });
@@ -36,6 +38,7 @@ export default function Solitaire() {
 
     if (isMoveLegal(gameState, dropResult.dropZoneId, sourceZone, cardIds)) {
       const newGameState = makeMove(gameState, sourceZone, dropResult.dropZoneId, cardIds);
+      setIsWon(newGameState.pileOne.length === 13 && newGameState.pileTwo.length === 13 && newGameState.pileThree.length === 13 && newGameState.pileFour.length === 13);
       setGameState(newGameState);
     }
   }
@@ -251,7 +254,94 @@ export default function Solitaire() {
             </>
           ) : null}
         </DndProvider>
+        {isWon && gameState ? (
+          <VictoryCanvas piles={[gameState.pileOne, gameState.pileTwo, gameState.pileThree, gameState.pileFour]} />
+        ) : null}
       </Container>
     </main>
   );
 }
+
+const VictoryCanvas = memo(function VictoryCanvas({ piles }: { piles: Card[][] }) {
+  const dpr = window.devicePixelRatio;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const rectOne = document.getElementById("pile-one")?.getBoundingClientRect();
+    const rectTwo = document.getElementById("pile-two")?.getBoundingClientRect();
+    const rectThree = document.getElementById("pile-three")?.getBoundingClientRect();
+    const rectFour = document.getElementById("pile-four")?.getBoundingClientRect();
+    if (canvasRef.current && rectOne && rectTwo && rectThree && rectFour) {
+      const rects = [rectOne, rectTwo, rectThree, rectFour];
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
+      if (context) {
+        piles.forEach(function (pile, i) {
+          setTimeout(function () {
+            const pileReverse = [...pile].reverse();
+            pileReverse.forEach(function (card, j) {
+              setTimeout(function () {
+                const img = document.getElementById(`${card.id}-img`) as HTMLImageElement;
+                startFall(canvas, context, img, rects[i]);
+              }, j * 1000);
+            });
+          }, i * 1000);
+        });
+      }
+    }
+  }, [piles]);
+
+  function fallIteration(
+    canvas: HTMLCanvasElement,
+    context: CanvasRenderingContext2D,
+    img: HTMLImageElement,
+    pos: { top: number; left: number },
+    dx: number,
+    dy: number
+  ) {
+    context.drawImage(img, pos.left, pos.top, img.width, img.height);
+    var newTop = Math.min(canvas.height - img.height, pos.top + dy);
+    var newPos = {
+      left: pos.left + dx,
+      top: newTop,
+    };
+    if (Math.abs(newTop - (canvas.height - img.height)) < 5) {
+      if (dy < 0 || dy > 20) {
+        dy *= -1 * 0.7;
+        setTimeout(function () {
+          fallIteration(canvas, context, img, newPos, dx, dy);
+        }, 20);
+      }
+    } else {
+      dy = dy - -3;
+      setTimeout(function () {
+        fallIteration(canvas, context, img, newPos, dx, dy);
+      }, 20);
+    }
+  }
+
+  function startFall(
+    canvas: HTMLCanvasElement,
+    context: CanvasRenderingContext2D,
+    img: HTMLImageElement,
+    domRect: DOMRect
+  ) {
+    var dx = Math.floor(Math.random() * 10) + 5;
+    if (Math.floor(Math.random() * 10) > 5) {
+      dx = -dx;
+    }
+    setTimeout(function () {
+      fallIteration(canvas, context, img, { top: domRect.top, left: domRect.left }, dx, 0);
+    }, 200);
+  }
+
+  return (
+    <canvas
+      ref={canvasRef}
+      width={window.innerWidth * dpr}
+      height={window.innerHeight * dpr}
+      id="victory-canvas"
+      style={{ zIndex: 500, position: "fixed", top: 0, left: 0, width: "100%", height: "100%" }}
+    />
+  );
+});
