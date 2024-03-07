@@ -48,43 +48,45 @@ export function dealSolitaire(): GameState {
     shuffledDeck.shift(),
     shuffledDeck.shift(),
   ];
+  const columns = [columnOne, columnTwo, columnThree, columnFour, columnFive, columnSix, columnSeven];
+
+  const columnMap = new Map<string, Card[]>();
+  cardColumns.map((k, i) => {
+    columnMap.set(k, flipAllExceptLast(columns[i] as string[]));
+  });
+
+  const pileMap = new Map<string, Card[]>();
+  cardPiles.map((k) => {
+    pileMap.set(k, []);
+  });
 
   return {
-    columnOne: flipAllExceptLast(columnOne as string[]),
-    columnTwo: flipAllExceptLast(columnTwo as string[]),
-    columnThree: flipAllExceptLast(columnThree as string[]),
-    columnFour: flipAllExceptLast(columnFour as string[]),
-    columnFive: flipAllExceptLast(columnFive as string[]),
-    columnSix: flipAllExceptLast(columnSix as string[]),
-    columnSeven: flipAllExceptLast(columnSeven as string[]),
-    pileOne: [],
-    pileTwo: [],
-    pileThree: [],
-    pileFour: [],
+    columns: columnMap,
+    piles: pileMap,
     deck: flipAll([...shuffledDeck]),
     turnedDeck: [],
   };
 }
 
 export function turnThreeDeckCards(gameState: GameState) {
-  const newGameState: GameState = JSON.parse(JSON.stringify(gameState));
+  const newGameState: GameState = _.cloneDeep(gameState);
 
   if (gameState.deck.length === 0) {
-    newGameState.deck = [...gameState.turnedDeck].reverse().map((c) => ({ id: c.id, isFaceUp: false }));
+    newGameState.deck = [...gameState.turnedDeck]
+      .reverse()
+      .map((c) => ({ id: c.id, isFaceUp: false, isDraggable: false }));
     newGameState.turnedDeck = [];
   } else {
     newGameState.turnedDeck = newGameState.turnedDeck
       .concat([newGameState.deck.pop() as Card, newGameState.deck.pop() as Card, newGameState.deck.pop() as Card])
       .filter((c) => c !== undefined)
-      .map((c) => ({ id: c.id, isFaceUp: true }));
-
-    console.log(newGameState.turnedDeck);
+      .map((c, i, arr) => ({ id: c.id, isFaceUp: true, isDraggable: i === arr.length - 1 }));
   }
   return newGameState;
 }
 
 export function makeMove(gameState: GameState, sourceZone: string, targetZone: string, cardIds: string[]): GameState {
-  const newGameState: GameState = JSON.parse(JSON.stringify(gameState));
+  const newGameState: GameState = _.cloneDeep(gameState);
   addCardsToTargetZone(gameState, targetZone, newGameState, cardIds);
   removeCardFromSourceList(gameState, sourceZone, newGameState, cardIds);
 
@@ -92,43 +94,12 @@ export function makeMove(gameState: GameState, sourceZone: string, targetZone: s
 }
 
 function addCardsToTargetZone(gameState: GameState, targetZone: string, newGameState: GameState, cardIds: string[]) {
-  const cards = cardIds.map((id) => ({ id, isFaceUp: true }));
-  switch (targetZone) {
-    case "column-one":
-      newGameState.columnOne = gameState.columnOne.concat(cards);
-      break;
-    case "column-two":
-      newGameState.columnTwo = gameState.columnTwo.concat(cards);
-      break;
-    case "column-three":
-      newGameState.columnThree = gameState.columnThree.concat(cards);
-      break;
-    case "column-four":
-      newGameState.columnFour = gameState.columnFour.concat(cards);
-      break;
-    case "column-five":
-      newGameState.columnFive = gameState.columnFive.concat(cards);
-      break;
-    case "column-six":
-      newGameState.columnSix = gameState.columnSix.concat(cards);
-      break;
-    case "column-seven":
-      newGameState.columnSeven = gameState.columnSeven.concat(cards);
-      break;
-    case "pile-one":
-      newGameState.pileOne = gameState.pileOne.concat(cards);
-      break;
-    case "pile-two":
-      newGameState.pileTwo = gameState.pileTwo.concat(cards);
-      break;
-    case "pile-three":
-      newGameState.pileThree = gameState.pileThree.concat(cards);
-      break;
-    case "pile-four":
-      newGameState.pileFour = gameState.pileFour.concat(cards);
-      break;
-    default:
-      return;
+  const cards = cardIds.map((id) => ({ id, isFaceUp: true, isDraggable: !cardPiles.includes(targetZone) }));
+  if (cardColumns.includes(targetZone)) {
+    newGameState.columns.set(targetZone, gameState.columns.get(targetZone)!.concat(cards));
+  }
+  if (cardPiles.includes(targetZone)) {
+    newGameState.piles.set(targetZone, gameState.piles.get(targetZone)!.concat(cards));
   }
 }
 
@@ -138,45 +109,27 @@ function removeCardFromSourceList(
   newGameState: GameState,
   cardIds: string[]
 ) {
-  switch (sourceZone) {
-    case "column-one":
-      newGameState.columnOne = removeCardsFromColumn(gameState.columnOne, cardIds);
-      break;
-    case "column-two":
-      newGameState.columnTwo = removeCardsFromColumn(gameState.columnTwo, cardIds);
-      break;
-    case "column-three":
-      newGameState.columnThree = removeCardsFromColumn(gameState.columnThree, cardIds);
-      break;
-    case "column-four":
-      newGameState.columnFour = removeCardsFromColumn(gameState.columnFour, cardIds);
-      break;
-    case "column-five":
-      newGameState.columnFive = removeCardsFromColumn(gameState.columnFive, cardIds);
-      break;
-    case "column-six":
-      newGameState.columnSix = removeCardsFromColumn(gameState.columnSix, cardIds);
-      break;
-    case "column-seven":
-      newGameState.columnSeven = removeCardsFromColumn(gameState.columnSeven, cardIds);
-      break;
-    case "turnedDeck":
-      newGameState.turnedDeck = gameState.turnedDeck.filter((c) => !cardIds.includes(c.id));
-      break;
-    default:
-      return;
+  if (cardColumns.includes(sourceZone)) {
+    newGameState.columns.set(sourceZone, removeCardsFromColumn(gameState.columns.get(sourceZone)!, cardIds));
+  }
+  if (sourceZone === "turnedDeck") {
+    newGameState.turnedDeck = gameState.turnedDeck.filter((c) => !cardIds.includes(c.id));
   }
 }
 
 function removeCardsFromColumn(list: Card[], cardIds: string[]): Card[] {
   return list
     .filter((c) => !cardIds.includes(c.id))
-    .map((c, i, arr) => ({ id: c.id, isFaceUp: c.isFaceUp ? c.isFaceUp : i === arr.length - 1 }));
+    .map((c, i, arr) => ({
+      id: c.id,
+      isFaceUp: c.isFaceUp ? c.isFaceUp : i === arr.length - 1,
+      isDraggable: c.isDraggable,
+    }));
 }
 
 export function isMoveLegal(gameState: GameState, targetZone: string, sourceZone: string, cardIds: string[]) {
   if (cardPiles.includes(sourceZone)) return false;
-  
+
   if (cardPiles.includes(targetZone)) {
     if (cardIds.length !== 1) return false;
 
@@ -191,39 +144,11 @@ export function isMoveLegal(gameState: GameState, targetZone: string, sourceZone
 }
 
 function isCardInvalidForPile(gameState: GameState, cardId: string, targetZone: string) {
-  switch (targetZone) {
-    case "pile-one":
-      return !isSameSuitAndOneHigher(cardId, gameState.pileOne);
-    case "pile-two":
-      return !isSameSuitAndOneHigher(cardId, gameState.pileTwo);
-    case "pile-three":
-      return !isSameSuitAndOneHigher(cardId, gameState.pileThree);
-    case "pile-four":
-      return !isSameSuitAndOneHigher(cardId, gameState.pileFour);
-    default:
-      return true;
-  }
+  return !isSameSuitAndOneHigher(cardId, gameState.piles.get(targetZone)!);
 }
 
 function isCardInvalidForColumn(gameState: GameState, cardId: string, targetZone: string) {
-  switch (targetZone) {
-    case "column-one":
-      return !isOppositeColourAndOneLower(cardId, gameState.columnOne);
-    case "column-two":
-      return !isOppositeColourAndOneLower(cardId, gameState.columnTwo);
-    case "column-three":
-      return !isOppositeColourAndOneLower(cardId, gameState.columnThree);
-    case "column-four":
-      return !isOppositeColourAndOneLower(cardId, gameState.columnFour);
-    case "column-five":
-      return !isOppositeColourAndOneLower(cardId, gameState.columnFive);
-    case "column-six":
-      return !isOppositeColourAndOneLower(cardId, gameState.columnSix);
-    case "column-seven":
-      return !isOppositeColourAndOneLower(cardId, gameState.columnSeven);
-    default:
-      return true;
-  }
+  return !isOppositeColourAndOneLower(cardId, gameState.columns.get(targetZone)!);
 }
 
 function isSameSuitAndOneHigher(cardId: string, pile: Card[]) {
@@ -276,9 +201,13 @@ function isOppositeColour(suitOne: string, suitTwo: string) {
 }
 
 function flipAllExceptLast(cards: string[]): Card[] {
-  return cards.map((card, index) => ({ id: card, isFaceUp: index === cards.length - 1 }));
+  return cards.map((card, index) => ({
+    id: card,
+    isFaceUp: index === cards.length - 1,
+    isDraggable: index === cards.length - 1,
+  }));
 }
 
 function flipAll(cards: string[]): Card[] {
-  return cards.map((card) => ({ id: card, isFaceUp: false }));
+  return cards.map((card) => ({ id: card, isFaceUp: false, isDraggable: false }));
 }

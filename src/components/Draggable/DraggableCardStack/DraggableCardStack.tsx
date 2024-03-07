@@ -20,7 +20,7 @@ export default function DraggableStack({
     () => ({
       type: ItemTypes.STACK,
       item: { id },
-      canDrag: isDeck ? !id.includes(",") : selfCard?.isFaceUp,
+      canDrag: isDeck ? !id.includes(",") : selfCard?.isDraggable,
       end: (item, mon) => {
         const dropResult = mon.getDropResult<DropResult>();
         if (dropResult) {

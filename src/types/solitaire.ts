@@ -1,15 +1,6 @@
 export interface GameState {
-  columnOne: Card[];
-  columnTwo: Card[];
-  columnThree: Card[];
-  columnFour: Card[];
-  columnFive: Card[];
-  columnSix: Card[];
-  columnSeven: Card[];
-  pileOne: Card[];
-  pileTwo: Card[];
-  pileThree: Card[];
-  pileFour: Card[];
+  columns: Map<string, Card[]>;
+  piles: Map<string, Card[]>;
   deck: Card[];
   turnedDeck: Card[];
 }
@@ -17,6 +8,7 @@ export interface GameState {
 export interface Card {
   id: string;
   isFaceUp: boolean;
+  isDraggable: boolean;
 }
 
 export interface DraggableCard {
@@ -31,9 +23,9 @@ export interface DraggableCardStack {
 }
 
 export const ItemTypes = {
-  CARD: "card",
   STACK: "stack",
 };
+
 export interface DropResult {
   dropZoneId: string;
 }
