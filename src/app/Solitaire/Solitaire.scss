@@ -87,6 +87,13 @@
   left: 0;
 }
 
+@media (min-width: 1600px) {
+  .container, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+    max-width: 2000px;
+}
+}
+
+
 .animated-card {
   z-index: 5;
   position: absolute;
