@@ -3,7 +3,7 @@ import { dealIntoColumns, shuffle } from "./deck.service";
 import { deck } from "@/types/deck";
 import _ from "lodash";
 import { Card } from "@/types/draggableCards";
-import { isSameSuitAndOneHigher, pileOrder, removeCardsFromColumn } from "@/helpers/cardArrayHelper";
+import { isOppositeColour, isSameSuitAndOneHigher, pileOrder, removeCardsFromColumn } from "@/helpers/cardArrayHelper";
 
 const cardColumns = [
   "column-one",
@@ -131,19 +131,6 @@ function isOppositeColourAndOneLower(cardId: string, column: Card[]) {
   if (columnOrder[columnOrder.indexOf(cardValue) - 1] !== columnValue) return false;
 
   return true;
-}
-
-function isOppositeColour(suitOne: string, suitTwo: string) {
-  switch (suitOne) {
-    case "C":
-    case "S":
-      return suitTwo === "D" || suitTwo === "H";
-    case "D":
-    case "H":
-      return suitTwo === "C" || suitTwo === "S";
-    default:
-      return false;
-  }
 }
 
 function flipAllExceptLast(cards: string[]): Card[] {
