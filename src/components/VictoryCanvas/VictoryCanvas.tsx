@@ -1,6 +1,6 @@
 "use client";
 import { memo, useEffect, useRef } from "react";
-import { Card } from "@/types/solitaire";
+import { Card } from "@/types/draggableCards";
 
 export const VictoryCanvas = memo(function VictoryCanvas({ piles }: { piles: Map<string, Card[]>; }) {
   const dpr = window.devicePixelRatio;

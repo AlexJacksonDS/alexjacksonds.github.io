@@ -1,7 +1,9 @@
-import { Card, GameState } from "@/types/solitaire";
-import { shuffle } from "./deck.service";
+import { GameState } from "@/types/solitaire";
+import { dealIntoColumns, shuffle } from "./deck.service";
 import { deck } from "@/types/deck";
 import _ from "lodash";
+import { Card } from "@/types/draggableCards";
+import { isSameSuitAndOneHigher, pileOrder, removeCardsFromColumn } from "@/helpers/cardArrayHelper";
 
 const cardColumns = [
   "column-one",
@@ -14,14 +16,13 @@ const cardColumns = [
 ];
 
 const cardPiles = ["pile-one", "pile-two", "pile-three", "pile-four"];
-const pileOrder = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K"];
 const columnOrder = [...pileOrder].reverse();
 
 export function dealSolitaire(): GameState {
   const shuffledDeck = shuffle(deck);
   const columnLengths = [1, 2, 3, 4, 5, 6, 7];
 
-  const columns = columnLengths.map((x) => Array.from({ length: x }, () => shuffledDeck.shift()));
+  const columns = dealIntoColumns(columnLengths, shuffledDeck);
 
   const columnMap = new Map<string, Card[]>();
   cardColumns.map((k, i) => {
@@ -90,16 +91,6 @@ function removeCardFromSourceList(
   }
 }
 
-function removeCardsFromColumn(list: Card[], cardIds: string[]): Card[] {
-  return list
-    .filter((c) => !cardIds.includes(c.id))
-    .map((c, i, arr) => ({
-      id: c.id,
-      isFaceUp: c.isFaceUp ? c.isFaceUp : i === arr.length - 1,
-      isDraggable: i === arr.length - 1,
-    }));
-}
-
 export function isMoveLegal(gameState: GameState, targetZone: string, sourceZone: string, cardIds: string[]) {
   if (cardPiles.includes(sourceZone)) return false;
 
@@ -122,24 +113,6 @@ function isCardInvalidForPile(gameState: GameState, cardId: string, targetZone: 
 
 function isCardInvalidForColumn(gameState: GameState, cardId: string, targetZone: string) {
   return !isOppositeColourAndOneLower(cardId, gameState.columns.get(targetZone)!);
-}
-
-function isSameSuitAndOneHigher(cardId: string, pile: Card[]) {
-  const lastInPile = _.last(pile);
-
-  if (!lastInPile) return cardId.includes("A");
-
-  const pileSuit = lastInPile.id.substring(1);
-  const cardSuit = cardId.substring(1);
-
-  if (pileSuit !== cardSuit) return false;
-
-  const pileValue = lastInPile.id.substring(0, 1);
-  const cardValue = cardId.substring(0, 1);
-
-  if (pileOrder[pileOrder.indexOf(cardValue) - 1] !== pileValue) return false;
-
-  return true;
 }
 
 function isOppositeColourAndOneLower(cardId: string, column: Card[]) {

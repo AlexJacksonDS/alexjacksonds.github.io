@@ -2,9 +2,9 @@
 
 import { Col, Container, Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import { dealSolitaire, isMoveLegal, makeMove, turnThreeDeckCards } from "@/services/solitaire.service";
-import "./Solitaire.scss";
-import { GameState } from "@/types/solitaire";
+import { dealFreecell, isMoveLegal, makeMove } from "@/services/freecell.service";
+import "./Freecell.scss";
+import { GameState } from "@/types/freecell";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DroppableCardList from "@/components/Draggable/DroppableCardList/DroppableCardList";
@@ -13,14 +13,14 @@ import Placeholder from "@/components/CardPlaceholder/Placeholder";
 import { VictoryCanvas } from "../../components/VictoryCanvas/VictoryCanvas";
 import { DropResult } from "@/types/draggableCards";
 
-export default function Solitaire() {
+export default function Freecell() {
   const [isDealt, setIsDealt] = useState(false);
   const [gameState, setGameState] = useState<GameState | undefined>();
   const [isWon, setIsWon] = useState(false);
 
   useEffect(() => {
     if (!isDealt) {
-      setGameState(dealSolitaire());
+      setGameState(dealFreecell());
       setIsWon(false);
       setIsDealt(true);
     }
@@ -44,14 +44,6 @@ export default function Solitaire() {
     }
   }
 
-  function dealThree() {
-    if (!gameState) return;
-
-    const newGameState = turnThreeDeckCards(gameState);
-
-    setGameState(newGameState);
-  }
-
   return (
     <main>
       <Container>
@@ -61,38 +53,26 @@ export default function Solitaire() {
               <Row>
                 <Col>
                   <Row>
-                    <Col className="deck" onClick={dealThree}>
-                      <DroppableCardList dropZoneId="deck">
-                        {gameState.deck.length !== 0 ? (
-                          <DraggableStack
-                            cards={gameState.deck}
-                            stackId="deck"
-                            isDeck={true}
-                            handleStackMove={handleStackMove}
-                          />
-                        ) : (
-                          <Placeholder isResetDraw={true} />
-                        )}
-                      </DroppableCardList>
-                    </Col>
-                    <Col className="turned-deck">
-                      <DroppableCardList dropZoneId="turnedDeck">
-                        {gameState.turnedDeck.length !== 0 ? (
-                          <DraggableStack
-                            cards={gameState.turnedDeck}
-                            stackId="turnedDeck"
-                            isDeck={true}
-                            handleStackMove={handleStackMove}
-                          />
-                        ) : (
-                          <Placeholder />
-                        )}
-                      </DroppableCardList>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col>
-                  <Row>
+                    {[...gameState.slots.keys()].map((key) => {
+                      const slot = gameState.slots.get(key)!;
+                      return (
+                        <Col key={key} className="slot">
+                          <DroppableCardList dropZoneId={key}>
+                            {slot.length !== 0 ? (
+                              <DraggableStack
+                                cards={slot}
+                                stackId={key}
+                                isDeck={false}
+                                handleStackMove={handleStackMove}
+                              />
+                            ) : (
+                              <Placeholder />
+                            )}
+                          </DroppableCardList>
+                        </Col>
+                      );
+                    })}
+                    <Col></Col>
                     {[...gameState.piles.keys()].map((key) => {
                       const pile = gameState.piles.get(key)!;
                       return (
@@ -144,5 +124,3 @@ export default function Solitaire() {
     </main>
   );
 }
-
-

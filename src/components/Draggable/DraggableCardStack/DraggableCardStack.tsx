@@ -1,4 +1,4 @@
-import { Card, DropResult, ItemTypes } from "@/types/solitaire";
+import { Card, DropResult, ItemTypes } from "@/types/draggableCards";
 import { useDrag, DragSourceMonitor } from "react-dnd";
 
 export default function DraggableStack({
@@ -52,7 +52,7 @@ function DisplayCard(props: { card: Card }) {
   return (
     <img
       id={`${props.card.id}-img`}
-      className={`normal${props.card.isFaceUp ? " draggable" : ""}`}
+      className={`normal${props.card.isDraggable ? " draggable" : ""}`}
       src={`/cards/${props.card.isFaceUp ? props.card.id : "BLUE_BACK"}.svg`}
       alt={props.card.isFaceUp ? props.card.id : "BLUE_BACK"}
       draggable={false}

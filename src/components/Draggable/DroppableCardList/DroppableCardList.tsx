@@ -1,7 +1,7 @@
 "use client";
 
 import { useDrop } from "react-dnd";
-import { ItemTypes } from "@/types/solitaire";
+import { ItemTypes } from "@/types/draggableCards";
 
 export default function DroppableCardList({ dropZoneId, children }: { dropZoneId: string; children: React.ReactNode }) {
   const [, drop] = useDrop(
@@ -12,5 +12,9 @@ export default function DroppableCardList({ dropZoneId, children }: { dropZoneId
     [dropZoneId]
   );
 
-  return <div id={dropZoneId} ref={drop} className="droppable">{children}</div>;
+  return (
+    <div id={dropZoneId} ref={drop} className="droppable">
+      {children}
+    </div>
+  );
 }
