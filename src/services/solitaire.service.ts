@@ -123,7 +123,7 @@ function removeCardsFromColumn(list: Card[], cardIds: string[]): Card[] {
     .map((c, i, arr) => ({
       id: c.id,
       isFaceUp: c.isFaceUp ? c.isFaceUp : i === arr.length - 1,
-      isDraggable: c.isDraggable,
+      isDraggable: i === arr.length - 1,
     }));
 }
 
