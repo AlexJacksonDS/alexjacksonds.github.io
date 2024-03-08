@@ -1,0 +1,33 @@
+.board-container {
+  padding-top: 5vh;
+  width: 80vh;
+}
+
+.specials-container {
+  padding-top: 1vh;
+  width: 80vh;
+  clear: both;
+  
+
+  & .tile-pool {
+    flex-direction: row;
+    display: flex;
+  }
+
+  & .tile {
+    float: none;
+    margin-right: 20px;
+  }
+}
+
+.dice-container {
+  padding-top: 5vh;
+  width: 10vh;
+  flex-direction: column;
+  display: flex;
+
+  & .tile {
+    float: none;
+    margin-bottom: 20px;
+  }
+}

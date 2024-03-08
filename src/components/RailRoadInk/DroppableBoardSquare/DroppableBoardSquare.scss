@@ -1,0 +1,9 @@
+.board-square {
+    width: 10vh;
+    aspect-ratio: 1 / 1;
+    background: white;
+    border: 1px solid black;
+    display: flex;
+    position: relative;
+    float: left;
+}
