@@ -19,36 +19,9 @@ const columnOrder = [...pileOrder].reverse();
 
 export function dealSolitaire(): GameState {
   const shuffledDeck = shuffle(deck);
+  const columnLengths = [1, 2, 3, 4, 5, 6, 7];
 
-  const columnOne = [shuffledDeck.shift()];
-  const columnTwo = [shuffledDeck.shift(), shuffledDeck.shift()];
-  const columnThree = [shuffledDeck.shift(), shuffledDeck.shift(), shuffledDeck.shift()];
-  const columnFour = [shuffledDeck.shift(), shuffledDeck.shift(), shuffledDeck.shift(), shuffledDeck.shift()];
-  const columnFive = [
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-  ];
-  const columnSix = [
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-  ];
-  const columnSeven = [
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-    shuffledDeck.shift(),
-  ];
-  const columns = [columnOne, columnTwo, columnThree, columnFour, columnFive, columnSix, columnSeven];
+  const columns = columnLengths.map((x) => Array.from({ length: x }, () => shuffledDeck.shift()));
 
   const columnMap = new Map<string, Card[]>();
   cardColumns.map((k, i) => {
