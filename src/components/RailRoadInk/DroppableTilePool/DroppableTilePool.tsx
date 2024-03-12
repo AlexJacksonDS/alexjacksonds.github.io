@@ -1,19 +1,19 @@
 "use client";
 
-import { BoardTile, DropResult, Types } from "@/types/railRoadInk";
+import { DropResult, Tile, Types } from "@/types/railRoadInk";
 import { useDrop } from "react-dnd";
 import DraggableTile from "../DraggableTile/DraggableTile";
 import "./DroppableTilePool.scss";
 
 export default function DroppableTilePool({
   id,
-  boardTiles,
+  tiles,
   handleStackMove,
-  handleClick
+  handleClick,
 }: {
   id: string;
-  boardTiles: BoardTile[];
-  handleStackMove: (dropResult: DropResult, stackId: string) => void;
+  tiles: Map<string, Tile>;
+  handleStackMove: (dropResult: DropResult, item: { id: string; tile: Tile }) => void;
   handleClick: any;
 }) {
   const [, drop] = useDrop(
@@ -24,11 +24,23 @@ export default function DroppableTilePool({
     [id]
   );
 
+  const isOutOfSpecials = id === "specials" && [...tiles.keys()].length <= 3;
+
   return (
     <div id={id} ref={drop} className="tile-pool droppable">
-      {boardTiles.map((boardTile) => (
-        <DraggableTile key={boardTile.id} boardTile={boardTile} handleStackMove={handleStackMove} handleClick={handleClick} />
-      ))}
+      {[...tiles.keys()].map((key) => {
+        const tile = tiles.get(key);
+        return tile ? (
+          <DraggableTile
+            key={key}
+            id={key}
+            tile={tile}
+            isDraggable={isOutOfSpecials ? false : true}
+            handleStackMove={handleStackMove}
+            handleClick={handleClick}
+          />
+        ) : null;
+      })}
     </div>
   );
 }

@@ -55,9 +55,9 @@ export default function TrackPiece({ tile }: { tile: Tile }) {
   );
 }
 
-function RailSection({ location }: { location: string }) {
+export function RailSection({ location, short }: { location: string; short?: boolean }) {
   function getClassName(location: string) {
-    return `rail ${location === "top" || location === "bottom" ? "vert" : "horiz"} ${location}`;
+    return `rail ${location === "top" || location === "bottom" ? "vert" : "horiz"} ${location} ${short ? "short" : ""}`;
   }
   return (
     <div className={getClassName(location)}>
@@ -69,9 +69,9 @@ function RailSection({ location }: { location: string }) {
   );
 }
 
-function RoadSection({ location }: { location: string }) {
+export function RoadSection({ location, short }: { location: string; short?: boolean }) {
   function getClassName(location: string) {
-    return `road ${location === "top" || location === "bottom" ? "vert" : "horiz"} ${location}`;
+    return `road ${location === "top" || location === "bottom" ? "vert" : "horiz"} ${location} ${short ? "short" : ""}`;
   }
   return (
     <div className={getClassName(location)}>

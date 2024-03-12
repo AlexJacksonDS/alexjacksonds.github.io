@@ -1,18 +1,19 @@
 export interface GameState {
+  playedTiles: Map<string, Tile>;
   board: BoardTile[][];
   dice: BoardTile[];
   specials: BoardTile[];
 }
 
 export interface BoardTile {
-  id: string,
+  id: string;
   isLockedIn: boolean;
   tile?: Tile;
   round?: number;
 }
 
 export interface DropResult {
-    id: string;
+  id: string;
 }
 
 export interface Tile {
@@ -76,6 +77,15 @@ export const singleTypeDice = [
   DefaultTileTypes.SROAD,
   DefaultTileTypes.RROAD,
   DefaultTileTypes.TROAD,
+];
+
+export const specials = [
+  DefaultTileTypes.XROAD,
+  DefaultTileTypes.XRAIL,
+  DefaultTileTypes.XRRRT,
+  DefaultTileTypes.XTTTR,
+  DefaultTileTypes.XTRTR,
+  DefaultTileTypes.XTTRR,
 ];
 
 export const dice = [dualTypeDice, singleTypeDice, singleTypeDice, singleTypeDice];
