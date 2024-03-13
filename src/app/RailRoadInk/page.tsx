@@ -10,7 +10,7 @@ import DroppableTilePool from "@/components/RailRoadInk/DroppableTilePool/Droppa
 import _ from "lodash";
 import { useState, useEffect } from "react";
 import { shiftConnections } from "@/helpers/railRoadInk";
-import { Graph, depthFirstTraversal } from "@/helpers/graph";
+import { Graph, depthFirstTraversal, depthFirstTraversalBranches } from "@/helpers/graph";
 
 const roadStarterSquares = ["-1,1", "-1,5", "3,-1", "3,7", "7,1", "7,5"];
 const starterSquares = [...roadStarterSquares, "-1,3", "1,-1", "5,-1", "1,7", "5,7", "7,3"];
@@ -33,6 +33,13 @@ export default function RailRoadInk() {
   const [railGraph, setRailGraph] = useState(new Graph());
 
   const boardArray = [...Array(7)].map(() => [...Array(7)].map(() => null));
+  const allIds = boardArray
+    .map((_, i) => {
+      return boardArray[i].map((_, j) => {
+        return `${i},${j}`;
+      });
+    })
+    .flat();
 
   useEffect(() => {
     if (!isInit) {
@@ -72,6 +79,42 @@ export default function RailRoadInk() {
   });
 
   function calculateScore() {
+    let mistakeConnections = 0;
+    for (const [id, tile] of lockedPieceMap) {
+      const surroundingSquares = getSurroundingSquares(id);
+      const myConnections = shiftConnections(tile);
+
+      for (const surroundingSquare of surroundingSquares) {
+        if (surroundingSquare.tile) {
+          const surrSqConns = shiftConnections(surroundingSquare.tile);
+          switch (surroundingSquare.direction) {
+            case "down":
+              if (isMistakeConnection(myConnections[2], surrSqConns[0])) {
+                mistakeConnections++;
+              }
+              break;
+            case "right":
+              if (isMistakeConnection(myConnections[1], surrSqConns[3])) {
+                mistakeConnections++;
+              }
+              break;
+            case "up":
+              if (isMistakeConnection(myConnections[0], surrSqConns[2])) {
+                mistakeConnections++;
+              }
+              break;
+            case "left":
+              if (isMistakeConnection(myConnections[3], surrSqConns[1])) {
+                mistakeConnections++;
+              }
+              break;
+            default:
+          }
+        }
+      }
+    }
+    setMistakeScore(mistakeConnections);
+
     const uniqTest = _.uniqBy(
       starterSquares.map((x) => _.sortBy(depthFirstTraversal(graph, x).filter((str) => starterSquares.includes(str)))),
       function (item) {
@@ -81,18 +124,8 @@ export default function RailRoadInk() {
     const connectedSets = uniqTest.map((y) => getPoints(y.length));
     setConnectionScore(_.sum(connectedSets));
 
-    const allIds = boardArray
-      .map((_, i) => {
-        return boardArray[i].map((_, j) => {
-          return `${i},${j}`;
-        });
-      })
-      .flat();
-
     const uniqueRailSections = _.uniqBy(
-      allIds.map((x) =>
-        _.sortBy(depthFirstTraversal(railGraph, x).filter((str) => !str.includes("-") && !str.includes("7")))
-      ),
+      allIds.map((x) => getLongestArrayInObject(depthFirstTraversalBranches(railGraph, x))),
       function (item) {
         return JSON.stringify(item);
       }
@@ -101,9 +134,7 @@ export default function RailRoadInk() {
     setRailScore(_.max(railLengths) ?? 0);
 
     const uniqueRoadSections = _.uniqBy(
-      allIds.map((x) =>
-        _.sortBy(depthFirstTraversal(roadGraph, x).filter((str) => !str.includes("-") && !str.includes("7")))
-      ),
+      allIds.map((x) => getLongestArrayInObject(depthFirstTraversalBranches(roadGraph, x))),
       function (item) {
         return JSON.stringify(item);
       }
@@ -116,6 +147,14 @@ export default function RailRoadInk() {
       .filter((x) => x !== undefined).length;
 
     setCentreScore(centerScore);
+  }
+
+  function getLongestArrayInObject(object: { [key: string]: string[] }) {
+    let longest: string[] = [];
+    for (const key in object) {
+      if (object[key].length > longest.length) longest = object[key];
+    }
+    return longest;
   }
 
   function getPoints(connectedCount: number) {
@@ -245,6 +284,10 @@ export default function RailRoadInk() {
     return (c1 === "r" && c2 === "r") || (c2 === "t" && c1 === "t");
   }
 
+  function isMistakeConnection(c1: string, c2: string) {
+    return (c1 === "r" || c1 === "t") && c2 === "u";
+  }
+
   function getSurroundingSquares(squareId: string): { direction: string; id: string; tile?: Tile }[] {
     const split = squareId.split(",").map((x) => parseInt(x));
     const ids = [
@@ -299,7 +342,7 @@ export default function RailRoadInk() {
         graph.addVertex(id);
         if (tile.tileType.defaultConnections.includes("t")) {
           railGraph.addVertex(id);
-        } 
+        }
         if (tile.tileType.defaultConnections.includes("r")) {
           roadGraph.addVertex(id);
         }
@@ -618,13 +661,13 @@ export default function RailRoadInk() {
             {!allPlayedTilesValid ? <p>Not all tiles are in valid locations</p> : ""}
             {!noMoreThanFivePlayed ? <p>To many specials used this round</p> : ""}
             {gameComplete ? <p>Game complete</p> : ""}
-            Score {totalScore}
-            Connection Score {connectionScore}
-            Road Score {roadScore}
-            Rail Score {railScore}
-            Centre Score {centreScore}
+            <p>Total Score {totalScore}</p>
+            <p>Connection Score {connectionScore}</p>
+            <p>Road Score {roadScore}</p>
+            <p>Rail Score {railScore}</p>
+            <p>Mistake Score -{mistakeScore}</p>
+            <p>Centre Score {centreScore}</p>
           </Row>
-          <Row>{JSON.stringify(graph)}</Row>
         </DndProvider>
       </Container>
     </main>

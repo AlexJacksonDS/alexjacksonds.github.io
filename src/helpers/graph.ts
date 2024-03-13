@@ -104,6 +104,65 @@ export function depthFirstTraversal(graph: Graph, startingVertex: string) {
   return result;
 }
 
+export function depthFirstTraversalBranches(graph: Graph, startingVertex: string): { [key: string]: string[] } {
+  // If the starting vertex is not in the graph, return an empty array.
+  if (!graph.adjacencyList[startingVertex]) {
+    return {};
+  }
+
+  //  Create an empty object to store visited vertices.
+  const visited: { [key: string]: boolean } = {};
+  // Create a new Stack instance.
+  const stack = new Stack();
+
+  const results: { [key: string]: string[] } = {};
+
+  // Push the starting vertex onto the stack.
+  stack.push(startingVertex);
+
+  // Mark the starting vertex as visited.
+  visited[startingVertex] = true;
+
+  let i = 1;
+  results[`result${i}`] = [];
+
+  // While the stack is not empty:
+  while (!stack.isEmpty()) {
+    // Pop a vertex from the stack.
+    const currentVertex = stack.pop();
+
+    if (currentVertex) {
+      // Add the vertex to the result.
+      results[`result${i}`].push(currentVertex);
+
+      const neighbours = graph.adjacencyList[currentVertex];
+      if (neighbours?.every((n) => visited[n])) {
+        i++;
+        results[`result${i}`] = [];
+      } else {
+        // For each neighbor of the vertex:
+        neighbours?.forEach((neighbour: string) => {
+          // If the neighbor has not been visited:
+          if (!visited[neighbour]) {
+            // Mark it as visited.
+            visited[neighbour] = true;
+            // Push it onto the stack.
+            stack.push(neighbour);
+          }
+        });
+      }
+    }
+  }
+
+  // Filter edge connectors
+  for (const key in results) {
+    results[key] = results[key].filter((str) => !str.includes("-") && !str.includes("7"));
+  }
+
+  // Return the result.
+  return results;
+}
+
 class Stack {
   maxSize: number;
   stack: string[];
