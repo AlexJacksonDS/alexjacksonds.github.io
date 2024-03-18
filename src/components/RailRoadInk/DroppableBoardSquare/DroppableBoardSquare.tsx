@@ -6,6 +6,8 @@ import DraggableTile from "../DraggableTile/DraggableTile";
 import "./DroppableBoardSquare.scss";
 import { RailSection, RoadSection } from "../TrackPiece/TrackPiece";
 
+
+
 export default function DroppableBoardSquare({
   id,
   isLockedIn,
@@ -31,7 +33,7 @@ export default function DroppableBoardSquare({
   );
 
   return (
-    <div id={id} ref={drop} className={`board-square droppable ${!isLockedIn ? isTileValid ? "valid" : "invalid" : ""}`}>
+    <div id={id} ref={drop} className={`board-square droppable x${id.split(",").join(" y")} ${!isLockedIn ? isTileValid ? "valid" : "invalid" : ""}`}>
       {tile ? (
         <DraggableTile
           id={id}
