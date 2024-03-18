@@ -2,8 +2,8 @@
 import DroppableBoardSquare from "@/components/RailRoadInk/DroppableBoardSquare/DroppableBoardSquare";
 import { DropResult, Orientiations, Tile, specials } from "@/types/railRoadInk";
 import { Button, Col, Container, Row, Table } from "react-bootstrap";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from 'react-dnd-multi-backend'
+import { HTML5toTouch } from 'rdndmb-html5-to-touch'
 import DroppableTilePool from "@/components/RailRoadInk/DroppableTilePool/DroppableTilePool";
 import _ from "lodash";
 import { useState, useEffect } from "react";
@@ -263,7 +263,7 @@ export default function RailRoadInk() {
   return (
     <main>
       <Container>
-        <DndProvider backend={HTML5Backend}>
+        <DndProvider options={HTML5toTouch}>
           <Row>
             <Col></Col>
             <Col>
