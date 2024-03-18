@@ -24,9 +24,10 @@ export default function DroppableBoardSquare({
   const [, drop] = useDrop(
     () => ({
       accept: Types.TILE,
+      canDrop: () => tile === undefined,
       drop: () => ({ id: id }),
     }),
-    [id]
+    [id, tile]
   );
 
   return (

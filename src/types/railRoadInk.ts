@@ -16,6 +16,12 @@ export interface DropResult {
   id: string;
 }
 
+export interface SurroundingSquare {
+  direction: string;
+  id: string;
+  tile?: Tile;
+}
+
 export interface Tile {
   tileType: TileType;
   orientation: string;

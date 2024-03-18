@@ -29,35 +29,35 @@ export class Graph {
     }
   }
 
+  removeVertex(vertex: string) {
+    const adjList = this.adjacencyList[vertex];
+    if (adjList) {
+      // While the adjacency list of vertex is not empty:
+      while (adjList.length) {
+        // Pop the last element from the adjacency list of vertex.
+        const adjacentVertex = adjList.pop();
+        if (adjacentVertex) {
+          // Remove the edge between vertex and adjacentVertex.
+          this.removeEdge(vertex, adjacentVertex);
+        }
+      }
+    }
+
+    // Delete the adjacency list of vertex.
+    delete this.adjacencyList[vertex];
+  }
+
   // Remove an edge between vertex1 and vertex2.
-  //   removeEdge(vertexId1: string, vertexId2: string) {
-  //     // Filter out vertex2 from the adjacency list of vertex1.
-  //     this.adjacencyList[vertexId1] = this.adjacencyList[vertexId1].filter((v) => v !== vertexId2);
-  //     // Filter out vertex1 from the adjacency list of vertex2.
-  //     this.adjacencyList[vertexId2] = this.adjacencyList[vertexId2].filter((v) => v !== vertexId1);
-  //   }
-
-  //   // Remove a vertex from the graph.
-  //   removeVertex(vertex: string) {
-  //     // While the adjacency list of vertex is not empty:
-  //     while (this.adjacencyList[vertex].length) {
-  //       // Pop the last element from the adjacency list of vertex.
-  //       const adjacentVertex = this.adjacencyList[vertex].pop();
-  //       if (adjacentVertex) {
-  //         // Remove the edge between vertex and adjacentVertex.
-  //         this.removeEdge(vertex, adjacentVertex);
-  //       }
-  //     }
-  //     // Delete the adjacency list of vertex.
-  //     delete this.adjacencyList[vertex];
-  //   }
-
-  // Print the adjacency list
-  //   printAdjacencyList() {
-  //     for (const vertex in this.adjacencyList) {
-  //       console.log(`${vertex} -> ${this.adjacencyList[vertex].join(", ")}`);
-  //     }
-  //   }
+  removeEdge(vertex1: string, vertex2: string) {
+    const list1 = this.adjacencyList[vertex1];
+    const list2 = this.adjacencyList[vertex2];
+    if (list1 && list2) {
+      // Filter out vertex2 from the adjacency list of vertex1.
+      this.adjacencyList[vertex1] = this.adjacencyList[vertex1]!.filter((v) => v !== vertex2);
+      // Filter out vertex1 from the adjacency list of vertex2.
+      this.adjacencyList[vertex2] = this.adjacencyList[vertex2]!.filter((v) => v !== vertex1);
+    }
+  }
 }
 
 export function depthFirstTraversal(graph: Graph, startingVertex: string) {
@@ -104,18 +104,19 @@ export function depthFirstTraversal(graph: Graph, startingVertex: string) {
   return result;
 }
 
-export function depthFirstTraversalBranches(graph: Graph, startingVertex: string): { [key: string]: string[] } {
+export function graphToTree(graph: Graph, startingVertex: string): TreeNode[] {
   // If the starting vertex is not in the graph, return an empty array.
   if (!graph.adjacencyList[startingVertex]) {
-    return {};
+    return [];
   }
 
   //  Create an empty object to store visited vertices.
   const visited: { [key: string]: boolean } = {};
+
   // Create a new Stack instance.
   const stack = new Stack();
 
-  const results: { [key: string]: string[] } = {};
+  const treeNodes: TreeNode[] = [];
 
   // Push the starting vertex onto the stack.
   stack.push(startingVertex);
@@ -123,8 +124,55 @@ export function depthFirstTraversalBranches(graph: Graph, startingVertex: string
   // Mark the starting vertex as visited.
   visited[startingVertex] = true;
 
-  let i = 1;
-  results[`result${i}`] = [];
+  // While the stack is not empty:
+  while (!stack.isEmpty()) {
+    // Pop a vertex from the stack.
+    const currentVertex = stack.pop();
+
+    if (currentVertex) {
+      const node = new TreeNode(currentVertex);
+      const validNeighbours = graph.adjacencyList[currentVertex]?.filter(
+        (str) => !str.includes("-") && !str.includes("7")
+      );
+
+      // For each neighbor of the vertex:
+      validNeighbours?.forEach((neighbour: string) => {
+        // If the neighbor has not been visited:
+        if (!visited[neighbour]) {
+          node.addChild(neighbour);
+          // Mark it as visited.
+          visited[neighbour] = true;
+          // Push it onto the stack.
+          stack.push(neighbour);
+        }
+      });
+
+      treeNodes.push(node);
+    }
+  }
+
+  return treeNodes;
+}
+
+export function graphToTreeReverse(graph: Graph, startingVertex: string): TreeNode[] {
+  // If the starting vertex is not in the graph, return an empty array.
+  if (!graph.adjacencyList[startingVertex]) {
+    return [];
+  }
+
+  //  Create an empty object to store visited vertices.
+  const visited: { [key: string]: boolean } = {};
+
+  // Create a new Stack instance.
+  const stack = new Stack();
+
+  const treeNodes: TreeNode[] = [];
+
+  // Push the starting vertex onto the stack.
+  stack.push(startingVertex);
+
+  // Mark the starting vertex as visited.
+  visited[startingVertex] = true;
 
   // While the stack is not empty:
   while (!stack.isEmpty()) {
@@ -132,35 +180,39 @@ export function depthFirstTraversalBranches(graph: Graph, startingVertex: string
     const currentVertex = stack.pop();
 
     if (currentVertex) {
-      // Add the vertex to the result.
-      results[`result${i}`].push(currentVertex);
+      // Mark it as visited.
+      visited[currentVertex] = true;
+      const node = new TreeNode(currentVertex);
+      const validNeighbours = graph.adjacencyList[currentVertex]?.filter(
+        (str) => !str.includes("-") && !str.includes("7")
+      );
 
-      const neighbours = graph.adjacencyList[currentVertex];
-      if (neighbours?.every((n) => visited[n])) {
-        i++;
-        results[`result${i}`] = [];
-      } else {
-        // For each neighbor of the vertex:
-        neighbours?.forEach((neighbour: string) => {
-          // If the neighbor has not been visited:
-          if (!visited[neighbour]) {
-            // Mark it as visited.
-            visited[neighbour] = true;
-            // Push it onto the stack.
-            stack.push(neighbour);
-          }
-        });
-      }
+      // For each neighbor of the vertex:
+      validNeighbours?.reverse().forEach((neighbour: string) => {
+        // If the neighbor has not been visited:
+        if (!visited[neighbour]) {
+          node.addChild(neighbour);
+
+          // Push it onto the stack.
+          stack.push(neighbour);
+        }
+      });
+
+      treeNodes.push(node);
     }
   }
 
-  // Filter edge connectors
-  for (const key in results) {
-    results[key] = results[key].filter((str) => !str.includes("-") && !str.includes("7"));
+  return treeNodes;
+}
+
+export function maxDepth(treeNodes: TreeNode[], root: string): number {
+  const node = treeNodes.find((tn) => tn.value === root);
+  if (!node) {
+    return 0;
   }
 
-  // Return the result.
-  return results;
+  const childDepths = node.children.map((c) => maxDepth(treeNodes, c));
+  return Math.max(0, ...childDepths) + 1;
 }
 
 class Stack {
@@ -205,5 +257,18 @@ class Stack {
 
   isFull() {
     return this.top === this.maxSize - 1;
+  }
+}
+
+class TreeNode {
+  value: string;
+  children: string[];
+  constructor(value: string) {
+    this.value = value;
+    this.children = [];
+  }
+
+  addChild(child: string) {
+    this.children.push(child);
   }
 }
