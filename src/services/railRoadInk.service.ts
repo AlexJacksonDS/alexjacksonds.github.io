@@ -231,10 +231,6 @@ function isRoadToRailConnection(c1: string, c2: string) {
   return (c1 === "r" && c2 === "t") || (c2 === "r" && c1 === "t");
 }
 
-function isValidConnection(c1: string, c2: string) {
-  return (c1 === "r" && c2 === "r") || (c2 === "t" && c1 === "t");
-}
-
 function isMistakeConnection(c1: string, c2: string) {
   return (c1 === "r" || c1 === "t") && c2 === "u";
 }

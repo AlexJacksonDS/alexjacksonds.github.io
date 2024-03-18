@@ -2,7 +2,7 @@
 
 import DroppableBoardSquare from "@/components/RailRoadInk/DroppableBoardSquare/DroppableBoardSquare";
 import { DropResult, Orientiations, Tile, specials } from "@/types/railRoadInk";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Button, Col, Container, Row, Table } from "react-bootstrap";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import "./RailRoadInk.scss";
@@ -328,13 +328,36 @@ export default function RailRoadInk() {
             {!allDiceUsed ? <p>Not all dice used</p> : ""}
             {!allPlayedTilesValid ? <p>Not all tiles are in valid locations</p> : ""}
             {!noMoreThanFivePlayed ? <p>To many specials used this round</p> : ""}
-            {gameComplete ? <p>Game complete</p> : ""}
-            <p>Total Score {totalScore}</p>
-            <p>Connection Score {connectionScore}</p>
-            <p>Road Score {roadScore}</p>
-            <p>Rail Score {railScore}</p>
-            <p>Mistake Score -{mistakeScore}</p>
-            <p>Centre Score {centreScore}</p>
+            {gameComplete ? <p>Game complete</p> : <p>Round {round}</p>}
+          </Row>
+          <Row>
+            <Col xs={4}>
+              <Table bordered size="sm">
+                <thead>
+                  <tr>
+                    <th>Connections</th>
+                    <th>Road</th>
+                    <th>Rail</th>
+                    <th>Centre</th>
+                    <th>Mistakes</th>
+                    <th>Total Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{connectionScore}</td>
+                    <td>{roadScore}</td>
+                    <td>{railScore}</td>
+                    <td>{centreScore}</td>
+                    <td>
+                      {mistakeScore ? "-" : ""}
+                      {mistakeScore}
+                    </td>
+                    <td>{totalScore}</td>
+                  </tr>
+                </tbody>
+              </Table>
+            </Col>
           </Row>
         </DndProvider>
       </Container>
