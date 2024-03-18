@@ -267,7 +267,15 @@ export default function RailRoadInk() {
       <Container>
         <DndProvider backend={HTML5Backend}>
           <Row>
-            {gameComplete ? <p className="text-center">Game complete</p> : <p className="text-center">Round {round}</p>}
+            <Col></Col>
+            <Col>
+              {gameComplete ? (
+                <p className="text-center">Game complete</p>
+              ) : (
+                <p className="text-center">Round {round}</p>
+              )}
+            </Col>
+            <Col><p>Left click to spin, Right click to invert</p></Col>
           </Row>
           <Row>
             <Col xs={2}>
