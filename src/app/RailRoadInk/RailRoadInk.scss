@@ -1,6 +1,6 @@
 .board-container {
   padding-top: 5vh;
-  width: 80vh;
+  width: 73vh;
 }
 
 .board-square {
@@ -35,7 +35,6 @@
 }
 
 .dice-container, .specials-container {
-  padding-top: 5vh;
   width: 15vh;
   flex-direction: column;
   display: flex;
@@ -50,6 +49,10 @@
     float: none;
     margin-bottom: 20px;
   }
+}
+
+.save-button {
+  width: 50%;
 }
 
 @media (min-width: 1600px) {

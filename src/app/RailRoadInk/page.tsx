@@ -267,6 +267,9 @@ export default function RailRoadInk() {
       <Container>
         <DndProvider backend={HTML5Backend}>
           <Row>
+            {gameComplete ? <p className="text-center">Game complete</p> : <p className="text-center">Round {round}</p>}
+          </Row>
+          <Row>
             <Col xs={2}>
               <Container className="specials-container">
                 <p>Specials</p>
@@ -321,16 +324,16 @@ export default function RailRoadInk() {
               </Container>
             </Col>
           </Row>
-          <Row className="pt-5">
-            <Button disabled={!saveEnabled} onClick={saveRound}>
+          <Row className="pt-3">
+            <Button className="save-button mx-auto" disabled={!saveEnabled} onClick={saveRound}>
               Save Round
             </Button>
-            {!allDiceUsed ? <p>Not all dice used</p> : ""}
-            {!allPlayedTilesValid ? <p>Not all tiles are in valid locations</p> : ""}
-            {!noMoreThanFivePlayed ? <p>To many specials used this round</p> : ""}
-            {gameComplete ? <p>Game complete</p> : <p>Round {round}</p>}
+            {!allDiceUsed ? <p className="text-center">Not all dice used</p> : ""}
+            {!allPlayedTilesValid ? <p className="text-center">Not all tiles are in valid locations</p> : ""}
+            {!noMoreThanFivePlayed ? <p className="text-center">To many specials used this round</p> : ""}
           </Row>
           <Row>
+            <Col xs={4}></Col>
             <Col xs={4}>
               <Table bordered size="sm">
                 <thead>
