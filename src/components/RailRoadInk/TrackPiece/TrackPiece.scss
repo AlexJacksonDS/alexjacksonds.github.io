@@ -16,13 +16,17 @@
   &.vert {
     width: 2px;
     height: 50%;
-    left: calc(50% - 1px);
+    left: 50%;
 
     &.short {
       height: 20%;
 
       &.bottom {
-        top: calc(80% - 1px);
+        top: calc(80% + 1px);
+      }
+
+      & .cross-rail.one {
+        top: calc(50% - 1px);
       }
 
       & .two,
@@ -33,13 +37,13 @@
     }
 
     & .cross-rail {
-      width: 10px;
+      width: 300%;
       height: 2px;
 
-      left: -4px;
+      left: calc(-150% + 1px);
 
       &.one {
-        top: calc(20% - 1px);
+        top: 20%;
       }
 
       &.two {
@@ -56,20 +60,24 @@
     }
 
     &.bottom {
-      top: calc(50% - 1px);
+      top: 50%;
     }
   }
 
   &.horiz {
     width: 50%;
     height: 2px;
-    top: calc(50% - 1px);
+    top: 50%;
 
     &.short {
       width: 20%;
 
       &.right {
-        left: calc(80% - 1px);
+        left: calc(80% + 1px);
+      }
+
+      & .cross-rail.one {
+        left: calc(50% - 1px);
       }
 
       & .two,
@@ -81,8 +89,8 @@
 
     & .cross-rail {
       width: 2px;
-      height: 10px;
-      top: -4px;
+      height: 300%;
+      top: calc(-150% + 1px);
 
       &.one {
         left: calc(20% - 1px);
@@ -106,7 +114,7 @@
     }
 
     &.right {
-      left: calc(50% - 1px);
+      left: 50%;
     }
   }
 }
@@ -117,18 +125,22 @@
   z-index: 3;
 
   &.vert {
-    width: 20%;
+    width: calc(20% + 2px);
     height: calc(40% + 2px);
     border-left: 2px solid black;
     border-right: 2px solid black;
-    left: 40%;
+    left: calc(40% - 1px);
 
     &.short {
       height: 20%;
 
       &.bottom {
         height: calc(20% - 1px);
-        top: calc(80% - 1px);
+        top: calc(80% + 2px);
+      }
+
+      & .road-dash.one {
+        top: 50%;
       }
 
       & .two,
@@ -142,7 +154,7 @@
       height: 15%;
       background-color: black;
 
-      left: calc(65% - 3px);
+      left: calc(50% - 1px);
 
       &.one {
         top: calc(15% - 1px);
@@ -159,16 +171,16 @@
 
     &.bottom {
       height: 40%;
-      top: calc(60% - 2px);
+      top: 60%;
     }
   }
 
   &.horiz {
     width: 40%;
-    height: 20%;
+    height: calc(20% + 2px);
     border-top: 2px solid black;
     border-bottom: 2px solid black;
-    top: 40%;
+    top: calc(40% - 1px);
 
     &.short {
       &.left {
@@ -177,7 +189,11 @@
 
       &.right {
         width: calc(20% - 1px);
-        left: calc(80% - 1px);
+        left: calc(80% + 1px);
+      }
+
+      & .road-dash.one {
+        left: 50%;
       }
 
       & .two,
@@ -191,7 +207,7 @@
       height: 2px;
       background-color: black;
 
-      top: calc(65% - 3px);
+      top: calc(50% - 1px);
 
       &.one {
         left: calc(15% - 1px);
@@ -212,7 +228,7 @@
     }
 
     &.right {
-      left: calc(60% - 2px);
+      left: 60%;
     }
   }
 }
@@ -220,10 +236,10 @@
 .connection {
   background-color: black;
   position: absolute;
-  width: 20%;
+  width: calc(20% + 2px);
   aspect-ratio: 1 / 1;
-  top: 40%;
-  left: 40%;
+  top: calc(40% - 1px);
+  left: calc(40% - 1px);
   z-index: 2;
 
   &.road-connection {

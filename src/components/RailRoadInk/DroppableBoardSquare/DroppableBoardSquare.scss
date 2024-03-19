@@ -1,46 +1,45 @@
 .board-square {
-    width: min(10vh, 12vw);
-    aspect-ratio: 1 / 1;
-    background: white;
-    border: 1px solid black;
-    display: flex;
-    position: relative;
-    float: left;
+  width: min(10vh, 12vw);
+  aspect-ratio: 1 / 1;
+  background: white;
+  border: 1px solid black;
+  display: flex;
+  position: relative;
+  float: left;
 
-    &.x2.y2 {
-        border-left-color: cyan;
-        border-top-color: cyan;
-    }
+  &.x2.y2 {
+    border-left-color: cyan;
+    border-top-color: cyan;
+  }
 
-    &.x2.y3 {
-        border-top-color: cyan;
-    }
+  &.x2.y3 {
+    border-top-color: cyan;
+  }
 
-    &.x2.y4 {
-        border-right-color: cyan;
-        border-top-color: cyan;
-    }
+  &.x2.y4 {
+    border-right-color: cyan;
+    border-top-color: cyan;
+  }
 
-    &.x3.y2 {
-        border-left-color: cyan;
-    }
+  &.x3.y2 {
+    border-left-color: cyan;
+  }
 
-    &.x3.y4 {
-        border-right-color: cyan;
-    }
+  &.x3.y4 {
+    border-right-color: cyan;
+  }
 
-    &.x4.y2 {
-        border-left-color: cyan;
-        border-bottom-color: cyan;
-    }
+  &.x4.y2 {
+    border-left-color: cyan;
+    border-bottom-color: cyan;
+  }
 
-    &.x4.y3 {
-        border-left-color: cyan;
-        border-bottom-color: cyan;
-    }
+  &.x4.y3 {
+    border-bottom-color: cyan;
+  }
 
-    &.x4.y4 {
-        border-right-color: cyan;
-        border-bottom-color: cyan;
-    }
+  &.x4.y4 {
+    border-right-color: cyan;
+    border-bottom-color: cyan;
+  }
 }
