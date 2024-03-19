@@ -1,5 +1,5 @@
 .board-container {
-  width: calc(7 * min(10vh, 8vw));
+  width: calc(7 * min(10vh, 12vw));
   padding-top: 5vh;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
