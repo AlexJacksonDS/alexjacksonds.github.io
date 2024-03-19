@@ -2,8 +2,8 @@
 import DroppableBoardSquare from "@/components/RailRoadInk/DroppableBoardSquare/DroppableBoardSquare";
 import { DropResult, Orientiations, Tile, specials } from "@/types/railRoadInk";
 import { Button, Col, Container, Row, Table } from "react-bootstrap";
-import { DndProvider } from 'react-dnd-multi-backend'
-import { HTML5toTouch } from 'rdndmb-html5-to-touch'
+import { DndProvider } from "react-dnd-multi-backend";
+import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import DroppableTilePool from "@/components/RailRoadInk/DroppableTilePool/DroppableTilePool";
 import _ from "lodash";
 import { useState, useEffect } from "react";
@@ -18,8 +18,9 @@ import {
   getNextOrientation,
   getSurroundingSquares,
   isTileValid,
-  rollTileDice
+  rollTileDice,
 } from "@/services/railRoadInk.service";
+import { isMobile } from "react-device-detect";
 
 const roadStarterSquares = ["-1,1", "-1,5", "3,-1", "3,7", "7,1", "7,5"];
 const starterSquares = [...roadStarterSquares, "-1,3", "1,-1", "5,-1", "1,7", "5,7", "7,3"];
@@ -41,6 +42,8 @@ export default function RailRoadInk() {
   const [validityGraph, setValidityGraph] = useState(new Graph());
   const [roadGraph, setRoadGraph] = useState(new Graph());
   const [railGraph, setRailGraph] = useState(new Graph());
+  const [spin, setSpin] = useState("");
+  const [flip, setFlip] = useState("");
 
   useEffect(() => {
     if (!isInit) {
@@ -63,6 +66,9 @@ export default function RailRoadInk() {
       setDiceMap(new Map<string, Tile>(rollTileDice()));
       setIsInit(true);
     }
+
+    setSpin(isMobile ? "Tap to spin" : "Left click to spin");
+    setFlip(isMobile ? "Hold to flip" : "Right click to flip");
   });
 
   const totalScore = connectionScore + roadScore + railScore + centreScore - mistakeScore;
@@ -93,7 +99,7 @@ export default function RailRoadInk() {
     }
   }
 
-  const handleStackMove = (dropResult: DropResult, item: { id: string; tile: Tile; }) => {
+  const handleStackMove = (dropResult: DropResult, item: { id: string; tile: Tile }) => {
     const ids = [0, 1, 2, 3, 4, 5];
     if (dropResult.id === "dice") {
       if (item.id.includes("specials") || item.id.includes("dice")) return;
@@ -265,28 +271,37 @@ export default function RailRoadInk() {
       <Container>
         <DndProvider options={HTML5toTouch}>
           <Row>
-            <Col></Col>
-            <Col>
+            <Col xs={4}>
+              <p className="text-center">{spin}</p>
+            </Col>
+            <Col xs={4}>
               {gameComplete ? (
-                <p className="text-center">Game complete</p>
+                <p className="text-center">
+                  <strong>Game complete</strong>
+                </p>
               ) : (
-                <p className="text-center">Round {round}</p>
+                <p className="text-center">
+                  <strong>Round {round}</strong>
+                </p>
               )}
             </Col>
-            <Col><p>Left click to spin, Right click to invert</p></Col>
+            <Col xs={4}>
+              <p className="text-center">{flip}</p>
+            </Col>
           </Row>
           <Row>
-            <Col xs={2}>
+            <Col lg={2}>
               <Container className="specials-container">
                 <p>Specials</p>
                 <DroppableTilePool
                   id="specials"
                   tiles={specialsMap}
                   handleStackMove={handleStackMove}
-                  handleClick={handleTileClick} />
+                  handleClick={handleTileClick}
+                />
               </Container>
             </Col>
-            <Col xs={8}>
+            <Col lg={8}>
               <Container className="board-container">
                 {boardArray.map((_, i) => {
                   return boardArray[i].map((_, j) => {
@@ -310,20 +325,22 @@ export default function RailRoadInk() {
                         isLockedIn={isLocked}
                         tile={tile}
                         handleStackMove={handleStackMove}
-                        handleClick={handleTileClick} />
+                        handleClick={handleTileClick}
+                      />
                     );
                   });
                 })}
               </Container>
             </Col>
-            <Col xs={2}>
+            <Col lg={2}>
               <Container className="dice-container">
                 <p>Dice</p>
                 <DroppableTilePool
                   id="dice"
                   tiles={diceMap}
                   handleStackMove={handleStackMove}
-                  handleClick={handleTileClick} />
+                  handleClick={handleTileClick}
+                />
               </Container>
             </Col>
           </Row>
@@ -336,8 +353,8 @@ export default function RailRoadInk() {
             {!noMoreThanFivePlayed ? <p className="text-center">To many specials used this round</p> : ""}
           </Row>
           <Row>
-            <Col xs={4}></Col>
-            <Col xs={4}>
+            <Col lg={4}></Col>
+            <Col lg={4}>
               <Table bordered size="sm">
                 <thead>
                   <tr>

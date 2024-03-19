@@ -1,6 +1,10 @@
 .board-container {
+  width: calc(7 * min(10vh, 8vw));
   padding-top: 5vh;
-  width: 73vh;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  column-gap: 0;
+  row-gap: 0;
 }
 
 .board-square {
@@ -31,19 +35,21 @@
 }
 
 .tile-pool {
+  flex-direction: column;
+  display: flex;
   border: 1px dashed rgba(182, 182, 182, 0.747);
+
+  @media (max-width: 990px) {
+    flex-direction: row;
+  }
 }
 
-.dice-container, .specials-container {
+.dice-container,
+.specials-container {
   width: 15vh;
   flex-direction: column;
   display: flex;
   align-items: center;
-
-  .tile-pool {
-    min-width: 10vh;
-    min-height: 50vh;
-  }
 
   & .tile {
     float: none;
@@ -56,12 +62,12 @@
 }
 
 @media (min-width: 1600px) {
-    .container,
-    .container-lg,
-    .container-md,
-    .container-sm,
-    .container-xl,
-    .container-xxl {
-      max-width: 2000px;
-    }
+  .container,
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container-xl,
+  .container-xxl {
+    max-width: 2000px;
   }
+}

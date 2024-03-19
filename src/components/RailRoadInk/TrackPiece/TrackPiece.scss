@@ -1,5 +1,5 @@
 .tile {
-  width: 10vh;
+  width: min(10vh, 8vw);
   aspect-ratio: 1 / 1;
   background: white;
   border: 1px solid black;
@@ -15,14 +15,14 @@
 
   &.vert {
     width: 2px;
-    height: 5vh;
-    left: calc(5vh - 1px);
+    height: 50%;
+    left: calc(50% - 1px);
 
     &.short {
-      height: 2vh;
+      height: 20%;
 
       &.bottom {
-        top: calc(8vh - 1px);
+        top: calc(80% - 1px);
       }
 
       & .two,
@@ -33,43 +33,43 @@
     }
 
     & .cross-rail {
-      width: calc(1vh + 2px);
+      width: 10px;
       height: 2px;
 
-      left: calc(-0.5vh);
+      left: -4px;
 
       &.one {
-        top: calc(1vh - 1px);
+        top: calc(20% - 1px);
       }
 
       &.two {
-        top: 2vh;
+        top: 40%;
       }
 
       &.three {
-        top: 3vh;
+        top: 60%;
       }
 
       &.four {
-        top: 4vh;
+        top: 80%;
       }
     }
 
     &.bottom {
-      top: calc(5vh - 1px);
+      top: calc(50% - 1px);
     }
   }
 
   &.horiz {
-    width: 5vh;
+    width: 50%;
     height: 2px;
-    top: calc(5vh - 1px);
+    top: calc(50% - 1px);
 
     &.short {
-      width: 2vh;
+      width: 20%;
 
       &.right {
-        left: calc(8vh - 1px);
+        left: calc(80% - 1px);
       }
 
       & .two,
@@ -81,23 +81,23 @@
 
     & .cross-rail {
       width: 2px;
-      height: calc(1vh + 2px);
-      top: calc(-0.5vh);
+      height: 10px;
+      top: -4px;
 
       &.one {
-        left: calc(1vh - 1px);
+        left: calc(20% - 1px);
       }
 
       &.two {
-        left: 2vh;
+        left: 40%;
       }
 
       &.three {
-        left: 3vh;
+        left: 60%;
       }
 
       &.four {
-        left: 4vh;
+        left: 80%;
       }
     }
 
@@ -106,7 +106,7 @@
     }
 
     &.right {
-      left: calc(5vh - 1px);
+      left: calc(50% - 1px);
     }
   }
 }
@@ -117,18 +117,18 @@
   z-index: 3;
 
   &.vert {
-    width: 2vh;
-    height: calc(4vh + 2px);
+    width: 20%;
+    height: calc(40% + 2px);
     border-left: 2px solid black;
     border-right: 2px solid black;
-    left: 4vh;
+    left: 40%;
 
     &.short {
-      height: 2vh;
+      height: 20%;
 
       &.bottom {
-        height: calc(2vh - 1px);
-        top: calc(8vh - 1px);
+        height: calc(20% - 1px);
+        top: calc(80% - 1px);
       }
 
       & .two,
@@ -139,45 +139,45 @@
 
     & .road-dash {
       width: 2px;
-      height: 0.5vh;
+      height: 15%;
       background-color: black;
 
-      left: calc(1vh - 3px);
+      left: calc(65% - 3px);
 
       &.one {
-        top: calc(1vh - 1px);
+        top: calc(15% - 1px);
       }
 
       &.two {
-        top: 2vh;
+        top: 40%;
       }
 
       &.three {
-        top: 3vh;
+        top: 70%;
       }
     }
 
     &.bottom {
-      height: 4vh;
-      top: calc(6vh - 2px);
+      height: 40%;
+      top: calc(60% - 2px);
     }
   }
 
   &.horiz {
-    width: 4vh;
-    height: 2vh;
+    width: 40%;
+    height: 20%;
     border-top: 2px solid black;
     border-bottom: 2px solid black;
-    top: 4vh;
+    top: 40%;
 
     &.short {
       &.left {
-        width: 2vh;
+        width: 20%;
       }
 
       &.right {
-        width: calc(2vh - 1px);
-        left: calc(8vh - 1px);
+        width: calc(20% - 1px);
+        left: calc(80% - 1px);
       }
 
       & .two,
@@ -187,32 +187,32 @@
     }
 
     & .road-dash {
-      width: 0.5vh;
+      width: 15%;
       height: 2px;
       background-color: black;
 
-      top: calc(1vh - 3px);
+      top: calc(65% - 3px);
 
       &.one {
-        left: calc(1vh - 1px);
+        left: calc(15% - 1px);
       }
 
       &.two {
-        left: 2vh;
+        left: 40%;
       }
 
       &.three {
-        left: 3vh;
+        left: 70%;
       }
     }
 
     &.left {
       left: 0;
-      width: calc(4vh + 2px);
+      width: calc(40% + 2px);
     }
 
     &.right {
-      left: calc(6vh - 2px);
+      left: calc(60% - 2px);
     }
   }
 }
@@ -220,10 +220,10 @@
 .connection {
   background-color: black;
   position: absolute;
-  width: 2vh;
+  width: 20%;
   aspect-ratio: 1 / 1;
-  top: 4vh;
-  left: 4vh;
+  top: 40%;
+  left: 40%;
   z-index: 2;
 
   &.road-connection {
