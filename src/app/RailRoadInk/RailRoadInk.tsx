@@ -355,7 +355,7 @@ export default function RailRoadInk() {
           <Row>
             <Col lg={4}></Col>
             <Col lg={4}>
-              <Table bordered size="sm">
+              <Table responsive bordered size="sm">
                 <thead>
                   <tr>
                     <th>Connections</th>
