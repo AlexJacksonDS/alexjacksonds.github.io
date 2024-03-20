@@ -290,7 +290,7 @@ export default function RailRoadInk() {
             </Col>
           </Row>
           <Row>
-            <Col lg={2}>
+            <Col lg={12} xl={2}>
               <Container className="specials-container">
                 <p>Specials</p>
                 <DroppableTilePool
@@ -301,7 +301,7 @@ export default function RailRoadInk() {
                 />
               </Container>
             </Col>
-            <Col lg={8}>
+            <Col lg={12} xl={8} className="board-column">
               <Container className="board-container">
                 {boardArray.map((_, i) => {
                   return boardArray[i].map((_, j) => {
@@ -332,7 +332,7 @@ export default function RailRoadInk() {
                 })}
               </Container>
             </Col>
-            <Col lg={2}>
+            <Col lg={12} xl={2}>
               <Container className="dice-container">
                 <p>Dice</p>
                 <DroppableTilePool

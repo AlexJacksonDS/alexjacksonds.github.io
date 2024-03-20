@@ -171,12 +171,12 @@
 
     &.bottom {
       height: 40%;
-      top: 60%;
+      top: calc(60% - 1px);
     }
   }
 
   &.horiz {
-    width: 40%;
+    width: calc(40% + 2px);
     height: calc(20% + 2px);
     border-top: 2px solid black;
     border-bottom: 2px solid black;
@@ -228,7 +228,7 @@
     }
 
     &.right {
-      left: 60%;
+      left: calc(60% - 1px);
     }
   }
 }
