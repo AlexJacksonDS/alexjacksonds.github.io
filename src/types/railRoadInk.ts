@@ -28,7 +28,7 @@ export interface Tile {
   inverted: boolean;
 }
 
-export const Orientiations = {
+export const Orientations = {
   UP: "up",
   LEFT: "left",
   DOWN: "down",
@@ -38,6 +38,13 @@ export const Orientiations = {
 export const Types = {
   TILE: "tile",
 };
+
+export const Pools = {
+  DICE: "dice",
+  SPECIALS: "specials"
+}
+
+export const bridge = "bridge";
 
 export interface TileType {
   id: string;
@@ -52,7 +59,7 @@ export interface TileTypes {
 export const DefaultTileTypes: TileTypes = {
   SCONN: { id: "sconn", defaultConnections: ["t", "u", "r", "u"], isJunction: true },
   RCONN: { id: "rconn", defaultConnections: ["t", "r", "u", "u"], isJunction: true },
-  BRIDGE: { id: "bridge", defaultConnections: ["t", "r", "t", "r"], isJunction: false },
+  BRIDGE: { id: bridge, defaultConnections: ["t", "r", "t", "r"], isJunction: false },
   SRAIL: { id: "srail", defaultConnections: ["t", "u", "t", "u"], isJunction: false },
   RRAIL: { id: "rrail", defaultConnections: ["t", "t", "u", "u"], isJunction: false },
   TRAIL: { id: "trail", defaultConnections: ["t", "t", "t", "u"], isJunction: false },

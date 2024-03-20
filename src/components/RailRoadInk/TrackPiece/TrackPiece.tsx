@@ -1,6 +1,6 @@
 "use client";
 
-import { Orientiations, Tile } from "@/types/railRoadInk";
+import { Orientations, Tile } from "@/types/railRoadInk";
 import "./TrackPiece.scss";
 
 export default function TrackPiece({ tile }: { tile: Tile }) {
@@ -11,16 +11,16 @@ export default function TrackPiece({ tile }: { tile: Tile }) {
     const connections = [...tile.tileType.defaultConnections];
     let shift: number;
     switch (tile.orientation) {
-      case Orientiations.UP:
+      case Orientations.UP:
         shift = 0;
         break;
-      case Orientiations.RIGHT:
+      case Orientations.RIGHT:
         shift = 3;
         break;
-      case Orientiations.DOWN:
+      case Orientations.DOWN:
         shift = 2;
         break;
-      case Orientiations.LEFT:
+      case Orientations.LEFT:
         shift = 1;
         break;
       default:

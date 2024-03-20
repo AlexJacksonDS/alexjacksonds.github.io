@@ -1,4 +1,4 @@
-import RailRoadInk from "./RailRoadInk";
+import RailRoadInk from "../../components/RailRoadInk/RailRoadInk";
 import "./RailRoadInk.scss";
 import { Metadata } from "next";
 

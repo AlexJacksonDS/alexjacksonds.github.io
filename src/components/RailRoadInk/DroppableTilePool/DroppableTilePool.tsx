@@ -1,9 +1,8 @@
 "use client";
 
-import { DropResult, Tile, Types } from "@/types/railRoadInk";
+import { DropResult, Pools, Tile, Types } from "@/types/railRoadInk";
 import { useDrop } from "react-dnd";
 import DraggableTile from "../DraggableTile/DraggableTile";
-import "./DroppableTilePool.scss";
 
 export default function DroppableTilePool({
   id,
@@ -24,7 +23,7 @@ export default function DroppableTilePool({
     [id]
   );
 
-  const isOutOfSpecials = id === "specials" && [...tiles.keys()].length <= 3;
+  const isOutOfSpecials = id === Pools.SPECIALS && [...tiles.keys()].length <= 3;
 
   return (
     <div id={id} ref={drop} className="tile-pool droppable">

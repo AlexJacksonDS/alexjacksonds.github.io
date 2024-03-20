@@ -1,13 +1,13 @@
 "use client";
+
 import DroppableBoardSquare from "@/components/RailRoadInk/DroppableBoardSquare/DroppableBoardSquare";
-import { DropResult, Orientiations, Tile, specials } from "@/types/railRoadInk";
-import { Button, Col, Container, Row, Table } from "react-bootstrap";
+import { DropResult, Orientations, Pools, Tile, specials } from "@/types/railRoadInk";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import { DndProvider } from "react-dnd-multi-backend";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import DroppableTilePool from "@/components/RailRoadInk/DroppableTilePool/DroppableTilePool";
 import _ from "lodash";
 import { useState, useEffect } from "react";
-import { shiftConnections } from "@/helpers/railRoadInk";
 import { Graph } from "@/helpers/graph";
 import {
   boardArray,
@@ -16,14 +16,14 @@ import {
   getLongestPathScore,
   getMistakeScore,
   getNextOrientation,
-  getSurroundingSquares,
   isTileValid,
   rollTileDice,
+  starterSquares,
+  updateMapsAndGraphs,
+  updateValidityGraph,
 } from "@/services/railRoadInk.service";
 import { isMobile } from "react-device-detect";
-
-const roadStarterSquares = ["-1,1", "-1,5", "3,-1", "3,7", "7,1", "7,5"];
-const starterSquares = [...roadStarterSquares, "-1,3", "1,-1", "5,-1", "1,7", "5,7", "7,3"];
+import { RriScoreboard } from "./RriScoreboard/RriScoreboard";
 
 export default function RailRoadInk() {
   const [lockedPieceMap, setLockedPieceMap] = useState(new Map<string, Tile>());
@@ -57,7 +57,7 @@ export default function RailRoadInk() {
       specials.map((dice, i) => {
         specialsMap.set(`specials,${i}`, {
           tileType: dice,
-          orientation: Orientiations.UP,
+          orientation: Orientations.UP,
           inverted: false,
         });
       });
@@ -71,7 +71,6 @@ export default function RailRoadInk() {
     setFlip(isMobile ? "Hold to flip" : "Right click to flip");
   });
 
-  const totalScore = connectionScore + roadScore + railScore + centreScore - mistakeScore;
   const allDiceUsed = [...diceMap.keys()].length === 0;
   let allPlayedTilesValid = true;
   for (const [squareId, tile] of playedPieceMap) {
@@ -82,7 +81,7 @@ export default function RailRoadInk() {
   const saveEnabled = !gameComplete && allDiceUsed && allPlayedTilesValid && noMoreThanFivePlayed;
 
   function handleTileClick(id: string, isLeftClick: boolean) {
-    if (id.includes("dice") || id.includes("specials")) return;
+    if (id.includes(Pools.DICE) || id.includes(Pools.SPECIALS)) return;
 
     const tile = playedPieceMap.get(id);
 
@@ -94,15 +93,16 @@ export default function RailRoadInk() {
       }
 
       playedPieceMap.set(id, tile);
-      updateValidityGraph(id, tile);
+      updateValidityGraph(id, tile, validityGraph, playedPieceMap, lockedPieceMap);
+      setValidityGraph(validityGraph);
       setPlayedPieceMap(new Map(playedPieceMap));
     }
   }
 
   const handleStackMove = (dropResult: DropResult, item: { id: string; tile: Tile }) => {
     const ids = [0, 1, 2, 3, 4, 5];
-    if (dropResult.id === "dice") {
-      if (item.id.includes("specials") || item.id.includes("dice")) return;
+    if (dropResult.id === Pools.DICE) {
+      if (item.id.includes(Pools.SPECIALS) || item.id.includes(Pools.DICE)) return;
       if (specials.includes(item.tile.tileType)) return;
 
       playedPieceMap.delete(item.id);
@@ -112,8 +112,8 @@ export default function RailRoadInk() {
       const lowestId = Math.min(...availableIds);
       setDiceMap(new Map(diceMap.set(`dice,${lowestId}`, item.tile)));
       setPlayedPieceMap(new Map(playedPieceMap));
-    } else if (dropResult.id === "specials") {
-      if (item.id.includes("dice") || item.id.includes("specials")) return;
+    } else if (dropResult.id === Pools.SPECIALS) {
+      if (item.id.includes(Pools.DICE) || item.id.includes(Pools.SPECIALS)) return;
       if (!specials.includes(item.tile.tileType)) return;
 
       playedPieceMap.delete(item.id);
@@ -124,147 +124,49 @@ export default function RailRoadInk() {
       setSpecialsMap(new Map(specialsMap.set(`specials,${lowestId}`, item.tile)));
       setPlayedPieceMap(new Map(playedPieceMap));
     } else {
-      if (!item.id.includes("dice") || !item.id.includes("specials")) {
+      if (!item.id.includes(Pools.DICE) || !item.id.includes(Pools.SPECIALS)) {
         playedPieceMap.delete(item.id);
         validityGraph.removeVertex(item.id);
       }
 
-      if (item.id.includes("dice")) {
+      if (item.id.includes(Pools.DICE)) {
         diceMap.delete(item.id);
-      } else if (item.id.includes("specials")) {
+      } else if (item.id.includes(Pools.SPECIALS)) {
         specialsMap.delete(item.id);
       }
 
-      updateValidityGraph(dropResult.id, item.tile);
+      updateValidityGraph(dropResult.id, item.tile, validityGraph, playedPieceMap, lockedPieceMap);
+      setValidityGraph(validityGraph);
       setPlayedPieceMap(new Map(playedPieceMap.set(dropResult.id, item.tile)));
       setDiceMap(new Map(diceMap));
       setSpecialsMap(new Map(specialsMap));
     }
   };
 
-  function updateValidityGraph(id: string, tile: Tile) {
-    validityGraph.removeVertex(id);
-    validityGraph.addVertex(id);
-    const surroundingSquares = getSurroundingSquares(id, playedPieceMap, lockedPieceMap);
-    const myConnections = shiftConnections(tile);
+  const saveRound = () => {
+    updateMapsAndGraphs(playedPieceMap, lockedPieceMap, graph, roadGraph, railGraph);
 
-    for (const surroundingSquare of surroundingSquares) {
-      if (surroundingSquare.tile) {
-        const surrSqConns = shiftConnections(surroundingSquare.tile);
-        switch (surroundingSquare.direction) {
-          case "down":
-            populateValidityGraphForDirection(id, myConnections[2], surroundingSquare.id, surrSqConns[0]);
-            break;
-          case "right":
-            populateValidityGraphForDirection(id, myConnections[1], surroundingSquare.id, surrSqConns[3]);
-            break;
-          case "up":
-            populateValidityGraphForDirection(id, myConnections[0], surroundingSquare.id, surrSqConns[2]);
-            break;
-          case "left":
-            populateValidityGraphForDirection(id, myConnections[3], surroundingSquare.id, surrSqConns[1]);
-            break;
-          default:
-        }
-      }
-    }
-    setValidityGraph(validityGraph);
-  }
-
-  function isValidConnection(c1: string, c2: string) {
-    return (c1 === "r" && c2 === "r") || (c2 === "t" && c1 === "t");
-  }
-
-  function saveRound() {
     const nextRound = round + 1;
-    for (const [id, tile] of playedPieceMap) {
-      lockedPieceMap.set(id, tile);
-
-      if (tile.tileType.id === "bridge") {
-        graph.addVertex(`${id}r`);
-        graph.addVertex(`${id}t`);
-        roadGraph.addVertex(`${id}r`);
-        railGraph.addVertex(`${id}t`);
-      } else {
-        graph.addVertex(id);
-        if (tile.tileType.defaultConnections.includes("t")) {
-          railGraph.addVertex(id);
-        }
-        if (tile.tileType.defaultConnections.includes("r")) {
-          roadGraph.addVertex(id);
-        }
-      }
-      const surroundingSquares = getSurroundingSquares(id, playedPieceMap, lockedPieceMap);
-      const myConnections = shiftConnections(tile);
-
-      for (const surroundingSquare of surroundingSquares) {
-        if (surroundingSquare.tile) {
-          const surrSqConns = shiftConnections(surroundingSquare.tile);
-          switch (surroundingSquare.direction) {
-            case "down":
-              populateGraphForDirection(
-                id,
-                myConnections[2],
-                tile,
-                surroundingSquare.id,
-                surrSqConns[0],
-                surroundingSquare.tile
-              );
-              break;
-            case "right":
-              populateGraphForDirection(
-                id,
-                myConnections[1],
-                tile,
-                surroundingSquare.id,
-                surrSqConns[3],
-                surroundingSquare.tile
-              );
-              break;
-            case "up":
-              populateGraphForDirection(
-                id,
-                myConnections[0],
-                tile,
-                surroundingSquare.id,
-                surrSqConns[2],
-                surroundingSquare.tile
-              );
-              break;
-            case "left":
-              populateGraphForDirection(
-                id,
-                myConnections[3],
-                tile,
-                surroundingSquare.id,
-                surrSqConns[1],
-                surroundingSquare.tile
-              );
-              break;
-            default:
-          }
-        }
-      }
-    }
-    setGraph(graph);
-    setRailGraph(railGraph);
-    setRoadGraph(roadGraph);
-
     if (nextRound < 8) {
       setDiceMap(new Map<string, Tile>(rollTileDice()));
     } else {
       setGameComplete(true);
     }
+    setRound(nextRound);
 
     setConnectionScore(getConnectionScore(graph));
     setRailScore(getLongestPathScore(railGraph, lockedPieceMap));
     setRoadScore(getLongestPathScore(roadGraph, lockedPieceMap));
     setCentreScore(getCentreScore(lockedPieceMap));
     setMistakeScore(getMistakeScore(lockedPieceMap));
+
+    setGraph(graph);
+    setRailGraph(railGraph);
+    setRoadGraph(roadGraph);
+
     setLockedPieceMap(new Map(lockedPieceMap));
     setPlayedPieceMap(new Map<string, Tile>());
-    setRound(nextRound);
-  }
+  };
 
   return (
     <main>
@@ -294,7 +196,7 @@ export default function RailRoadInk() {
               <Container className="specials-container">
                 <p>Specials</p>
                 <DroppableTilePool
-                  id="specials"
+                  id={Pools.SPECIALS}
                   tiles={specialsMap}
                   handleStackMove={handleStackMove}
                   handleClick={handleTileClick}
@@ -336,7 +238,7 @@ export default function RailRoadInk() {
               <Container className="dice-container">
                 <p>Dice</p>
                 <DroppableTilePool
-                  id="dice"
+                  id={Pools.DICE}
                   tiles={diceMap}
                   handleStackMove={handleStackMove}
                   handleClick={handleTileClick}
@@ -355,82 +257,19 @@ export default function RailRoadInk() {
           <Row>
             <Col lg={4}></Col>
             <Col lg={4}>
-              <Table responsive bordered size="sm">
-                <thead>
-                  <tr>
-                    <th>Connections</th>
-                    <th>Road</th>
-                    <th>Rail</th>
-                    <th>Centre</th>
-                    <th>Mistakes</th>
-                    <th>Total Score</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{connectionScore}</td>
-                    <td>{roadScore}</td>
-                    <td>{railScore}</td>
-                    <td>{centreScore}</td>
-                    <td>
-                      {mistakeScore ? "-" : ""}
-                      {mistakeScore}
-                    </td>
-                    <td>{totalScore}</td>
-                  </tr>
-                </tbody>
-              </Table>
+              <RriScoreboard
+                connectionScore={connectionScore}
+                roadScore={roadScore}
+                railScore={railScore}
+                centreScore={centreScore}
+                mistakeScore={mistakeScore}
+              />
             </Col>
           </Row>
         </DndProvider>
       </Container>
     </main>
   );
-
-  function populateGraphForDirection(
-    selfId: string,
-    selfConn: string,
-    selfTile: Tile,
-    surrSqId: string,
-    surrSqConn: string,
-    surrSqTile: Tile
-  ) {
-    if (!isValidConnection(selfConn, surrSqConn)) return;
-
-    const isRailConnection = selfConn === "t";
-    const selfTileIsBridge = selfTile.tileType.id === "bridge";
-    const surrTileIsBridge = surrSqTile.tileType.id === "bridge";
-
-    const selfVertexId = selfTileIsBridge ? `${selfId}${selfConn}` : selfId;
-    const surrVertexId = surrTileIsBridge ? `${surrSqId}${selfConn}` : surrSqId;
-
-    if (surrTileIsBridge) {
-      graph.addVertex(`${surrSqId}r`);
-      roadGraph.addVertex(`${surrSqId}r`);
-      graph.addVertex(`${surrSqId}t`);
-      railGraph.addVertex(`${surrSqId}t`);
-    } else {
-      graph.addVertex(surrSqId);
-
-      if (isRailConnection) {
-        railGraph.addVertex(surrSqId);
-      } else {
-        roadGraph.addVertex(surrSqId);
-      }
-    }
-
-    graph.addEdge(selfVertexId, surrVertexId);
-    if (isRailConnection) {
-      railGraph.addEdge(selfVertexId, surrVertexId);
-    } else {
-      roadGraph.addEdge(selfVertexId, surrVertexId);
-    }
-  }
-
-  function populateValidityGraphForDirection(selfId: string, selfConn: string, surrSqId: string, surrSqConn: string) {
-    if (isValidConnection(selfConn, surrSqConn)) {
-      validityGraph.addVertex(surrSqId);
-      validityGraph.addEdge(selfId, surrSqId);
-    }
-  }
 }
+
+
