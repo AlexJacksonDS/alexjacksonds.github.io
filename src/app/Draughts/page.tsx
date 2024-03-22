@@ -5,7 +5,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import { Socket } from "socket.io-client";
 import { useSearchParams } from "next/navigation";
 import { DraughtsBoard as Board, DraughtsTurn } from "../../types/draughts";
-import DraughtsBoard from "../../components/DraughtsBoard/DraughtsBoard";
+import DraughtsBoard from "../../components/Draughts/DraughtsBoard/DraughtsBoard";
 import "./Draughts.scss";
 import {
   boardFromString,

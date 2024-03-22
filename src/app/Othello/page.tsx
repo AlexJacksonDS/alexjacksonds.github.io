@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { Socket } from "socket.io-client";
 import { useSearchParams } from "next/navigation";
-import OthelloBoard from "../../components/OthelloBoard/OthelloBoard";
+import OthelloBoard from "../../components/Othello/OthelloBoard/OthelloBoard";
 import { isArrayInArray } from "../../helpers/arrayHelper";
 import getSocket from "../../services/socket.service";
 import {

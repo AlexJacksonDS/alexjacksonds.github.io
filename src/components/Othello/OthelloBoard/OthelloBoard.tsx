@@ -1,5 +1,5 @@
-import { isArrayInArray } from "../../helpers/arrayHelper";
-import { getSquareCode } from "../../helpers/squareHelper";
+import { isArrayInArray } from "../../../helpers/arrayHelper";
+import { getSquareCode } from "../../../helpers/squareHelper";
 import OthelloSquare from "../OthelloSquare/OthelloSquare";
 import "./OthelloBoard.scss";
 

@@ -1,0 +1,11 @@
+.offer-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  row-gap: 10px;
+  padding: 10px;
+  border: 1px solid lightgray;
+}
+
+.offer-row > div {
+  margin: auto;
+}

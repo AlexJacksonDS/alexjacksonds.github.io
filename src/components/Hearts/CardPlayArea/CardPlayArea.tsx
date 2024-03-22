@@ -1,5 +1,5 @@
 import { Col, Container, Row } from "react-bootstrap";
-import { OtherPlayer, Player } from "../../types/hearts";
+import { OtherPlayer, Player } from "../../../types/hearts";
 import OtherCardPlayer from "../OtherCardPlayer/OtherCardPlayer";
 import CardPlayer from "../CardPlayer/CardPlayer";
 import PlayedCards from "../PlayedCards/PlayedCards";

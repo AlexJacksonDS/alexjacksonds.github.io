@@ -1,0 +1,34 @@
+.animal {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background: white;
+  text-align: center;
+  line-height: 40px;
+  font-size: large;
+}
+
+.allowedAnimals {
+  font-size: x-small;
+
+  &.three {
+    padding-top: 5px;
+    line-height: 15px;
+  }
+}
+
+.bear {
+  background: rgb(85, 42, 11);
+}
+.elk {
+  background: rgb(223, 150, 77);
+}
+.fox {
+  background: rgb(255, 123, 0);
+}
+.hawk {
+  background: rgb(140, 226, 255);
+}
+.salmon {
+  background: rgb(235, 91, 151);
+}

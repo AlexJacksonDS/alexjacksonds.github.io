@@ -1,6 +1,6 @@
-import { isPossibleMove } from '../../services/draughts.service';
-import { getSquareCode, getSquareColour } from '../../helpers/squareHelper';
-import { DraughtsBoard } from '../../types/draughts';
+import { isPossibleMove } from '../../../services/draughts.service';
+import { getSquareCode, getSquareColour } from '../../../helpers/squareHelper';
+import { DraughtsBoard } from '../../../types/draughts';
 import DraughtsSquare from '../DraughtsSquare/DraughtsSquare';
 import './DraughtsBoard.scss';
 

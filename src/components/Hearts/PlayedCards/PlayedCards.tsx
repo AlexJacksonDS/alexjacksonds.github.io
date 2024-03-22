@@ -1,5 +1,5 @@
 import { Col, Container, Row } from "react-bootstrap";
-import PlayingCard from "../PlayingCard/PlayingCard";
+import PlayingCard from "../../PlayingCard/PlayingCard";
 import "./PlayedCards.scss";
 
 export default function PlayedCards(props: {

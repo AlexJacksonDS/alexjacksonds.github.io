@@ -1,4 +1,4 @@
-import { DraughtsPiece } from "../../types/draughts";
+import { DraughtsPiece } from "../../../types/draughts";
 import "./DraughtsSquare.scss";
 
 export default function DraughtsSquare(props: {

@@ -1,0 +1,16 @@
+$hexBorderColor: #999;
+
+.hexagon.unfilled {
+  border-left: dashed 5px $hexBorderColor;
+  border-right: dashed 5px $hexBorderColor;
+}
+
+.hexTop.unfilled {
+  border-top: dashed 7.0711px $hexBorderColor;
+  border-right: dashed 7.0711px $hexBorderColor;
+}
+
+.hexBottom.unfilled {
+  border-bottom: dashed 7.0711px $hexBorderColor;
+  border-left: dashed 7.0711px $hexBorderColor;
+}

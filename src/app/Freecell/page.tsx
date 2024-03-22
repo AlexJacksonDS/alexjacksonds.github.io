@@ -9,8 +9,8 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DroppableCardList from "@/components/Draggable/DroppableCardList/DroppableCardList";
 import DraggableStack from "@/components/Draggable/DraggableCardStack/DraggableCardStack";
-import Placeholder from "@/components/CardPlaceholder/Placeholder";
-import { VictoryCanvas } from "../../components/VictoryCanvas/VictoryCanvas";
+import Placeholder from "@/components/Draggable/CardPlaceholder/Placeholder";
+import { VictoryCanvas } from "../../components/Draggable/VictoryCanvas/VictoryCanvas";
 import { DropResult } from "@/types/draggableCards";
 
 export default function Freecell() {

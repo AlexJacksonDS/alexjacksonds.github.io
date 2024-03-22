@@ -3,7 +3,7 @@
 import { Chess as ChessJS, Square } from "chess.js";
 import { useEffect, useRef, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import ChessBoard from "../../components/ChessBoard/ChessBoard";
+import ChessBoard from "../../components/Chess/ChessBoard/ChessBoard";
 import { Socket } from "socket.io-client";
 import { useSearchParams } from "next/navigation";
 import { getPieceUnicodeFromString } from "../../helpers/pieceUnicodeHelper";

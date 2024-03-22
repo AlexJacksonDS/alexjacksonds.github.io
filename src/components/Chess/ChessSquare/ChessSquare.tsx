@@ -1,4 +1,4 @@
-import { BoardSquare, getPieceUnicode } from '../../helpers/pieceUnicodeHelper';
+import { BoardSquare, getPieceUnicode } from '../../../helpers/pieceUnicodeHelper';
 import { Square } from 'chess.js';
 import './ChessSquare.scss';
 

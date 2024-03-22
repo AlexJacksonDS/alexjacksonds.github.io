@@ -1,4 +1,4 @@
-import { getSquareCode, getSquareColour } from '../../helpers/squareHelper';
+import { getSquareCode, getSquareColour } from '../../../helpers/squareHelper';
 import { Color, PieceSymbol, Square } from 'chess.js';
 import ChessSquare from '../ChessSquare/ChessSquare';
 import './ChessBoard.scss';
