@@ -4,16 +4,17 @@ import { useDrop } from "react-dnd";
 import { AnimalTypes } from "@/types/cascadia";
 import DraggableToken from "../DraggableToken/DraggableToken";
 import AnimalToken from "../AnimalToken/AnimalToken";
+import { ReactNode } from "react";
 
 export default function DroppableTokenZone({
   row,
   column,
-  animal,
+  children,
   possibleAnimals,
 }: {
   row: number;
   column: number;
-  animal?: AnimalTypes;
+  children?: ReactNode;
   possibleAnimals: AnimalTypes[];
 }) {
   const id = `${row},${column}`;
@@ -30,11 +31,7 @@ export default function DroppableTokenZone({
 
   return (
     <div id={id} ref={drop} className="token-zone">
-      {animal ? (
-        <DraggableToken id={id} animal={animal} isDraggable={true} />
-      ) : (
-        <AnimalToken possibleAnimals={possibleAnimals} />
-      )}
+      {children ? children : <AnimalToken possibleAnimals={possibleAnimals} />}
     </div>
   );
 }

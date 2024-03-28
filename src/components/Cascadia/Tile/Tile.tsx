@@ -1,4 +1,4 @@
-import { HabitatTypes, Orientation, GameTile } from "@/types/cascadia";
+import { HabitatTypes, GameTile } from "@/types/cascadia";
 import { CSSProperties, ReactNode } from "react";
 import "./tile.scss";
 
@@ -12,7 +12,7 @@ export default function Tile({ tile, children }: { tile: GameTile; children: Rea
     tile.habitats[1],
   ];
 
-  const shift = Object.values(Orientation).indexOf(tile.orientation);
+  const shift = tile.orientation;
   const colourings = defaultColouring.slice(shift, 6).concat(defaultColouring.slice(0, shift));
 
   const topStyle: CSSProperties = {
