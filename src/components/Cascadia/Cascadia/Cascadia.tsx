@@ -14,7 +14,7 @@ import {
 import PlayZone from "../PlayZone/PlayZone";
 import OfferRowDisplay from "../OfferRow/OfferRow";
 import { useEffect, useRef, useState, KeyboardEvent, useContext } from "react";
-import { Button, Col, Container, FormGroup, FormLabel, Row } from "react-bootstrap";
+import { Button, Col, Container, FormGroup, FormLabel, Row, Toast, ToastContainer } from "react-bootstrap";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import { DndProvider } from "react-dnd-multi-backend";
 import _ from "lodash";
@@ -23,6 +23,9 @@ import { DragHandlerContext } from "../context";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { UserContext } from "@/app/UserContext";
 import { useRouter } from "next/navigation";
+import DroppableTokenPile from "../DroppableTokenPile/DroppableTokenPile";
+import AnimalToken from "../AnimalToken/AnimalToken";
+import OtherPlayZone from "../OtherPlayZone/OtherPlayZone";
 
 export default function Cascadia() {
   const userData = useContext(UserContext);
@@ -41,6 +44,8 @@ export default function Cascadia() {
   const [playedTiles, setPlayedTiles] = useState<GamePlayedTile[]>(gameState?.myDetails.playedTiles ?? []);
   const [myTurn, setMyTurn] = useState(false);
   const [errorString, setErrorString] = useState("");
+  const [flushIds, setFlushIds] = useState<{ index: number; animal: AnimalTypes }[]>([]);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     if (!userData.token && isInit) {
@@ -51,7 +56,7 @@ export default function Cascadia() {
       if (userData.isLoggedIn && userData.token && userData.accessTokenExpiry) {
         if (!connectionRef.current) {
           connectionRef.current = new HubConnectionBuilder()
-            .withUrl("http://localhost:5101/cascadia", {
+            .withUrl("https://ajj-sig-test.azurewebsites.net/cascadia", {
               withCredentials: false,
               accessTokenFactory: async () => getToken(),
             })
@@ -103,10 +108,11 @@ export default function Cascadia() {
     setTurnTile(undefined);
     setTurnToken(undefined);
     setErrorString(message);
+    setShow(true);
   }
 
   function handleNewState(state: ClientGameState) {
-    setMyTurn(state.currentPlayer === state.myDetails.player.id);
+    setMyTurn(state.currentPlayer === state.myDetails.player.id && !state.isGameFinished);
     setPlayedTiles(state.myDetails.playedTiles);
     setOfferRow({ tiles: [...state.offerTiles], animals: [...state.offerTokens] });
     setGameState(state);
@@ -143,18 +149,30 @@ export default function Cascadia() {
   const handleDragToken = (dropResult: DropResult, item: { id: string; animal: AnimalTypes }) => {
     if (!gameState) return;
 
-    setTurnToken({
-      row: dropResult.row,
-      column: dropResult.column,
-      tokenIndex: parseInt(item.id),
-      animal: item.animal,
-    });
-    const offerRowTokens: (AnimalTypes | undefined)[] = [...gameState.offerTokens];
-    offerRowTokens[parseInt(item.id)] = undefined;
-    setOfferRow({
-      tiles: offerRow.tiles,
-      animals: offerRowTokens,
-    });
+    if (Number.isNaN(dropResult.row) && Number.isNaN(dropResult.column)) {
+      const newFlushIds = [...flushIds];
+      newFlushIds.push({ index: parseInt(item.id), animal: item.animal });
+      setFlushIds(newFlushIds);
+      const offerRowTokens: (AnimalTypes | undefined)[] = [...offerRow.animals];
+      offerRowTokens[parseInt(item.id)] = undefined;
+      setOfferRow({
+        tiles: offerRow.tiles,
+        animals: offerRowTokens,
+      });
+    } else {
+      setTurnToken({
+        row: dropResult.row,
+        column: dropResult.column,
+        tokenIndex: parseInt(item.id),
+        animal: item.animal,
+      });
+      const offerRowTokens: (AnimalTypes | undefined)[] = [...gameState.offerTokens];
+      offerRowTokens[parseInt(item.id)] = undefined;
+      setOfferRow({
+        tiles: offerRow.tiles,
+        animals: offerRowTokens,
+      });
+    }
   };
 
   const handleTileClick = (row: number, column: number, tile?: GamePlayedTile) => {
@@ -172,15 +190,36 @@ export default function Cascadia() {
 
   function saveRound() {
     if (connectionRef.current && turnTile && turnToken) {
-      connectionRef.current.send("takeTurn", gameId, { turnTile, turnToken, requiresNatureToken: false });
+      connectionRef.current.send("takeTurn", gameId, { turnTile, turnToken });
       setTurnTile(undefined);
       setTurnToken(undefined);
     }
   }
 
+  function reset() {
+    if (!gameState) return;
+    setTurnTile(undefined);
+    setTurnToken(undefined);
+    setOfferRow({ tiles: [...gameState.offerTiles], animals: [...gameState.offerTokens] });
+    setGameState(gameState);
+    setErrorString("");
+    setFlushIds([]);
+  }
+
   function freeFlush() {
     if (connectionRef.current) {
       connectionRef.current.send("freeFlush", gameId);
+    }
+  }
+
+  function optionalFlush() {
+    if (connectionRef.current) {
+      connectionRef.current.send(
+        "optionalFlush",
+        gameId,
+        flushIds.map((x) => x.index)
+      );
+      setFlushIds([]);
     }
   }
 
@@ -204,6 +243,13 @@ export default function Cascadia() {
 
   const displaySaveButton = myTurn && turnTile && turnToken;
 
+  const displayResetButton = myTurn && (turnTile || turnToken);
+
+  function hideToast() {
+    setShow(false);
+    setErrorString("");
+  }
+
   return isInit ? (
     <Container className="cascadia">
       <Row>
@@ -226,7 +272,7 @@ export default function Cascadia() {
           </button>
         </Col>
       </Row>
-      {gameState ? (
+      {gameState && gameState.isStarted ? (
         <DndProvider options={HTML5toTouch}>
           <DragHandlerContext.Provider value={{ handleDragTile, handleDragToken, handleTileClick, isMyTurn: myTurn }}>
             <Row>
@@ -235,45 +281,88 @@ export default function Cascadia() {
               </Col>
             </Row>
             <Row>
-              {myTurn ? (
-                <p>It`&apos;`s your turn</p>
-              ) : (
-                <p>
-                  It`&apos;`s {gameState.otherPlayers.find((op) => op.player.id === gameState.currentPlayer)?.player.name}`&apos;`s
-                  turn
-                </p>
-              )}
-              {displaySaveButton ? (
-                <FormGroup>
-                  <Button className="save-button mx-auto" onClick={saveRound}>
-                    Save Round
-                  </Button>
-                </FormGroup>
+              {errorString ? (
+                <ToastContainer position="middle-center">
+                  <Toast bg={'danger'} show={show} onClick={hideToast} onClose={() => hideToast()} delay={3000} autohide>
+                    <Toast.Header>
+                      <strong className="me-auto">Cascadia</strong>
+                      <small className="text-muted">Just now</small>
+                    </Toast.Header>
+                    <Toast.Body>{errorString}</Toast.Body>
+                  </Toast>
+                </ToastContainer>
               ) : null}
-              {displayFreeFlushButton ? (
-                <FormGroup>
-                  <Button className="save-button mx-auto" onClick={freeFlush}>
-                    Free Triple Flush
-                  </Button>
-                </FormGroup>
-              ) : null}
-              <Container>
-                {"\uD83C\uDF32"} : {gameState.myDetails.tokens}
-              </Container>
-              {errorString ? <Container>{errorString}</Container> : null}
             </Row>
             <Row>
               <Col>
                 <PlayZone
+                  isTurn={myTurn}
+                  name={gameState.myDetails.player.name}
+                  tokens={gameState.myDetails.tokens}
                   playedTiles={playedTiles}
                   playedTokens={gameState.myDetails.playedTokens}
                   turnTile={turnTile}
                   turnToken={turnToken}
                 />
+                <div className="buttons">
+                  <FormGroup>
+                    <Button className="save-button mx-auto" onClick={saveRound} disabled={!displaySaveButton}>
+                      Save Round
+                    </Button>
+                  </FormGroup>
+
+                  <FormGroup>
+                    <Button className="save-button mx-auto" onClick={reset} disabled={!displayResetButton}>
+                      Reset Round
+                    </Button>
+                  </FormGroup>
+
+                  <FormGroup>
+                    <Button className="save-button mx-auto" onClick={freeFlush} disabled={!displayFreeFlushButton}>
+                      Free Triple Flush
+                    </Button>
+                  </FormGroup>
+
+                  {myTurn && gameState.myDetails.tokens > 0 ? (
+                    <div className="flush-pile">
+                      <FormGroup>
+                        <Button
+                          className="save-button mx-auto"
+                          onClick={optionalFlush}
+                          disabled={flushIds.length === 0}
+                        >
+                          Optional Flush
+                        </Button>
+                      </FormGroup>
+                      <p>Tiles to flush:</p>
+                      <DroppableTokenPile>
+                        {flushIds.map((x) => (
+                          <AnimalToken key={x.index} animal={x.animal} possibleAnimals={[]} />
+                        ))}
+                      </DroppableTokenPile>
+                    </div>
+                  ) : null}
+                </div>
               </Col>
             </Row>
           </DragHandlerContext.Provider>
         </DndProvider>
+      ) : null}
+      {gameState && gameState.isStarted ? (
+        <Row>
+          <Col>
+            {gameState?.otherPlayers.map((op) => (
+              <OtherPlayZone
+                key={op.player.id}
+                isTurn={gameState.currentPlayer === op.player.id}
+                name={op.player.name}
+                tokens={op.tokens}
+                playedTiles={op.playedTiles}
+                playedTokens={op.playedTokens}
+              />
+            ))}
+          </Col>
+        </Row>
       ) : null}
     </Container>
   ) : null;

@@ -2,3 +2,22 @@
   width: 100%;
   max-width: unset;
 }
+
+.buttons {
+  padding: 0 10px 10px 10px;
+  width: unset;
+  float: left;
+
+  & .save-button {
+    margin-top: 10px;
+  }
+}
+
+.flush-pile {
+  width: unset;
+  float: left;
+
+  & p {
+    margin-bottom: 5px;
+  }
+}

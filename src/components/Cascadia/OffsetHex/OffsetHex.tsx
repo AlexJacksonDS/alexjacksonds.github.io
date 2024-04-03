@@ -23,8 +23,8 @@ export function OffsetHex({
   const displayColumn = column + columnOffset + (row % 2 == 0 ? 0.5 : 0);
 
   const style: CSSProperties = {
-    top: `${fullHexHeight * 0.75 * (row + rowOffset)}px`,
-    left: `${fullHexWidth * displayColumn}px`,
+    top: `${10 + fullHexHeight * 0.75 * (row + rowOffset)}px`,
+    left: `${10 + fullHexWidth * displayColumn}px`,
     width: `${fullHexWidth}px`,
     height: `${fullHexHeight}px`,
     position: "absolute",

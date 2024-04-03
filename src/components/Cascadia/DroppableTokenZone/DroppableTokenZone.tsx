@@ -2,7 +2,6 @@
 
 import { useDrop } from "react-dnd";
 import { AnimalTypes } from "@/types/cascadia";
-import DraggableToken from "../DraggableToken/DraggableToken";
 import AnimalToken from "../AnimalToken/AnimalToken";
 import { ReactNode } from "react";
 
