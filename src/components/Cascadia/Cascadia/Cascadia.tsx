@@ -70,6 +70,19 @@ export default function Cascadia() {
             resetAfterInvalidMove(message, state);
           });
 
+          connectionRef.current.on("gameEnded", () => {
+            if (connectionRef.current) {
+              connectionRef.current.send("leaveGame", gameId);
+            }
+            setGameId("");
+            setGameIdDisabled(false);
+            setConnectedToGame(false);
+            setTurnTile(undefined);
+            setTurnToken(undefined);
+            setGameState(undefined);
+            setMyTurn(false);
+          });
+
           connectionRef.current.start().catch((err) => console.log(err));
           setIsInit(true);
         }
@@ -160,6 +173,14 @@ export default function Cascadia() {
   function saveRound() {
     if (connectionRef.current && turnTile && turnToken) {
       connectionRef.current.send("takeTurn", gameId, { turnTile, turnToken, requiresNatureToken: false });
+      setTurnTile(undefined);
+      setTurnToken(undefined);
+    }
+  }
+
+  function freeFlush() {
+    if (connectionRef.current) {
+      connectionRef.current.send("freeFlush", gameId);
     }
   }
 
@@ -178,6 +199,10 @@ export default function Cascadia() {
       connectionRef.current.send("startGame", gameId);
     }
   };
+
+  const displayFreeFlushButton = myTurn && Object.values(_.countBy(gameState?.offerTokens)).includes(3);
+
+  const displaySaveButton = myTurn && turnTile && turnToken;
 
   return isInit ? (
     <Container className="cascadia">
@@ -210,11 +235,28 @@ export default function Cascadia() {
               </Col>
             </Row>
             <Row>
-              <FormGroup>
-                <Button className="save-button mx-auto" onClick={saveRound}>
-                  Save Round
-                </Button>
-              </FormGroup>
+              {myTurn ? (
+                <p>It's your turn</p>
+              ) : (
+                <p>
+                  It's {gameState.otherPlayers.find((op) => op.player.id === gameState.currentPlayer)?.player.name}'s
+                  turn
+                </p>
+              )}
+              {displaySaveButton ? (
+                <FormGroup>
+                  <Button className="save-button mx-auto" onClick={saveRound}>
+                    Save Round
+                  </Button>
+                </FormGroup>
+              ) : null}
+              {displayFreeFlushButton ? (
+                <FormGroup>
+                  <Button className="save-button mx-auto" onClick={freeFlush}>
+                    Free Triple Flush
+                  </Button>
+                </FormGroup>
+              ) : null}
               <Container>
                 {"\uD83C\uDF32"} : {gameState.myDetails.tokens}
               </Container>

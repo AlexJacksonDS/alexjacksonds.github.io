@@ -9,6 +9,7 @@ export interface ClientGameState {
   gameId: string;
   isStarted: boolean;
   isStartable: boolean;
+  hasBeenFreeFlushedThisTurn: boolean;
   offerTiles: GameTile[];
   offerTokens: AnimalTypes[];
   currentPlayer: string;
