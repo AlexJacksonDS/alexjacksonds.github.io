@@ -24,7 +24,7 @@ export default function Freecell() {
       setIsWon(false);
       setIsDealt(true);
     }
-  });
+  }, [isDealt]);
 
   function handleStackMove(dropResult: DropResult, stackId: string) {
     if (!gameState) return;

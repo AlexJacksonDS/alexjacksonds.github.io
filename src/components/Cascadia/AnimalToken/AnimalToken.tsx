@@ -6,9 +6,9 @@ export default function AnimalToken({
   animal,
 }: {
   possibleAnimals: AnimalTypes[];
-  animal?: AnimalTypes;
+  animal?: string;
 }) {
-  function animalToUnicode(animal: AnimalTypes) {
+  function animalToUnicode(animal: string) {
     switch (animal) {
       case AnimalTypes.BEAR:
         return "\uD83D\uDC3B";

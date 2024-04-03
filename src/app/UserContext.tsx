@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setRefreshToken(localStorage.getItem("refreshToken"));
     setAccessTokenExpiry(parseInt(localStorage.getItem("accessTokenExpiry") ?? "0"));
     setIsLoggedIn(!!localStorage.getItem("userId"));
-  });
+  }, []);
 
   const login = async (username: string, password: string) => {
     const body = { userName: username, password };
@@ -76,6 +76,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (response.ok) {
       const res = await response.json();
       localStorage.setItem("token", res.token);
+      const tokenDetails = jose.decodeJwt(res.token);
+      localStorage.setItem("accessTokenExpiry", `${tokenDetails.exp}`);
+      setAccessTokenExpiry(tokenDetails.exp ?? 0);
       setToken(res.token);
       localStorage.setItem("refreshToken", res.refreshToken);
       setRefreshToken(res.refreshToken);

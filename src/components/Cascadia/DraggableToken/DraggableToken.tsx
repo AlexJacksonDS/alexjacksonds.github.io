@@ -20,7 +20,7 @@ export default function DraggableToken({
     () => ({
       type: "token",
       item: { id, animal },
-      canDrag: isDraggable,
+      canDrag: isDraggable && context.isMyTurn,
       end: (item, mon) => {
         const dropResult = mon.getDropResult<DropResult>();
         if (dropResult) {

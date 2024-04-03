@@ -57,7 +57,7 @@ export default function PlayZone({
             <OffsetHex key={`pz${x[0]}-${x[1]}`} row={x[0]} column={x[1]} rowOffset={rowOffset} columnOffset={colOffset}>
               <Tile tile={tile.tile}>
                 {token ? (
-                  <AnimalToken animal={token.animal} possibleAnimals={[]} />
+                  <AnimalToken animal={token.animalToken} possibleAnimals={[]} />
                 ) : (
                   <DroppableTokenZone row={x[0]} column={x[1]} possibleAnimals={tile.tile.validAnimals}>
                     {isTurnTokenTile ? (
@@ -72,7 +72,7 @@ export default function PlayZone({
         {dropZoneCoords.map((x) => {
           const tile = turnTile?.row === x[0] && turnTile?.column === x[1] ? turnTile : undefined;
           return (
-            <OffsetHex row={x[0]} column={x[1]} rowOffset={rowOffset} columnOffset={colOffset}>
+            <OffsetHex key={`ph${x[0]}-${x[1]}`} row={x[0]} column={x[1]} rowOffset={rowOffset} columnOffset={colOffset}>
               <DroppableHex key={`${x[0]},${x[1]}`} row={x[0]} column={x[1]} tile={tile} handleClick={() => null}>
                 {tile ? turnTileContent : <Placeholder />}
               </DroppableHex>

@@ -28,7 +28,7 @@ interface CascadiaPlayerState {
 export interface PlayedToken {
   row: number;
   column: number;
-  animal: AnimalTypes;
+  animalToken: AnimalTypes;
 }
 
 interface Player {

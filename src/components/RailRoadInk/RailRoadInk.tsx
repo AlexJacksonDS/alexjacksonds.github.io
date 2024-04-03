@@ -69,7 +69,7 @@ export default function RailRoadInk() {
 
     setSpin(isMobile ? "Tap to spin" : "Left click to spin");
     setFlip(isMobile ? "Hold to flip" : "Right click to flip");
-  });
+  }, [isInit, graph, validityGraph, specialsMap]);
 
   const allDiceUsed = [...diceMap.keys()].length === 0;
   let allPlayedTilesValid = true;
@@ -271,5 +271,3 @@ export default function RailRoadInk() {
     </main>
   );
 }
-
-

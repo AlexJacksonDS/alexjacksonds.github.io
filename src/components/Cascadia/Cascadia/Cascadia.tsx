@@ -5,7 +5,6 @@ import {
   ClientGameState,
   DropResult,
   GamePlayedTile,
-  GameState,
   GameTile,
   OfferRow,
   Orientation,
@@ -40,6 +39,8 @@ export default function Cascadia() {
   const [offerRow, setOfferRow] = useState<OfferRow>({ tiles: [], animals: [] });
   const [gameState, setGameState] = useState<ClientGameState | undefined>(undefined);
   const [playedTiles, setPlayedTiles] = useState<GamePlayedTile[]>(gameState?.myDetails.playedTiles ?? []);
+  const [myTurn, setMyTurn] = useState(false);
+  const [errorString, setErrorString] = useState("");
 
   useEffect(() => {
     if (!userData.token && isInit) {
@@ -65,28 +66,38 @@ export default function Cascadia() {
             handleNewState(state);
           });
 
+          connectionRef.current.on("invalidMove", (message: string, state: any) => {
+            resetAfterInvalidMove(message, state);
+          });
+
           connectionRef.current.start().catch((err) => console.log(err));
           setIsInit(true);
-
-          async function getToken() {
-            if (userData.accessTokenExpiry < Math.floor(new Date().getTime() / 1000)) {
-              console.log(userData.accessTokenExpiry);
-              console.log(Math.floor(new Date().getTime() / 1000));
-              const newToken = await userData.refresh();
-              return newToken;
-            }
-            return userData.token ?? "";
-          }
         }
       }
     }
-  });
+  }, [userData, isInit, router]);
+
+  async function getToken() {
+    if (userData.accessTokenExpiry < Math.floor(new Date().getTime() / 1000)) {
+      const newToken = await userData.refresh();
+      return newToken;
+    }
+    return userData.token ?? "";
+  }
+
+  function resetAfterInvalidMove(message: string, state: ClientGameState) {
+    handleNewState(state);
+    setTurnTile(undefined);
+    setTurnToken(undefined);
+    setErrorString(message);
+  }
 
   function handleNewState(state: ClientGameState) {
-    console.log(state);
+    setMyTurn(state.currentPlayer === state.myDetails.player.id);
     setPlayedTiles(state.myDetails.playedTiles);
     setOfferRow({ tiles: [...state.offerTiles], animals: [...state.offerTokens] });
     setGameState(state);
+    setErrorString("");
   }
 
   const handleDragTile = (dropResult: DropResult, item: { id: string; tile: GamePlayedTile }) => {
@@ -146,7 +157,11 @@ export default function Cascadia() {
     }
   };
 
-  function saveRound() {}
+  function saveRound() {
+    if (connectionRef.current && turnTile && turnToken) {
+      connectionRef.current.send("takeTurn", gameId, { turnTile, turnToken, requiresNatureToken: false });
+    }
+  }
 
   const gameIdOnKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key != "Enter") return;
@@ -164,7 +179,7 @@ export default function Cascadia() {
     }
   };
 
-  return (
+  return isInit ? (
     <Container className="cascadia">
       <Row>
         <Col>
@@ -188,7 +203,7 @@ export default function Cascadia() {
       </Row>
       {gameState ? (
         <DndProvider options={HTML5toTouch}>
-          <DragHandlerContext.Provider value={{ handleDragTile, handleDragToken, handleTileClick }}>
+          <DragHandlerContext.Provider value={{ handleDragTile, handleDragToken, handleTileClick, isMyTurn: myTurn }}>
             <Row>
               <Col xl={4}>
                 <OfferRowDisplay offerRow={offerRow} />
@@ -200,6 +215,10 @@ export default function Cascadia() {
                   Save Round
                 </Button>
               </FormGroup>
+              <Container>
+                {"\uD83C\uDF32"} : {gameState.myDetails.tokens}
+              </Container>
+              {errorString ? <Container>{errorString}</Container> : null}
             </Row>
             <Row>
               <Col>
@@ -215,7 +234,7 @@ export default function Cascadia() {
         </DndProvider>
       ) : null}
     </Container>
-  );
+  ) : null;
 }
 
 function getNextOrientation(orientation: Orientation) {
