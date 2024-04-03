@@ -88,7 +88,7 @@ export default function Cascadia() {
         }
       }
     }
-  }, [userData, isInit, router]);
+  }, [userData, isInit, router, gameId]);
 
   async function getToken() {
     if (userData.accessTokenExpiry < Math.floor(new Date().getTime() / 1000)) {
@@ -236,10 +236,10 @@ export default function Cascadia() {
             </Row>
             <Row>
               {myTurn ? (
-                <p>It's your turn</p>
+                <p>It`&apos;`s your turn</p>
               ) : (
                 <p>
-                  It's {gameState.otherPlayers.find((op) => op.player.id === gameState.currentPlayer)?.player.name}'s
+                  It`&apos;`s {gameState.otherPlayers.find((op) => op.player.id === gameState.currentPlayer)?.player.name}`&apos;`s
                   turn
                 </p>
               )}
