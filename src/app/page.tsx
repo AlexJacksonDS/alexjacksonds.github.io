@@ -15,7 +15,7 @@ export default function Home() {
 
         {userData.isReady ? (
           !userData.isLoggedIn ? (
-            <Tabs defaultActiveKey="profile" id="justify-tab-example" className="mb-3" justify>
+            <Tabs defaultActiveKey="login" id="justify-tab-example" className="mb-3" justify>
               <Tab eventKey="login" title="Login">
                 <SignInForm />
               </Tab>
