@@ -1,25 +1,29 @@
 "use client";
 
 import { createContext, useContext, ReactNode, useState, useEffect } from "react";
-import * as jose from 'jose'
+import * as jose from "jose";
 
 interface UserData {
+  isReady: boolean;
   isLoggedIn: boolean;
   userId: string | null;
   token: string | null;
   refreshToken: string | null;
   accessTokenExpiry: number;
+  register: (username: string, password: string, confirmPassword: string) => Promise<boolean>;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<string>;
 }
 
 export const UserContext = createContext<UserData>({
+  isReady: false,
   isLoggedIn: false,
   userId: null,
   token: null,
   refreshToken: null,
   accessTokenExpiry: 0,
+  register: () => new Promise((resolve) => resolve(false)),
   login: () => new Promise((resolve) => resolve()),
   logout: () => new Promise((resolve) => resolve()),
   refresh: () => new Promise((resolve) => resolve("")),
@@ -28,6 +32,7 @@ export const UserContext = createContext<UserData>({
 export const useAuth = () => useContext(UserContext);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [isReady, setIsReady] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -40,7 +45,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setRefreshToken(localStorage.getItem("refreshToken"));
     setAccessTokenExpiry(parseInt(localStorage.getItem("accessTokenExpiry") ?? "0"));
     setIsLoggedIn(!!localStorage.getItem("userId"));
+    setIsReady(true);
   }, []);
+
+  const register = async (username: string, password: string, confirmPassword: string) => {
+    const body = { gameUser: { userName: username }, password, confirmPassword };
+    const response = await fetch("https://ajj-sig-test.azurewebsites.net/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    return response.ok;
+  };
 
   const login = async (username: string, password: string) => {
     const body = { userName: username, password };
@@ -55,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("userId", res.username);
       setUserId(res.username);
       const tokenDetails = jose.decodeJwt(res.token);
-      localStorage.setItem("accessTokenExpiry", `${tokenDetails.exp}`)
+      localStorage.setItem("accessTokenExpiry", `${tokenDetails.exp}`);
       setAccessTokenExpiry(tokenDetails.exp ?? 0);
       localStorage.setItem("token", res.token);
       setToken(res.token);
@@ -95,7 +112,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <UserContext.Provider value={{ isLoggedIn, userId, token, refreshToken, accessTokenExpiry, login, logout, refresh }}>
+    <UserContext.Provider
+      value={{ isReady, isLoggedIn, userId, token, refreshToken, accessTokenExpiry, register, login, logout, refresh }}
+    >
       {children}
     </UserContext.Provider>
   );

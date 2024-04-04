@@ -1,8 +1,9 @@
 "use client";
 
 import SignInForm from "@/components/Authentication/SignInForm";
-import { Container } from "react-bootstrap";
+import { Container, Tab, Tabs } from "react-bootstrap";
 import { useAuth } from "./UserContext";
+import RegisterForm from "@/components/Authentication/RegisterForm";
 
 export default function Home() {
   const userData = useAuth();
@@ -12,7 +13,20 @@ export default function Home() {
       <Container>
         <h1>Homepage</h1>
 
-        {!userData.isLoggedIn ? <SignInForm /> : <p>Welcome {userData.userId}</p>}
+        {userData.isReady ? (
+          !userData.isLoggedIn ? (
+            <Tabs defaultActiveKey="profile" id="justify-tab-example" className="mb-3" justify>
+              <Tab eventKey="login" title="Login">
+                <SignInForm />
+              </Tab>
+              <Tab eventKey="register" title="Register">
+                <RegisterForm />
+              </Tab>
+            </Tabs>
+          ) : (
+            <p>Welcome {userData.userId}</p>
+          )
+        ) : null}
       </Container>
     </main>
   );
