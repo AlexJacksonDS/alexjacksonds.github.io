@@ -48,7 +48,7 @@ export default function Cascadia() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    if (!userData.token && isInit) {
+    if (userData.isReady && !userData.token) {
       router.push("/");
     }
 

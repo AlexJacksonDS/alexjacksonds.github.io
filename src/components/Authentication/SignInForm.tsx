@@ -19,12 +19,12 @@ export default function SignInForm() {
   return (
     <Container>
       <Form>
-        <Form.Group className="mb-3" controlId="formUsername">
+        <Form.Group className="mb-3" controlId="formLoginUsername">
           <Form.Label>Username</Form.Label>
           <Form.Control type="text" value={username} onInput={e => setUsername((e.target as HTMLInputElement).value)} />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formPassword">
+        <Form.Group className="mb-3" controlId="formLoginPassword">
           <Form.Label>Password</Form.Label>
           <Form.Control type="password" value={password} onInput={e => setPassword((e.target as HTMLInputElement).value)} />
         </Form.Group>
