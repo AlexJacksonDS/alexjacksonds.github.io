@@ -16,16 +16,47 @@ export interface ClientGameState {
   currentPlayer: string;
   myDetails: CascadiaPlayerState;
   otherPlayers: CascadiaPlayerState[];
+  scoringCards: ScoringCard[];
 }
 
-interface CascadiaPlayerState {
+export interface CascadiaPlayerState {
   player: Player;
-  score: number;
+  scores: PlayerScores;
   tokens: number;
   playedTiles: GamePlayedTile[];
   playedTokens: PlayedToken[];
   playerOrder: number;
 }
+
+interface PlayerScores {
+  bearScore: number;
+  elkScore: number;
+  salmonScore: number;
+  hawkScore: number;
+  foxScore: number;
+  mountainScore: number;
+  mountainBonusScore: number;
+  forestScore: number;
+  forestBonusScore: number;
+  wetlandsScore: number;
+  wetlandsBonusScore: number;
+  prarieScore: number;
+  prarieBonusScore: number;
+  riverScore: number;
+  riverBonusScore: number;
+  natureScore: number;
+}
+
+export interface ScoringCard {
+  animalType: AnimalTypes;
+  title: string;
+  scoringCriteria: string;
+  scores: string;
+}
+
+export type PlayerPlayerScores = PlayerScores & {
+  name: string;
+};
 
 export interface PlayedToken {
   row: number;

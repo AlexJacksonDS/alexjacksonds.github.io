@@ -2,12 +2,14 @@
 
 import {
   AnimalTypes,
+  CascadiaPlayerState,
   ClientGameState,
   DropResult,
   GamePlayedTile,
   GameTile,
   OfferRow,
   Orientation,
+  PlayerPlayerScores,
   TurnTile,
   TurnToken,
 } from "@/types/cascadia";
@@ -26,6 +28,8 @@ import { useRouter } from "next/navigation";
 import DroppableTokenPile from "../DroppableTokenPile/DroppableTokenPile";
 import AnimalToken from "../AnimalToken/AnimalToken";
 import OtherPlayZone from "../OtherPlayZone/OtherPlayZone";
+import ScoreBoard from "../ScoreBoard/ScoreBoard";
+import ScoringCard from "../ScoringCard/ScoringCard";
 
 export default function Cascadia() {
   const userData = useContext(UserContext);
@@ -250,6 +254,20 @@ export default function Cascadia() {
     setErrorString("");
   }
 
+  function getScoresFromGameState(gameState: ClientGameState): PlayerPlayerScores[] {
+    const myScores = getScoreFromPlayerDetails(gameState.myDetails);
+    const otherPlayerScores = gameState.otherPlayers.map((p) => getScoreFromPlayerDetails(p));
+
+    return [myScores, ...otherPlayerScores];
+  }
+
+  function getScoreFromPlayerDetails(player: CascadiaPlayerState): PlayerPlayerScores {
+    return {
+      name: player.player.name,
+      ...player.scores,
+    };
+  }
+
   return isInit ? (
     <Container className="cascadia">
       <Row>
@@ -276,14 +294,29 @@ export default function Cascadia() {
         <DndProvider options={HTML5toTouch}>
           <DragHandlerContext.Provider value={{ handleDragTile, handleDragToken, handleTileClick, isMyTurn: myTurn }}>
             <Row>
+              <Col>{<ScoreBoard playerScores={getScoresFromGameState(gameState)} />}</Col>
+            </Row>
+            <Row>
               <Col xl={4}>
                 <OfferRowDisplay offerRow={offerRow} />
               </Col>
+              {gameState.scoringCards.map((x, i) => (
+                <Col key={i} xl={1}>
+                  <ScoringCard card={x} />
+                </Col>
+              ))}
             </Row>
             <Row>
               {errorString ? (
                 <ToastContainer position="middle-center">
-                  <Toast bg={'danger'} show={show} onClick={hideToast} onClose={() => hideToast()} delay={3000} autohide>
+                  <Toast
+                    bg={"danger"}
+                    show={show}
+                    onClick={hideToast}
+                    onClose={() => hideToast()}
+                    delay={3000}
+                    autohide
+                  >
                     <Toast.Header>
                       <strong className="me-auto">Cascadia</strong>
                       <small className="text-muted">Just now</small>
