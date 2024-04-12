@@ -63,10 +63,10 @@ export default function BoggleSolverPage() {
       <Container>
         <Row className="pt-4">
           <Col lg={4}>
-            <input className="form-control" type="file" onChange={handleChange} />
+            <input className="form-control" type="file" onChange={handleChange} accept="image/*;capture=camera"/>
           </Col>
           <Col lg={2}>
-            <button onClick={uploadImage} className="btn btn-primary" accept="image/*;capture=camera">
+            <button onClick={uploadImage} className="btn btn-primary">
               Upload
             </button>
           </Col>
