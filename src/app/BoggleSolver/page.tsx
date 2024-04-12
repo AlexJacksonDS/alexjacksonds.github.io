@@ -62,15 +62,15 @@ export default function BoggleSolverPage() {
     <>
       <Container>
         <Row className="pt-4">
-          <Col xs={4}>
+          <Col lg={4}>
             <input className="form-control" type="file" onChange={handleChange} />
           </Col>
-          <Col xs={2}>
+          <Col lg={2}>
             <button onClick={uploadImage} className="btn btn-primary">
               Upload
             </button>
           </Col>
-          <Col xs={2}>
+          <Col lg={2}>
             <div className="dice-grid">
               {dice.map((x, i) => (
                 <div key={i}>
@@ -79,7 +79,7 @@ export default function BoggleSolverPage() {
               ))}
             </div>
           </Col>
-          <Col xs={2}>
+          <Col lg={2}>
             <button onClick={correctGrid} className="btn btn-primary">
               Submit Correction
             </button>
