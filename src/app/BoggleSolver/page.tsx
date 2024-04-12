@@ -19,7 +19,7 @@ export default function BoggleSolverPage() {
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      const response = await fetch("http://localhost:5101/boggle", {
+      const response = await fetch("https://ajj-sig-test.azurewebsites.net/boggle", {
         method: "POST",
         body: formData,
       });
@@ -36,7 +36,7 @@ export default function BoggleSolverPage() {
   const correctGrid = async () => {
     if (diceString) {
       const data = { boggleString: diceString };
-      const response = await fetch("http://localhost:5101/bogglestring", {
+      const response = await fetch("https://ajj-sig-test.azurewebsites.net/bogglestring", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -63,10 +63,10 @@ export default function BoggleSolverPage() {
       <Container>
         <Row className="pt-4">
           <Col lg={4}>
-            <input className="form-control" type="file" onChange={handleChange} accept="image/*;capture=camera"/>
+            <input className="form-control" type="file" onChange={handleChange} />
           </Col>
           <Col lg={2}>
-            <button onClick={uploadImage} className="btn btn-primary">
+            <button onClick={uploadImage} className="btn btn-primary" accept="image/*;capture=camera">
               Upload
             </button>
           </Col>
