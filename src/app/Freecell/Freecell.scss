@@ -6,31 +6,31 @@
   margin-top: 8vh;
 }
 
-.deck {
-  & .card-list {
-    display: flex;
-    position: relative;
-    flex-grow: 0;
+@media (max-width: 500px) {
+  .play-area {
+    margin-top: 0.2vh;
+  }
 
-    & .card-list {
-      margin-left: -6.8vw;
+  .column {
+    padding-left: 0;
+
+    .normal {
+      width: 8vw;
+    }
+  }
+
+  
+  .pile, .slot {
+    padding-left: 0;
+
+    .normal {
+      width: 8vw;
     }
   }
 }
 
-.turned-deck {
-  & .card-list {
-    display: flex;
-    position: relative;
-    flex-grow: 0;
-
-    & .card-list {
-      margin-left: -6.5vw;
-    }
-  }
-}
-
-.pile, .slot {
+.pile,
+.slot {
   & .card-list {
     position: relative;
     flex-grow: 0;
@@ -68,7 +68,7 @@
 
 .placeholder {
   display: flex;
-  border: 1px dashed white;
+  border: 2px dashed white;
   background-color: unset;
   cursor: default;
   align-items: center;
