@@ -7,8 +7,8 @@ import "./BoggleSolver.scss";
 export default function BoggleSolverPage() {
   const [file, setFile] = useState<File | undefined>(undefined);
   const [wordGroups, setWordGroups] = useState<WordGroups[]>([]);
-  const [dice, setDice] = useState<string[]>([]);
-  const [diceString, setDiceString] = useState("");
+  const [dice, setDice] = useState<string[]>(["A","A","A","A","A","A","A","A","A","A","A","A","A","A","A","A"]);
+  const [diceString, setDiceString] = useState("AAAAAAAAAAAAAAAA");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -19,7 +19,7 @@ export default function BoggleSolverPage() {
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      const response = await fetch("https://ajj-sig-test.azurewebsites.net/boggle", {
+      const response = await fetch("http://localhost:5101/boggle", {
         method: "POST",
         body: formData,
       });
@@ -36,7 +36,7 @@ export default function BoggleSolverPage() {
   const correctGrid = async () => {
     if (diceString) {
       const data = { boggleString: diceString };
-      const response = await fetch("https://ajj-sig-test.azurewebsites.net/bogglestring", {
+      const response = await fetch("http://localhost:5101/bogglestring", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -124,7 +124,7 @@ function CharSelect({
   };
 
   return (
-    <select onChange={onChange} value={currentValue}>
+    <select onChange={onChange} value={currentValue === "Qu" ? "Q" : currentValue}>
       {chars.map((c) => (
         <option key={c} value={c}>
           {c === "Q" ? "Qu" : c}
