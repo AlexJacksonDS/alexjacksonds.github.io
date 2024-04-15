@@ -79,6 +79,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("refreshToken", res.refreshToken);
       setRefreshToken(res.refreshToken);
       setIsLoggedIn(true);
+    } else {
+      setUserId(null);
+      setToken(null);
+      setRefreshToken(null);
+      setAccessTokenExpiry(0);
+      setIsLoggedIn(false);
+      localStorage.removeItem("userId");
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("accessTokenExpiry");
     }
   };
 
@@ -101,13 +111,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setRefreshToken(res.refreshToken);
       setIsLoggedIn(true);
       return res.token;
+    } else {
+      setUserId(null);
+      setToken(null);
+      setRefreshToken(null);
+      setAccessTokenExpiry(0);
+      setIsLoggedIn(false);
+      localStorage.removeItem("userId");
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("accessTokenExpiry");
     }
   };
 
   const logout = async () => {
+    setUserId(null);
+    setToken(null);
+    setRefreshToken(null);
+    setAccessTokenExpiry(0);
     localStorage.removeItem("userId");
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("accessTokenExpiry");
     setIsLoggedIn(false);
   };
 
