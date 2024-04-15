@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { dealSolitaire, isMoveLegal, makeMove, turnThreeDeckCards } from "@/services/solitaire.service";
 import "./Solitaire.scss";
 import { GameState } from "@/types/solitaire";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd-multi-backend";
+import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import DroppableCardList from "@/components/Draggable/DroppableCardList/DroppableCardList";
 import DraggableStack from "@/components/Draggable/DraggableCardStack/DraggableCardStack";
 import Placeholder from "@/components/Draggable/CardPlaceholder/Placeholder";
@@ -55,7 +55,7 @@ export default function Solitaire() {
   return (
     <main>
       <Container>
-        <DndProvider backend={HTML5Backend}>
+        <DndProvider options={HTML5toTouch}>
           {isDealt && gameState ? (
             <>
               <Row>
@@ -144,5 +144,3 @@ export default function Solitaire() {
     </main>
   );
 }
-
-
