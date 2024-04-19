@@ -1,0 +1,43 @@
+.card-col {
+  max-width: 5vw;
+}
+
+.hand-card {
+  display: flex;
+  border: 1px solid rgba(182, 182, 182, 0.747);
+  aspect-ratio: 28 / 39;
+  font-size: 5vw;
+  line-height: 5vw;
+  justify-content: center;
+  align-items: center;
+  max-width: 5vw;
+}
+
+.card-colour-1 {
+  background-color: red;
+  border: 1px solid red;
+  text-shadow: 2px 0 0 #000, 0 -2px 0 #000, 0 2px 0 #000, -2px 0 0 #000;
+}
+
+.card-colour-2 {
+  background-color: blue;
+  border: 1px solid blue;
+  text-shadow: 2px 0 0 #000, 0 -2px 0 #000, 0 2px 0 #000, -2px 0 0 #000;
+}
+
+.card-colour-3 {
+  background-color: yellow;
+  border: 1px solid yellow;
+  text-shadow: 2px 0 0 #000, 0 -2px 0 #000, 0 2px 0 #000, -2px 0 0 #000;
+}
+
+.card-colour-4 {
+  background-color: green;
+  border: 1px solid green;
+  text-shadow: 2px 0 0 #000, 0 -2px 0 #000, 0 2px 0 #000, -2px 0 0 #000;
+}
+
+.card-placeholder {
+    font-size: medium;
+    line-height: normal;
+}

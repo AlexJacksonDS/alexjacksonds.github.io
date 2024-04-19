@@ -107,6 +107,11 @@ function AuthenticatedCards() {
           <ImageCard title="Cascadia" description="Habitat matching tile game" image="Cascadia.webp" />
         </Link>
       </Col>
+      <Col>
+        <Link href="/CatInTheBox" style={{ textDecoration: "none" }}>
+          <ImageCard title="Cat in the Box" description="Trick taking paradox game" />
+        </Link>
+      </Col>
     </>
   );
 }

@@ -1,0 +1,63 @@
+.other-player-container {
+    border: 1px solid rgba(182, 182, 182, 0.747);
+    display: flex;
+    flex-direction: column;
+
+    &.colour-1 {
+        border-color: red;
+    }
+
+    &.colour-2 {
+        border-color: blue;
+    }
+
+    &.colour-3 {
+        border-color: yellow;
+    }
+
+    &.colour-4 {
+        border-color: green;
+    }
+
+    &.colour-5 {
+        border-color: purple;
+    }
+}
+
+.detail-col {
+    display: flex;
+}
+
+.has-colour-col {
+  display: flex;
+}
+
+.has-colour {
+  display: flex;
+  aspect-ratio: 2 / 1;
+  width: 100%;
+}
+
+.red {
+  background-color: red;
+  border: 1px solid red;
+}
+
+.blue {
+  background-color: blue;
+  border: 1px solid blue;
+}
+
+.yellow {
+  background-color: yellow;
+  border: 1px solid yellow;
+}
+
+.green {
+  background-color: green;
+  border: 1px solid green;
+}
+
+.no {
+  background-color: unset;
+}

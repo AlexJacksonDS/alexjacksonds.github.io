@@ -1,0 +1,34 @@
+.board-square {
+    display: flex;
+    aspect-ratio: 1 / 1;
+    max-width: 40px;
+    justify-content: center;
+    align-items: center;
+    font-size: xx-large;
+}
+
+.board-col {
+    max-width: 40px;
+}
+
+.filled-col {
+    border: 1px black solid;
+    text-shadow: 2px 0 0 #000, 0 -2px 0 #000, 0 2px 0 #000, -2px 0 0 #000;
+    color: white;
+}
+
+.red-row > .filled-col {
+    background-color: red;
+}
+
+.blue-row > .filled-col {
+    background-color: blue;
+}
+
+.yellow-row > .filled-col {
+    background-color: yellow;
+}
+
+.green-row > .filled-col {
+    background-color: green;
+}
