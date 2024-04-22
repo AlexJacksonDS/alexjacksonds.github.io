@@ -186,11 +186,22 @@ function RoundScores({
 }
 
 function ScoreControl({ setScore, score, label }: { setScore: (i: number) => void; score: number; label: string }) {
+  function handleInput(input: string) {
+    if (parseInt(input)) setScore(parseInt(input));
+  }
+
   return (
     <Col xs={6} lg={4}>
       <FormGroup className="mb-2">
         <Form.Label>{label}</Form.Label>
-        <input className="form-control" type="text" onChange={(e) => setScore(parseInt(e.target.value))} value={score} inputMode="numeric"/>
+        <input
+          className="form-control"
+          type="text"
+          onChange={(e) => handleInput(e.target.value)}
+          value={score}
+          inputMode="numeric"
+          pattern="\-?[0-9]+"
+        />
       </FormGroup>
     </Col>
   );
