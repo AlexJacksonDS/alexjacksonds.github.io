@@ -56,13 +56,14 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
         />
         <DisplayBoard board={board} />
         <Row className="gx-5">
-          <Col xs={1} className="border m-1">
+          <Col xs={12} lg={1} className="border">
             <FormGroup className="mb-2">
               <Form.Label>Coin Tracker</Form.Label>
               <Form.Control type="number" onChange={(e) => setCoins(parseInt(e.target.value))} value={coins} />
             </FormGroup>
           </Col>
           <RoundScores
+            season="Spring"
             setFirstCardScore={setOneAScore}
             firstCardScore={oneAScore}
             firstCardLetter="A"
@@ -75,6 +76,7 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
             monsterScore={oneMonsterScore}
           />
           <RoundScores
+            season="Summer"
             setFirstCardScore={setTwoBScore}
             firstCardScore={twoBScore}
             firstCardLetter="B"
@@ -87,6 +89,7 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
             monsterScore={twoMonsterScore}
           />
           <RoundScores
+            season="Autumn"
             setFirstCardScore={setThreeCScore}
             firstCardScore={threeCScore}
             firstCardLetter="C"
@@ -99,6 +102,7 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
             monsterScore={threeMonsterScore}
           />
           <RoundScores
+            season="Winter"
             setFirstCardScore={setFourDScore}
             firstCardScore={fourDScore}
             firstCardLetter="D"
@@ -110,7 +114,7 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
             setMonsterScore={setFourMonsterScore}
             monsterScore={fourMonsterScore}
           />
-          <Col xs={1} className="border m-1">
+          <Col xs={12} lg={1} className="border">
             <p>Total:</p>
             <p className="display-6">
               {oneAScore +
@@ -138,6 +142,7 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
 }
 
 function RoundScores({
+  season,
   setFirstCardScore,
   firstCardScore,
   firstCardLetter,
@@ -149,6 +154,7 @@ function RoundScores({
   setMonsterScore,
   monsterScore,
 }: {
+  season: string;
   setFirstCardScore: (i: number) => void;
   firstCardScore: number;
   firstCardLetter: string;
@@ -161,16 +167,19 @@ function RoundScores({
   monsterScore: number;
 }) {
   return (
-    <Col className="border m-1">
+    <Col xs={6} lg={2} className="border">
+      <Row>
+        <Col>{season}</Col>
+      </Row>
       <Row>
         <ScoreControl setScore={setFirstCardScore} score={firstCardScore} label={firstCardLetter} />
         <ScoreControl setScore={setSecondCardScore} score={secondCardScore} label={secondCardLetter} />
-        <Col>Total: {firstCardScore + secondCardScore + coinScore + monsterScore}</Col>
+        <Col></Col>
       </Row>
       <Row>
         <ScoreControl setScore={setCoinScore} score={coinScore} label="Coins" />
         <ScoreControl setScore={setMonsterScore} score={monsterScore} label="Monsters" />
-        <Col></Col>
+        <Col>Total: {firstCardScore + secondCardScore + coinScore + monsterScore}</Col>
       </Row>
     </Col>
   );
@@ -178,7 +187,7 @@ function RoundScores({
 
 function ScoreControl({ setScore, score, label }: { setScore: (i: number) => void; score: number; label: string }) {
   return (
-    <Col>
+    <Col xs={6} lg={4}>
       <FormGroup className="mb-2">
         <Form.Label>{label}</Form.Label>
         <Form.Control type="number" onChange={(e) => setScore(parseInt(e.target.value))} value={score} />
