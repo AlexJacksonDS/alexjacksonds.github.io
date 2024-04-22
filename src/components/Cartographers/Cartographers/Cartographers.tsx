@@ -190,7 +190,7 @@ function ScoreControl({ setScore, score, label }: { setScore: (i: number) => voi
     <Col xs={6} lg={4}>
       <FormGroup className="mb-2">
         <Form.Label>{label}</Form.Label>
-        <Form.Control type="number" onChange={(e) => setScore(parseInt(e.target.value))} value={score} />
+        <input className="form-control" type="text" onChange={(e) => setScore(parseInt(e.target.value))} value={score} inputMode="numeric"/>
       </FormGroup>
     </Col>
   );
