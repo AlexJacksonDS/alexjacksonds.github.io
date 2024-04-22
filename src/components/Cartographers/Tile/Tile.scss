@@ -1,0 +1,42 @@
+.tile {
+  width: min(6vw, 6vh);
+  font-size: min(3vw, 3vh);
+  color: black;
+  aspect-ratio: 1 / 1;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.empty {
+    background-color: antiquewhite;
+  }
+
+  &.forest {
+    background-color: forestgreen;
+  }
+
+  &.field {
+    background-color: goldenrod;
+  }
+
+  &.water {
+    background-color: dodgerblue;
+  }
+
+  &.town {
+    background-color: firebrick;
+  }
+
+  &.monster {
+    background-color: darkmagenta;
+  }
+
+  &.mountain {
+    background-color: sienna;
+  }
+
+  &.wasteland {
+    background-color: grey;
+  }
+}

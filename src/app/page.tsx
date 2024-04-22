@@ -112,6 +112,11 @@ function AuthenticatedCards() {
           <ImageCard title="Cat in the Box" description="Trick taking paradox game" />
         </Link>
       </Col>
+      <Col>
+        <Link href="/Cartographers" style={{ textDecoration: "none" }}>
+          <ImageCard title="Cartographers" description="Map drawing game" />
+        </Link>
+      </Col>
     </>
   );
 }
