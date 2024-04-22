@@ -1,6 +1,6 @@
 "use client";
 
-import { Board, Terrain } from "@/types/cartographers";
+import { Board } from "@/types/cartographers";
 import { Col, Container, Row } from "react-bootstrap";
 import Tile from "../Tile/Tile";
 import { useContext } from "react";
@@ -19,8 +19,8 @@ export default function DisplayBoard({ board }: { board: Board }) {
         <Row key={i}>
           <Col className="d-flex justify-content-center">
             {x.map((y, j) => (
-              <div onClick={() => onClick(i, j)}>
-                <Tile key={`${i},${j}`} tile={y} />
+              <div key={`${i},${j}`} onClick={() => onClick(i, j)}>
+                <Tile tile={y} />
               </div>
             ))}
           </Col>
