@@ -6,10 +6,11 @@ import { useState } from "react";
 import "./Cartographers.scss";
 import { Board, Terrain, defaultBoard, specialBoard } from "@/types/cartographers";
 import Pallet from "../Pallet/Pallet";
-import { Col, Container, Form, FormGroup, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, FormGroup, Row } from "react-bootstrap";
 
 export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boolean }) {
   const [board, setBoard] = useState(isSpecialBoard ? specialBoard : defaultBoard);
+  const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [brushTerrain, setBrushTerrain] = useState(Terrain.Empty);
   const [coins, setCoins] = useState(0);
 
@@ -38,12 +39,25 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
   }
 
   function handleTileClick(i: number, j: number) {
-    console.log(`${i},${j}`);
     if (board[i][j].terrain === Terrain.Empty) {
       const newBoard: Board = [...board];
       newBoard[i][j].terrain = brushTerrain;
-      console.log(newBoard);
       setBoard(newBoard);
+      const newMoveHistory = [...moveHistory];
+      newMoveHistory.push(`${i},${j}`);
+      setMoveHistory(newMoveHistory);
+    }
+  }
+
+  function undo() {
+    const newMoveHistory = [...moveHistory];
+    const move = newMoveHistory.pop();
+    if (move) {
+      const coords = move.split(",").map(x => parseInt(x));
+      const newBoard: Board = [...board];
+      newBoard[coords[0]][coords[1]].terrain = Terrain.Empty;
+      setBoard(newBoard);
+      setMoveHistory(newMoveHistory);
     }
   }
 
@@ -55,6 +69,13 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
           allowedTerrainTypes={[Terrain.Forest, Terrain.Field, Terrain.Water, Terrain.Town, Terrain.Monster]}
         />
         <DisplayBoard board={board} />
+        <Row>
+          <Col>
+            <button className="form-control btn btn-primary" type="submit" onClick={undo}>
+              Undo
+            </button>
+          </Col>
+        </Row>
         <Row className="gx-5">
           <Col xs={12} lg={1} className="border">
             <FormGroup className="mb-2">
@@ -189,7 +210,7 @@ function ScoreControl({ setScore, score, label }: { setScore: (i: number) => voi
   const [value, setValue] = useState(score.toString());
   function handleInput(input: string) {
     setValue(input);
-    if (parseInt(input)) setScore(parseInt(input));
+    if (!Number.isNaN(parseInt(input))) setScore(parseInt(input));
   }
 
   return (
