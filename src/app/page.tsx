@@ -75,6 +75,16 @@ function UnauthenticatedCards() {
           <ImageCard title="Railroad Ink" description="Road and Rail drawing game" image="RailRoadInk.png" />
         </Link>
       </Col>
+      <Col>
+        <Link href="/Cartographers/basic" style={{ textDecoration: "none" }}>
+          <ImageCard title="Cartographers" description="Play along with the basic board" image="cartographers.png"/>
+        </Link>
+      </Col>
+      <Col>
+        <Link href="/Cartographers/special" style={{ textDecoration: "none" }}>
+          <ImageCard title="Cartographers" description="Play along with the wasteland board" image="cartographersspecial.png"/>
+        </Link>
+      </Col>
     </>
   );
 }
@@ -109,12 +119,12 @@ function AuthenticatedCards() {
       </Col>
       <Col>
         <Link href="/CatInTheBox" style={{ textDecoration: "none" }}>
-          <ImageCard title="Cat in the Box" description="Trick taking paradox game" />
+          <ImageCard title="Cat in the Box" description="Trick taking paradox game" image="catinthebox.jpg"/>
         </Link>
       </Col>
       <Col>
         <Link href="/Cartographers" style={{ textDecoration: "none" }}>
-          <ImageCard title="Cartographers" description="Map drawing game" />
+          <ImageCard title="Cartographers" description="Map drawing game" image="cartographers.jpg"/>
         </Link>
       </Col>
     </>
