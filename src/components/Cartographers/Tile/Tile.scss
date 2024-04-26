@@ -7,6 +7,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+
+  &.small {
+    width: min(2vw, 2vh);
+    font-size: min(1vw, 1vh);
+
+    &.empty {
+        background-color: unset;
+    }
+  }
 
   &.empty {
     background-color: antiquewhite;
@@ -36,7 +46,19 @@
     background-color: sienna;
   }
 
+  &.claimedmountain {
+    background-color: sienna;
+  }
+
   &.wasteland {
     background-color: grey;
+  }
+
+  .secondary-symbol {
+    display: flex;
+    font-size: min(1.5vw, 1.5vh);
+    position: absolute;
+    bottom: 0;
+    right: 0;
   }
 }

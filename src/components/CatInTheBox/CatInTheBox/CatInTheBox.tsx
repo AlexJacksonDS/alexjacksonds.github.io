@@ -44,7 +44,6 @@ export default function CatInTheBox() {
     if (!isInit) {
       if (userData.isLoggedIn && userData.token && userData.accessTokenExpiry) {
         if (!connectionRef.current) {
-          console.log(userData);
           connectionRef.current = new HubConnectionBuilder()
             .withUrl("https://ajj-sig-test.azurewebsites.net/catinthebox", {
               withCredentials: false,
@@ -115,8 +114,6 @@ export default function CatInTheBox() {
         return;
       }
       const playerLegalMoves = getLegalMoves();
-      console.log(playerLegalMoves);
-      console.log(playerLegalMoves.includes({ card, colour }));
       if (playerLegalMoves.length !== 0 && !playerLegalMoves.find((x) => x.card === card && x.colour === colour)) {
         return;
       } else {

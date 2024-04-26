@@ -6,7 +6,7 @@ import { useState } from "react";
 import "./Cartographers.scss";
 import { Board, Terrain, defaultBoard, specialBoard } from "@/types/cartographers";
 import Pallet from "../Pallet/Pallet";
-import { Button, Col, Container, Form, FormGroup, Row } from "react-bootstrap";
+import { Col, Container, Form, FormGroup, Row } from "react-bootstrap";
 
 export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boolean }) {
   const [board, setBoard] = useState(isSpecialBoard ? specialBoard : defaultBoard);

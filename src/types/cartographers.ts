@@ -1,3 +1,44 @@
+export interface State {
+  gameId: string;
+  roundNumber: number;
+  roundSum: number;
+  a?: ScoringCard;
+  b?: ScoringCard;
+  c?: ScoringCard;
+  d?: ScoringCard;
+  terrainCard?: TerrainCard;
+  isRuinTurn: boolean;
+  isStarted: boolean;
+  player: CartographersPlayer;
+  otherPlayers: CartographersPlayer[];
+}
+
+interface Card {
+  title: string;
+}
+
+export type ScoringCard = Card & {
+  scoringCriteria: string;
+};
+
+export type TerrainCard = Card & {
+  value: number;
+  validTerrain: Terrain[][][];
+};
+
+interface CartographersPlayer {
+  player: Player;
+  scores: Scores;
+  coinTrack: number;
+  boardPlayer: Player;
+  board: Board;
+}
+
+interface Player {
+  id: string;
+  name: string;
+}
+
 export enum Terrain {
   Empty,
   Forest,
@@ -6,6 +47,7 @@ export enum Terrain {
   Town,
   Monster,
   Mountain,
+  ClaimedMountain,
   Wasteland,
 }
 
@@ -29,6 +71,25 @@ export type Board = [
   BoardRow,
   BoardRow
 ];
+
+export interface Scores {
+  oneAScore: number;
+  oneBScore: number;
+  oneCoinScore: number;
+  oneMonsterScore: number;
+  twoBScore: number;
+  twoCScore: number;
+  twoCoinScore: number;
+  twoMonsterScore: number;
+  threeCScore: number;
+  threeDScore: number;
+  threeCoinScore: number;
+  threeMonsterScore: number;
+  fourDScore: number;
+  fourAScore: number;
+  fourCoinScore: number;
+  fourMonsterScore: number;
+}
 
 function emptyRow(): BoardRow {
   return [
@@ -118,15 +179,15 @@ tenthRowSpecial[2] = { terrain: Terrain.Mountain, isRuin: false };
 tenthRowSpecial[3] = { terrain: Terrain.Empty, isRuin: true };
 
 export const specialBoard: Board = [
-    emptyRow(),
-    secondRowSpecial,
-    thirdRowSpecial,
-    fourthRowSpecial,
-    fifthRowSpecial,
-    sixthRowSpecial,
-    seventhRowSpecial,
-    eighthRowSpecial,
-    ninthRowSpecial,
-    tenthRowSpecial,
-    emptyRow()
-]
+  emptyRow(),
+  secondRowSpecial,
+  thirdRowSpecial,
+  fourthRowSpecial,
+  fifthRowSpecial,
+  sixthRowSpecial,
+  seventhRowSpecial,
+  eighthRowSpecial,
+  ninthRowSpecial,
+  tenthRowSpecial,
+  emptyRow(),
+];

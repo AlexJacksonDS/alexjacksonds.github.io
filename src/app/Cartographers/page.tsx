@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import Cartographers from "@/components/Cartographers/Cartographers/Cartographers";
+import MultiCartographers from "@/components/Cartographers/MultiCartographers/MultiCartographers";
 
 export const metadata: Metadata = {
   title: "Cartographers",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function CartographersPage() {
-  return <Cartographers />;
+  return <MultiCartographers />;
 }

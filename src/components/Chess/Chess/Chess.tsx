@@ -51,7 +51,6 @@ export default function Chess() {
           });
 
           connectionRef.current.on("fen", (fen: string) => {
-            console.log(fen);
             handleFen(fen);
           });
 
