@@ -67,8 +67,8 @@ export default function useSignalR(path: string, handlers: SignalRHandler[]) {
 
       if (optionsRef.current.httpTransportTypeOrOptions)
         // @ts-expect-error: We don't need to adhere to the overloads. https://github.com/microsoft/TypeScript/issues/14107
-        hubConnectionSetup.withUrl(`http://localhost:5101/${path}`, optionsRef.current.httpTransportTypeOrOptions);
-      else hubConnectionSetup.withUrl(`http://localhost:5101/${path}`);
+        hubConnectionSetup.withUrl(`https://ajj-sig-test.azurewebsites.net/${path}`, optionsRef.current.httpTransportTypeOrOptions);
+      else hubConnectionSetup.withUrl(`https://ajj-sig-test.azurewebsites.net/${path}`);
 
       if (optionsRef.current.automaticReconnect) {
         if (optionsRef.current.automaticReconnect === true) hubConnectionSetup.withAutomaticReconnect();

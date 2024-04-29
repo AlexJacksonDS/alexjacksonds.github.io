@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const register = async (username: string, password: string, confirmPassword: string) => {
     const body = { gameUser: { userName: username }, password, confirmPassword };
-    const response = await fetch("http://localhost:5101/register", {
+    const response = await fetch("https://ajj-sig-test.azurewebsites.net/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (username: string, password: string) => {
     const body = { userName: username, password };
-    const response = await fetch("http://localhost:5101/token", {
+    const response = await fetch("https://ajj-sig-test.azurewebsites.net/token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const refresh = async () => {
     if (!token || !refreshToken) return "Failed";
     const body = { accessToken: token, refreshToken };
-    const response = await fetch("http://localhost:5101/refresh", {
+    const response = await fetch("https://ajj-sig-test.azurewebsites.net/refresh", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
