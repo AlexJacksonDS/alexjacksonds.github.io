@@ -9,6 +9,7 @@ export interface State {
   terrainCard?: TerrainCard;
   isRuinTurn: boolean;
   isStarted: boolean;
+  isBasicBoard: boolean;
   player: CartographersPlayer;
   otherPlayers: CartographersPlayer[];
 }

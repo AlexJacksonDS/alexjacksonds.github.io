@@ -2,6 +2,7 @@
 
 import { createContext, useContext, ReactNode, useState, useEffect } from "react";
 import * as jose from "jose";
+import { useRouter } from "next/navigation";
 
 interface UserData {
   isReady: boolean;
@@ -14,6 +15,7 @@ interface UserData {
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<string>;
+  getToken: () => Promise<string>;
 }
 
 export const UserContext = createContext<UserData>({
@@ -26,7 +28,11 @@ export const UserContext = createContext<UserData>({
   register: () => new Promise((resolve) => resolve(false)),
   login: () => new Promise((resolve) => resolve()),
   logout: () => new Promise((resolve) => resolve()),
-  refresh: () => new Promise((resolve) => resolve("")),
+  refresh: () => {
+    console.log("Used default func");
+    return new Promise((resolve) => resolve("Invalid"));
+  },
+  getToken: () => new Promise((resolve) => resolve("Invalid")),
 });
 
 export const useAuth = () => useContext(UserContext);
@@ -38,6 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [accessTokenExpiry, setAccessTokenExpiry] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     setUserId(localStorage.getItem("userId"));
@@ -50,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const register = async (username: string, password: string, confirmPassword: string) => {
     const body = { gameUser: { userName: username }, password, confirmPassword };
-    const response = await fetch("https://ajj-sig-test.azurewebsites.net/register", {
+    const response = await fetch("http://localhost:5101/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -61,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (username: string, password: string) => {
     const body = { userName: username, password };
-    const response = await fetch("https://ajj-sig-test.azurewebsites.net/token", {
+    const response = await fetch("http://localhost:5101/token", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -93,15 +100,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const refresh = async () => {
+    if (!token || !refreshToken) return "Failed";
     const body = { accessToken: token, refreshToken };
-    const response = await fetch("https://ajj-sig-test.azurewebsites.net/refresh", {
+    const response = await fetch("http://localhost:5101/refresh", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
     if (response.ok) {
-      const res = await response.json();
+      const res: { token: string; refreshToken: string } = await response.json();
       localStorage.setItem("token", res.token);
       const tokenDetails = jose.decodeJwt(res.token);
       localStorage.setItem("accessTokenExpiry", `${tokenDetails.exp}`);
@@ -121,6 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("accessTokenExpiry");
+      return "Failed";
     }
   };
 
@@ -136,9 +145,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoggedIn(false);
   };
 
+  async function getToken() {
+    if (isReady && !token) {
+      router.push("/");
+    }
+
+    if (accessTokenExpiry < Math.floor(new Date().getTime() / 1000)) {
+      const newToken = await refresh();
+      if (newToken === "Failed") throw new Error("Invalid token");
+      return newToken;
+    }
+    return token ?? "";
+  }
+
   return (
     <UserContext.Provider
-      value={{ isReady, isLoggedIn, userId, token, refreshToken, accessTokenExpiry, register, login, logout, refresh }}
+      value={{
+        isReady,
+        isLoggedIn,
+        userId,
+        token,
+        refreshToken,
+        accessTokenExpiry,
+        register,
+        login,
+        logout,
+        refresh,
+        getToken,
+      }}
     >
       {children}
     </UserContext.Provider>

@@ -2,21 +2,39 @@
 
 import { CartographersContext } from "../context";
 import DisplayBoard from "../DisplayBoard/DisplayBoard";
-import { useContext, useEffect, useRef, useState, KeyboardEvent } from "react";
+import { useRef, useState, KeyboardEvent } from "react";
 import "./Cartographers.scss";
 import { Board, State, Terrain } from "@/types/cartographers";
 import Pallet from "../Pallet/Pallet";
 import { Button, Col, Container, Form, FormGroup, FormLabel, Row, Toast, ToastContainer } from "react-bootstrap";
-import { UserContext } from "@/app/UserContext";
-import { useRouter } from "next/navigation";
-import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import ScoreCards from "../ScoreCards/ScoreCards";
 import CurrentCard from "../CurrentCard/CurrentCard";
+import useSignalR from "@/hooks/useSignalR";
 
 export default function MultiCartographers() {
-  const userData = useContext(UserContext);
-  const router = useRouter();
-  const connectionRef = useRef<HubConnection | undefined>();
+  const signalRConnection = useSignalR("cartographers", [
+    [
+      "joinFailed",
+      () => {
+        setGameId("");
+        setGameIdDisabled(false);
+      },
+    ],
+    ["state", handleNewState],
+    ["invalidMove", resetAfterInvalidMove],
+    [
+      "gameEnded",
+      () => {
+        if (signalRConnection) {
+          signalRConnection.send("leaveGame", gameId);
+        }
+        setGameId("");
+        setGameIdDisabled(false);
+        setConnectedToGame(false);
+        gameState.current = undefined;
+      },
+    ],
+  ]);
 
   const gameState = useRef<State | undefined>(undefined);
 
@@ -24,59 +42,13 @@ export default function MultiCartographers() {
   const [gameIdDisabled, setGameIdDisabled] = useState(false);
   const [connectedToGame, setConnectedToGame] = useState(false);
 
-  const [isInit, setIsInit] = useState(false);
-
   const [errorString, setErrorString] = useState("");
   const [show, setShow] = useState(false);
+  const [isBasicBoard, setisBasicBoard] = useState(true);
 
   const [board, setBoard] = useState<Board | undefined>();
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [brushTerrain, setBrushTerrain] = useState(Terrain.Empty);
-
-  useEffect(() => {
-    if (userData.isReady && !userData.token) {
-      router.push("/");
-    }
-
-    if (!isInit) {
-      if (userData.isLoggedIn && userData.token && userData.accessTokenExpiry) {
-        if (!connectionRef.current) {
-          connectionRef.current = new HubConnectionBuilder()
-            .withUrl("https://ajj-sig-test.azurewebsites.net/cartographers", {
-              withCredentials: false,
-              accessTokenFactory: async () => getToken(),
-            })
-            .build();
-
-          connectionRef.current.on("joinFailed", () => {
-            setGameId("");
-            setGameIdDisabled(false);
-          });
-
-          connectionRef.current.on("state", (state: any) => {
-            handleNewState(state);
-          });
-
-          connectionRef.current.on("invalidMove", (message: string) => {
-            resetAfterInvalidMove(message);
-          });
-
-          connectionRef.current.on("gameEnded", () => {
-            if (connectionRef.current) {
-              connectionRef.current.send("leaveGame", gameId);
-            }
-            setGameId("");
-            setGameIdDisabled(false);
-            setConnectedToGame(false);
-            gameState.current = undefined;
-          });
-
-          connectionRef.current.start().catch((err) => console.log(err));
-          setIsInit(true);
-        }
-      }
-    }
-  }, [userData, isInit, router, gameId, resetAfterInvalidMove, handleNewState, setIsInit]);
 
   function handleNewState(state: State) {
     gameState.current = state;
@@ -91,14 +63,6 @@ export default function MultiCartographers() {
     setBoard(JSON.parse(JSON.stringify(gameState.current.player.board)));
     setMoveHistory([]);
     setShow(true);
-  }
-
-  async function getToken() {
-    if (userData.accessTokenExpiry < Math.floor(new Date().getTime() / 1000)) {
-      const newToken = await userData.refresh();
-      return newToken;
-    }
-    return userData.token ?? "";
   }
 
   function handlePalletClick(terrain: Terrain) {
@@ -132,8 +96,8 @@ export default function MultiCartographers() {
 
   const gameIdOnKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key != "Enter") return;
-    if (connectionRef.current) {
-      connectionRef.current.send("joinGame", gameId).then(() => {
+    if (signalRConnection) {
+      signalRConnection.send("joinGame", gameId).then(() => {
         setGameIdDisabled(true);
         setConnectedToGame(true);
       });
@@ -141,14 +105,21 @@ export default function MultiCartographers() {
   };
 
   function saveRound() {
-    if (connectionRef.current && gameState.current && board) {
-      connectionRef.current.send("takeTurn", gameId, gameState.current.player.boardPlayer.id, board);
+    if (signalRConnection && gameState.current && board) {
+      signalRConnection.send("takeTurn", gameId, gameState.current.player.boardPlayer.id, board);
+    }
+  }
+
+  function toggleMap() {
+    if (signalRConnection) {
+      signalRConnection.send("toggleMap", gameId, !isBasicBoard);
+      setisBasicBoard(!isBasicBoard);
     }
   }
 
   const startGame = () => {
-    if (connectionRef.current) {
-      connectionRef.current.send("startGame", gameId);
+    if (signalRConnection) {
+      signalRConnection.send("startGame", gameId);
     }
   };
 
@@ -190,9 +161,19 @@ export default function MultiCartographers() {
                 />
               </FormGroup>
             </Container>
-            <button className="btn btn-primary" onClick={startGame} hidden={gameState.current?.isStarted}>
+            <button
+              className="btn btn-primary"
+              onClick={startGame}
+              hidden={gameState.current?.isStarted || !connectedToGame}
+            >
               Start game
             </button>
+            <Form.Switch
+              onChange={toggleMap}
+              label="Use Wasteland Board"
+              defaultChecked={!isBasicBoard}
+              disabled={gameState.current?.isStarted || !connectedToGame}
+            />
           </Col>
         </Row>
         {gameState.current && !gameState.current.isStarted ? (
