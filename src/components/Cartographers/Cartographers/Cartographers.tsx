@@ -6,7 +6,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import "./Cartographers.scss";
 import { Board, Terrain, defaultBoard, specialBoard } from "@/types/cartographers";
 import Pallet from "../Pallet/Pallet";
-import { Button, Col, Container, Form, FormGroup, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, FormGroup, Modal, Row } from "react-bootstrap";
 
 interface CartographersResult {
   scoreOne: number;
@@ -19,6 +19,11 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [brushTerrain, setBrushTerrain] = useState(Terrain.Empty);
   const [coins, setCoins] = useState(0);
+
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const [season, setSeason] = useState(1);
 
@@ -117,6 +122,7 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
             return undefined;
         }
         setSeason(season + 1);
+        setShow(false);
       }
     }
   }
@@ -163,7 +169,7 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
                 </Button>
               </Col>
               <Col xs={3}>
-                <Button className="button-fill-col" onClick={() => setCoins(coins - 1)}>
+                <Button className="button-fill-col" onClick={() => setCoins(coins - 1 < 0 ? 0 : coins - 1)}>
                   -
                 </Button>
               </Col>
@@ -211,7 +217,7 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
         </Row>
         <Row>
           <Col>
-            <Button className="button-fill-col" onClick={scoreRound}>
+            <Button className="button-fill-col" onClick={handleShow}>
               Score Round
             </Button>
           </Col>
@@ -254,7 +260,22 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
             monsterScore={fourMonsterScore}
           />
         </Row>
-        <Row></Row>
+        <Row>
+          <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Score Round</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Score this round and move to the next season</Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Close
+              </Button>
+              <Button variant="primary" onClick={scoreRound}>
+                Score Round
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </Row>
       </Container>
     </CartographersContext.Provider>
   );
