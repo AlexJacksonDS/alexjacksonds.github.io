@@ -2,17 +2,30 @@
 
 import { CartographersContext } from "../context";
 import DisplayBoard from "../DisplayBoard/DisplayBoard";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import "./Cartographers.scss";
 import { Board, Terrain, defaultBoard, specialBoard } from "@/types/cartographers";
 import Pallet from "../Pallet/Pallet";
-import { Col, Container, Form, FormGroup, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, FormGroup, Row } from "react-bootstrap";
+
+interface CartographersResult {
+  scoreOne: number;
+  scoreTwo: number;
+  monsterScore: number;
+}
 
 export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boolean }) {
   const [board, setBoard] = useState(isSpecialBoard ? specialBoard : defaultBoard);
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [brushTerrain, setBrushTerrain] = useState(Terrain.Empty);
   const [coins, setCoins] = useState(0);
+
+  const [season, setSeason] = useState(1);
+
+  const [cardA, setCardA] = useState("");
+  const [cardB, setCardB] = useState("");
+  const [cardC, setCardC] = useState("");
+  const [cardD, setCardD] = useState("");
 
   const [oneAScore, setOneAScore] = useState(0);
   const [oneBScore, setOneBScore] = useState(0);
@@ -53,11 +66,73 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
     const newMoveHistory = [...moveHistory];
     const move = newMoveHistory.pop();
     if (move) {
-      const coords = move.split(",").map(x => parseInt(x));
+      const coords = move.split(",").map((x) => parseInt(x));
       const newBoard: Board = [...board];
       newBoard[coords[0]][coords[1]].terrain = Terrain.Empty;
       setBoard(newBoard);
       setMoveHistory(newMoveHistory);
+    }
+  }
+
+  async function scoreRound() {
+    const cards = getRoundCards(season);
+    console.log(cards);
+    if (cards && cards[0] && cards[1]) {
+      const data = { cardOne: cards[0], cardTwo: cards[1], tiles: board };
+      const response = await fetch("https://ajj-sig-test.azurewebsites.net/cartographersscore", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        const res: CartographersResult = await response.json();
+        console.log(res);
+        switch (season) {
+          case 1:
+            setOneAScore(res.scoreOne);
+            setOneBScore(res.scoreTwo);
+            setOneMonsterScore(res.monsterScore);
+            setOneCoinScore(coins);
+            break;
+          case 2:
+            setTwoBScore(res.scoreOne);
+            setTwoCScore(res.scoreTwo);
+            setTwoMonsterScore(res.monsterScore);
+            setTwoCoinScore(coins);
+            break;
+          case 3:
+            setThreeCScore(res.scoreOne);
+            setThreeDScore(res.scoreTwo);
+            setThreeMonsterScore(res.monsterScore);
+            setThreeCoinScore(coins);
+            break;
+          case 4:
+            setFourDScore(res.scoreOne);
+            setFourAScore(res.scoreTwo);
+            setFourMonsterScore(res.monsterScore);
+            setFourCoinScore(coins);
+            break;
+          default:
+            return undefined;
+        }
+        setSeason(season + 1);
+      }
+    }
+  }
+
+  function getRoundCards(roundNumber: number) {
+    switch (roundNumber) {
+      case 1:
+        return [cardA, cardB];
+      case 2:
+        return [cardB, cardC];
+      case 3:
+        return [cardC, cardD];
+      case 4:
+        return [cardD, cardA];
+      default:
+        return undefined;
     }
   }
 
@@ -76,68 +151,27 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
             </button>
           </Col>
         </Row>
-        <Row className="gx-5">
-          <Col xs={12} lg={1} className="border">
-            <FormGroup className="mb-2">
-              <Form.Label>Coin Tracker</Form.Label>
-              <Form.Control type="number" onChange={(e) => setCoins(parseInt(e.target.value))} value={coins} />
-            </FormGroup>
+        <Row>
+          <Col xs={12} lg={6} className="border">
+            <Row>
+              <Col>
+                <h3 className="pt-1">Coins: {coins}</h3>
+              </Col>
+              <Col xs={3}>
+                <Button className="button-fill-col" onClick={() => setCoins(coins + 1)}>
+                  +
+                </Button>
+              </Col>
+              <Col xs={3}>
+                <Button className="button-fill-col" onClick={() => setCoins(coins - 1)}>
+                  -
+                </Button>
+              </Col>
+            </Row>
           </Col>
-          <RoundScores
-            season="Spring"
-            setFirstCardScore={setOneAScore}
-            firstCardScore={oneAScore}
-            firstCardLetter="A"
-            setSecondCardScore={setOneBScore}
-            secondCardScore={oneBScore}
-            secondCardLetter="B"
-            setCoinScore={setOneCoinScore}
-            coinScore={oneCoinScore}
-            setMonsterScore={setOneMonsterScore}
-            monsterScore={oneMonsterScore}
-          />
-          <RoundScores
-            season="Summer"
-            setFirstCardScore={setTwoBScore}
-            firstCardScore={twoBScore}
-            firstCardLetter="B"
-            setSecondCardScore={setTwoCScore}
-            secondCardScore={twoCScore}
-            secondCardLetter="C"
-            setCoinScore={setTwoCoinScore}
-            coinScore={twoCoinScore}
-            setMonsterScore={setTwoMonsterScore}
-            monsterScore={twoMonsterScore}
-          />
-          <RoundScores
-            season="Autumn"
-            setFirstCardScore={setThreeCScore}
-            firstCardScore={threeCScore}
-            firstCardLetter="C"
-            setSecondCardScore={setThreeDScore}
-            secondCardScore={threeDScore}
-            secondCardLetter="D"
-            setCoinScore={setThreeCoinScore}
-            coinScore={threeCoinScore}
-            setMonsterScore={setThreeMonsterScore}
-            monsterScore={threeMonsterScore}
-          />
-          <RoundScores
-            season="Winter"
-            setFirstCardScore={setFourDScore}
-            firstCardScore={fourDScore}
-            firstCardLetter="D"
-            setSecondCardScore={setFourAScore}
-            secondCardScore={fourAScore}
-            secondCardLetter="A"
-            setCoinScore={setFourCoinScore}
-            coinScore={fourCoinScore}
-            setMonsterScore={setFourMonsterScore}
-            monsterScore={fourMonsterScore}
-          />
-          <Col xs={12} lg={1} className="border">
-            <p>Total:</p>
-            <p className="display-6">
+          <Col xs={12} lg={6} className="border">
+            <h3>
+              Total:{" "}
               {oneAScore +
                 oneBScore +
                 oneCoinScore +
@@ -154,9 +188,73 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
                 fourAScore +
                 fourCoinScore +
                 fourMonsterScore}
-            </p>
+            </h3>
           </Col>
         </Row>
+        <Row>
+          <Col className="border" xs={12} md={6} lg={3}>
+            <p>Card A</p>
+            <ScoringCardDropdown setCard={setCardA} value={cardA} />
+          </Col>
+          <Col className="border" xs={12} md={6} lg={3}>
+            <p>Card B</p>
+            <ScoringCardDropdown setCard={setCardB} value={cardB} />
+          </Col>
+          <Col className="border" xs={12} md={6} lg={3}>
+            <p>Card C</p>
+            <ScoringCardDropdown setCard={setCardC} value={cardC} />
+          </Col>
+          <Col className="border" xs={12} md={6} lg={3}>
+            <p>Card D</p>
+            <ScoringCardDropdown setCard={setCardD} value={cardD} />
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Button className="button-fill-col" onClick={scoreRound}>
+              Score Round
+            </Button>
+          </Col>
+        </Row>
+        <Row>
+          <RoundScores
+            season="Spring"
+            firstCardScore={oneAScore}
+            firstCardLetter="A"
+            secondCardScore={oneBScore}
+            secondCardLetter="B"
+            coinScore={oneCoinScore}
+            monsterScore={oneMonsterScore}
+          />
+          <RoundScores
+            season="Summer"
+            firstCardScore={twoBScore}
+            firstCardLetter="B"
+            secondCardScore={twoCScore}
+            secondCardLetter="C"
+            coinScore={twoCoinScore}
+            monsterScore={twoMonsterScore}
+          />
+          <RoundScores
+            season="Autumn"
+            firstCardScore={threeCScore}
+            firstCardLetter="C"
+            secondCardScore={threeDScore}
+            secondCardLetter="D"
+            coinScore={threeCoinScore}
+            monsterScore={threeMonsterScore}
+          />
+          <RoundScores
+            season="Winter"
+            firstCardScore={fourDScore}
+            firstCardLetter="D"
+            secondCardScore={fourAScore}
+            secondCardLetter="A"
+            coinScore={fourCoinScore}
+            monsterScore={fourMonsterScore}
+          />
+        </Row>
+        <Row></Row>
       </Container>
     </CartographersContext.Provider>
   );
@@ -164,61 +262,73 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
 
 function RoundScores({
   season,
-  setFirstCardScore,
   firstCardScore,
   firstCardLetter,
-  setSecondCardScore,
   secondCardScore,
   secondCardLetter,
-  setCoinScore,
   coinScore,
-  setMonsterScore,
   monsterScore,
 }: {
   season: string;
-  setFirstCardScore: (i: number) => void;
   firstCardScore: number;
   firstCardLetter: string;
-  setSecondCardScore: (i: number) => void;
   secondCardScore: number;
   secondCardLetter: string;
-  setCoinScore: (i: number) => void;
   coinScore: number;
-  setMonsterScore: (i: number) => void;
   monsterScore: number;
 }) {
   return (
-    <Col xs={6} lg={2} className="border">
-      <Row>
-        <Col>{season}</Col>
-      </Row>
-      <Row>
-        <ScoreControl setScore={setFirstCardScore} score={firstCardScore} label={firstCardLetter} />
-        <ScoreControl setScore={setSecondCardScore} score={secondCardScore} label={secondCardLetter} />
-        <Col></Col>
-      </Row>
-      <Row>
-        <ScoreControl setScore={setCoinScore} score={coinScore} label="Coins" />
-        <ScoreControl setScore={setMonsterScore} score={monsterScore} label="Monsters" />
-        <Col>Total: {firstCardScore + secondCardScore + coinScore + monsterScore}</Col>
-      </Row>
+    <Col xs={6} lg={3} className="border">
+      <Container>
+        <Row>
+          <Col>{season}</Col>
+        </Row>
+        <Row>
+          <Col>
+            {firstCardLetter}: {firstCardScore}
+          </Col>
+          <Col>
+            {secondCardLetter}: {secondCardScore}
+          </Col>
+          <Col></Col>
+        </Row>
+        <Row>
+          <Col>Coins: {coinScore}</Col>
+          <Col>Monster: {monsterScore}</Col>
+          <Col>Total: {firstCardScore + secondCardScore + coinScore + monsterScore}</Col>
+        </Row>
+      </Container>
     </Col>
   );
 }
 
-function ScoreControl({ setScore, score, label }: { setScore: (i: number) => void; score: number; label: string }) {
-  const [value, setValue] = useState(score.toString());
-  function handleInput(input: string) {
-    setValue(input);
-    if (!Number.isNaN(parseInt(input))) setScore(parseInt(input));
-  }
-
+function ScoringCardDropdown({ setCard, value }: { setCard: Dispatch<SetStateAction<string>>; value: string }) {
   return (
-    <Col xs={6} lg={4}>
-      <FormGroup className="mb-2">
-        <Form.Label>{label}</Form.Label>
-        <input className="form-control" type="text" onChange={(e) => handleInput(e.target.value)} value={value} />
-      </FormGroup>
-    </Col>
+    <Form.Select
+      aria-label="Default select example"
+      onChange={(e) => setCard(e.target.value)}
+      defaultValue={value}
+      className="mb-1"
+    >
+      <option disabled={true} value="">
+        Select card
+      </option>
+      <option value="Borderlands">Borderlands</option>
+      <option value="BrokenRoad">Broken Road</option>
+      <option value="Cauldrons">Cauldrons</option>
+      <option value="LostBarony">Lost Barony</option>
+      <option value="CanalLake">Canal Lake (Cake)</option>
+      <option value="GoldenGranary">Golden Granary</option>
+      <option value="MagesValley">Mages Valley</option>
+      <option value="ShoresideExpanse">Shoreside Expanse</option>
+      <option value="GreatCity">Great City</option>
+      <option value="GreengoldPlains">Greengold Plains</option>
+      <option value="Shieldgate">Shieldgate</option>
+      <option value="Wildholds">Wildholds</option>
+      <option value="Greenbough">Greenbough</option>
+      <option value="SentinelWood">Sentinel Wood</option>
+      <option value="StonesideForest">Stoneside Forest</option>
+      <option value="Treetower">Treetower</option>
+    </Form.Select>
   );
 }
