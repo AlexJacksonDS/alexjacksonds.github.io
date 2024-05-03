@@ -69,19 +69,22 @@ export default function IcePuzzle() {
   }
 
   return (
-    <Container>
-      {map.map((r, i) => (
-        <Row key={i}>
-          {r.map((c, j) => (
-            <Col key={j} className="ice-col">
-              <div className={"tile " + Object.keys(Tile)[Object.values(Tile).indexOf(c)].toLowerCase()}>
-                {i === currentI.current && j === currentJ.current ? <div className="player"></div> : null}
-              </div>
-            </Col>
-          ))}
-        </Row>
-      ))}
-    </Container>
+    <>
+      <Container>Arrow keys to move</Container>
+      <Container>
+        {map.map((r, i) => (
+          <Row key={i}>
+            {r.map((c, j) => (
+              <Col key={j} className="ice-col">
+                <div className={"tile " + Object.keys(Tile)[Object.values(Tile).indexOf(c)].toLowerCase()}>
+                  {i === currentI.current && j === currentJ.current ? <div className="player"></div> : null}
+                </div>
+              </Col>
+            ))}
+          </Row>
+        ))}
+      </Container>
+    </>
   );
 }
 
