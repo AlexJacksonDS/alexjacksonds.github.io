@@ -159,6 +159,76 @@ export default function IcePuzzle() {
 
   return (
     <>
+      {renderMap ? (
+        <>
+          <Container>Arrow keys or buttons to move</Container>
+          <Container>
+            <Row>
+              <Col xs={4} lg={1}></Col>
+              <Col xs={4} lg={1}>
+                <Button onClick={() => handleKey("ArrowUp")}>Up</Button>
+              </Col>
+              <Col xs={4} lg={1}></Col>
+            </Row>
+            <Row>
+              <Col xs={4} lg={1}>
+                <Button onClick={() => handleKey("ArrowLeft")}>Left</Button>
+              </Col>
+              <Col xs={4} lg={1}>
+                <Button onClick={() => handleKey("ArrowDown")}>Down</Button>
+              </Col>
+              <Col xs={4} lg={1}>
+                <Button onClick={() => handleKey("ArrowRight")}>Right</Button>
+              </Col>
+            </Row>
+          </Container>
+
+          <Container id="ice-puzzle">
+            {map.current.map((r, i) => (
+              <Row key={i}>
+                {r.map((c, j) => (
+                  <Col
+                    key={j}
+                    style={{
+                      width: scale.current + "px",
+                      maxWidth: scale.current + "px",
+                    }}
+                  >
+                    <div
+                      className={"tile " + Object.keys(Tile)[Object.values(Tile).indexOf(c)].toLowerCase()}
+                      style={{ width: scale.current + "px" }}
+                    ></div>
+                  </Col>
+                ))}
+              </Row>
+            ))}
+          </Container>
+          <Container>
+            <Row>
+              <Col lg={2}>
+                <p>{showSolution ? solution : "***********"}</p>
+              </Col>
+              <Col lg={2}>
+                <Button onClick={() => setShowSolution(!showSolution)}>
+                  {showSolution ? "Hide" : "Show"} Solution
+                </Button>
+              </Col>
+            </Row>
+          </Container>
+          <Container>
+            <p>{generationStats}</p>
+          </Container>
+        </>
+      ) : null}
+      {renderMap && rect && map.current.length > 0 ? (
+        <canvas
+          ref={canvasRef}
+          width={map.current[0].length * scale.current}
+          height={map.current.length * scale.current}
+          id="player-canvas"
+          style={{ zIndex: 500, position: "fixed", top: rect.top, left: rect.left }}
+        />
+      ) : null}
       <Container>
         <Form>
           <Form.Group as={Row}>
@@ -210,75 +280,6 @@ export default function IcePuzzle() {
           ) : null}
         </Form>
       </Container>
-      {renderMap ? (
-        <>
-          <Container>
-            <p>{generationStats}</p>
-          </Container>
-          <Container>Arrow keys or buttons to move</Container>
-          <Container>
-            <Row>
-              <Col xs={4} lg={1}></Col>
-              <Col xs={4} lg={1}>
-                <Button onClick={() => handleKey("ArrowUp")}>Up</Button>
-              </Col>
-              <Col xs={4} lg={1}></Col>
-            </Row>
-            <Row>
-              <Col xs={4} lg={1}>
-                <Button onClick={() => handleKey("ArrowLeft")}>Left</Button>
-              </Col>
-              <Col xs={4} lg={1}>
-                <Button onClick={() => handleKey("ArrowDown")}>Down</Button>
-              </Col>
-              <Col xs={4} lg={1}>
-                <Button onClick={() => handleKey("ArrowRight")}>Right</Button>
-              </Col>
-            </Row>
-          </Container>
-          <Container>
-            <Row>
-              <Col lg={2}>
-                <p>{showSolution ? solution : "***********"}</p>
-              </Col>
-              <Col lg={2}>
-                <Button onClick={() => setShowSolution(!showSolution)}>
-                  {showSolution ? "Hide" : "Show"} Solution
-                </Button>
-              </Col>
-            </Row>
-          </Container>
-          <Container id="ice-puzzle">
-            {map.current.map((r, i) => (
-              <Row key={i}>
-                {r.map((c, j) => (
-                  <Col
-                    key={j}
-                    style={{
-                      width: scale.current + "px",
-                      maxWidth: scale.current + "px",
-                    }}
-                  >
-                    <div
-                      className={"tile " + Object.keys(Tile)[Object.values(Tile).indexOf(c)].toLowerCase()}
-                      style={{ width: scale.current + "px" }}
-                    ></div>
-                  </Col>
-                ))}
-              </Row>
-            ))}
-          </Container>
-        </>
-      ) : null}
-      {renderMap && rect && map.current.length > 0 ? (
-        <canvas
-          ref={canvasRef}
-          width={map.current[0].length * scale.current}
-          height={map.current.length * scale.current}
-          id="player-canvas"
-          style={{ zIndex: 500, position: "fixed", top: rect.top, left: rect.left }}
-        />
-      ) : null}
     </>
   );
 }
