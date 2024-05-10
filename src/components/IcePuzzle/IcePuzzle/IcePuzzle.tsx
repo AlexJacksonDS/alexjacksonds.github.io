@@ -33,6 +33,7 @@ export default function IcePuzzle() {
   const [showSolution, setShowSolution] = useState(false);
   const [solution, setSolution] = useState("");
   const [generationStats, setGenerationStats] = useState("");
+  const inputLocked = useRef(false);
 
   useEffect(() => {
     if (!rect && renderMap) {
@@ -84,19 +85,22 @@ export default function IcePuzzle() {
   }
 
   function handleKey(key: string) {
-    switch (key) {
-      case "ArrowLeft":
-        movePlayer(0, -1);
-        break;
-      case "ArrowRight":
-        movePlayer(0, 1);
-        break;
-      case "ArrowUp":
-        movePlayer(-1, 0);
-        break;
-      case "ArrowDown":
-        movePlayer(1, 0);
-        break;
+    if (!inputLocked.current) {
+      inputLocked.current = true;
+      switch (key) {
+        case "ArrowLeft":
+          movePlayer(0, -1);
+          break;
+        case "ArrowRight":
+          movePlayer(0, 1);
+          break;
+        case "ArrowUp":
+          movePlayer(-1, 0);
+          break;
+        case "ArrowDown":
+          movePlayer(1, 0);
+          break;
+      }
     }
   }
 
@@ -144,6 +148,7 @@ export default function IcePuzzle() {
     }
     currentI.current = i;
     currentJ.current = j;
+    inputLocked.current = false;
   }
 
   async function generateBoard() {
