@@ -17,7 +17,7 @@ export default function IcePuzzle() {
   const [height, setHeight] = useState(10);
   const [bypassTimeout, setBypassTimeout] = useState(false);
 
-  const [rawSize, setRawSize] = useState(Math.floor(500 / Math.max(width, height)));
+  const [rawSize, setRawSize] = useState(Math.floor(500 / (Math.max(width, height) + 2)));
   scale.current = rawSize > 50 ? 50 : rawSize;
 
   const [renderMap, setRenderMap] = useState(false);
@@ -44,7 +44,8 @@ export default function IcePuzzle() {
     if (!isInit) {
       document.addEventListener("keyup", handleKeyPress);
       if (isMobile) {
-        setRawSize(window.innerWidth);
+        console.log(isMobile);
+        setRawSize(Math.floor(window.innerWidth / (Math.max(width, height) + 2)));
       }
 
       setIsInit(true);
@@ -54,6 +55,8 @@ export default function IcePuzzle() {
       };
     }
   }, [rect, setRect, renderMap]);
+
+  console.log(rawSize);
 
   function drawCurrentPlayerLocation(x: number, y: number) {
     if (canvasRef.current) {
