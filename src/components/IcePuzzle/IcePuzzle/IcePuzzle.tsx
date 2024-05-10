@@ -160,6 +160,9 @@ export default function IcePuzzle() {
 
   return (
     <>
+      <Container>
+        <Button onClick={generateBoard}>Generate Map</Button>
+      </Container>
       {renderMap ? (
         <>
           <Container>Arrow keys or buttons to move</Container>
@@ -184,7 +187,7 @@ export default function IcePuzzle() {
             </Row>
           </Container>
           <Container className="ice-puzzle-container">
-            <Container id="ice-puzzle" style={{width: scale.current * (width + 2) + "px"}}>
+            <Container id="ice-puzzle" style={{ width: scale.current * (width + 2) + "px" }}>
               {map.current.map((r, i) => (
                 <Row key={i} className="m-0 ice-puzzle-row ">
                   {r.map((c, j) => (
@@ -274,7 +277,7 @@ export default function IcePuzzle() {
               </Form.Group>
             </Col>
           </Form.Group>
-          <Button onClick={generateBoard}>Generate Map</Button>
+
           {width >= 15 && height >= 15 ? (
             <p>
               At this size performance of generation will be impacted and map may be very simple/impossible. To bypass
