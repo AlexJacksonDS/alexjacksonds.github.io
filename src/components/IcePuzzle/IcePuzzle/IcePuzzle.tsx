@@ -4,12 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 
 import "./IcePuzzle.scss";
-import { IcePuzzleGenerator, Tile } from "@/services/icePuzzle.service";
+import { IcePuzzleGenerator, IcePuzzleGeneratorV2, Tile } from "@/services/icePuzzle.service";
 import RangeSlider from "react-bootstrap-range-slider";
 import { isMobile } from "react-device-detect";
 
 export default function IcePuzzle() {
-  const [generator, _] = useState(new IcePuzzleGenerator());
+  const [generator, _] = useState(new IcePuzzleGeneratorV2());
   const map = useRef<Tile[][]>([]);
   const scale = useRef(50);
 
