@@ -146,6 +146,7 @@ export default function IcePuzzle() {
   }
 
   async function generateBoard() {
+    window.scrollTo(0, 0);
     const game = generator.Generate(width, height, bypassTimeout);
     map.current = game.board;
     currentJ.current = game.start.x;
