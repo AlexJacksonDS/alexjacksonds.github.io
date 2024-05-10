@@ -45,7 +45,7 @@ export default function IcePuzzle() {
     if (!isInit) {
       document.addEventListener("keyup", handleKeyPress);
       if (isMobile) {
-        setRawSize(Math.floor(window.innerWidth / (Math.max(width, height) + 2)));
+        setRawSize(Math.floor(window.innerWidth / ((Math.max(width, height) + 2) * 1.5)));
       }
 
       setIsInit(true);
@@ -186,13 +186,14 @@ export default function IcePuzzle() {
 
           <Container id="ice-puzzle">
             {map.current.map((r, i) => (
-              <Row key={i}>
+              <Row key={i} className="m-0 ice-puzzle-row ">
                 {r.map((c, j) => (
                   <Col
                     key={j}
                     style={{
                       width: scale.current + "px",
                       maxWidth: scale.current + "px",
+                      padding: 0,
                     }}
                   >
                     <div

@@ -1,5 +1,12 @@
 #ice-puzzle {
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ice-puzzle-row {
+  justify-content: center;
 }
 
 .tile {
