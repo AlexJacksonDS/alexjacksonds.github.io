@@ -183,27 +183,28 @@ export default function IcePuzzle() {
               </Col>
             </Row>
           </Container>
-
-          <Container id="ice-puzzle">
-            {map.current.map((r, i) => (
-              <Row key={i} className="m-0 ice-puzzle-row ">
-                {r.map((c, j) => (
-                  <Col
-                    key={j}
-                    style={{
-                      width: scale.current + "px",
-                      maxWidth: scale.current + "px",
-                      padding: 0,
-                    }}
-                  >
-                    <div
-                      className={"tile " + Object.keys(Tile)[Object.values(Tile).indexOf(c)].toLowerCase()}
-                      style={{ width: scale.current + "px" }}
-                    ></div>
-                  </Col>
-                ))}
-              </Row>
-            ))}
+          <Container className="ice-puzzle-container">
+            <Container id="ice-puzzle" style={{width: scale.current * (width + 2) + "px"}}>
+              {map.current.map((r, i) => (
+                <Row key={i} className="m-0 ice-puzzle-row ">
+                  {r.map((c, j) => (
+                    <Col
+                      key={j}
+                      style={{
+                        width: scale.current + "px",
+                        maxWidth: scale.current + "px",
+                        padding: 0,
+                      }}
+                    >
+                      <div
+                        className={"tile " + Object.keys(Tile)[Object.values(Tile).indexOf(c)].toLowerCase()}
+                        style={{ width: scale.current + "px" }}
+                      ></div>
+                    </Col>
+                  ))}
+                </Row>
+              ))}
+            </Container>
           </Container>
           <Container>
             <Row>
