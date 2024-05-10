@@ -44,7 +44,6 @@ export default function IcePuzzle() {
     if (!isInit) {
       document.addEventListener("keyup", handleKeyPress);
       if (isMobile) {
-        console.log(isMobile);
         setRawSize(Math.floor(window.innerWidth / (Math.max(width, height) + 2)));
       }
 
@@ -55,8 +54,6 @@ export default function IcePuzzle() {
       };
     }
   }, [rect, setRect, renderMap]);
-
-  console.log(rawSize);
 
   function drawCurrentPlayerLocation(x: number, y: number) {
     if (canvasRef.current) {
@@ -223,14 +220,20 @@ export default function IcePuzzle() {
             <Row>
               <Col xs={4} lg={1}></Col>
               <Col xs={4} lg={1}>
-                <Button onClick={() => handleKey("ArrowUp" )}>Up</Button>
+                <Button onClick={() => handleKey("ArrowUp")}>Up</Button>
               </Col>
               <Col xs={4} lg={1}></Col>
             </Row>
             <Row>
-              <Col xs={4} lg={1}><Button onClick={() => handleKey("ArrowLeft" )}>Left</Button></Col>
-              <Col xs={4} lg={1}><Button onClick={() => handleKey("ArrowDown" )}>Down</Button></Col>
-              <Col xs={4} lg={1}><Button onClick={() => handleKey("ArrowRight" )}>Right</Button></Col>
+              <Col xs={4} lg={1}>
+                <Button onClick={() => handleKey("ArrowLeft")}>Left</Button>
+              </Col>
+              <Col xs={4} lg={1}>
+                <Button onClick={() => handleKey("ArrowDown")}>Down</Button>
+              </Col>
+              <Col xs={4} lg={1}>
+                <Button onClick={() => handleKey("ArrowRight")}>Right</Button>
+              </Col>
             </Row>
           </Container>
           <Container>
