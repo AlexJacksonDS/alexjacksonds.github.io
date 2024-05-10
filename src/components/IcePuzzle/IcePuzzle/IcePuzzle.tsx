@@ -45,7 +45,7 @@ export default function IcePuzzle() {
     if (!isInit) {
       document.addEventListener("keyup", handleKeyPress);
       if (isMobile) {
-        setRawSize(Math.floor(window.innerWidth / ((Math.max(width, height) + 2) * 1.5)));
+        setRawSize(Math.floor(window.innerWidth / ((Math.max(width, height) + 2) * 2)));
       }
 
       setIsInit(true);
