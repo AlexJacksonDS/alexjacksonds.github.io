@@ -1,10 +1,8 @@
-.ice-col {
-  width: 50px;
-  max-width: 50px;
+#ice-puzzle {
+  padding: 0;
 }
 
 .tile {
-  width: 50px;
   aspect-ratio: 1 / 1;
   display: flex;
   justify-content: center;
@@ -27,11 +25,7 @@
   background-color: white;
 }
 
-.player {
-  height: 25px;
-  width: 25px;
-  background-color: #bbb;
-  border-radius: 50%;
-  display: inline-block;
-  background-color: red;
+.display-linebreak {
+  white-space: pre-line;
+  font-family: monospace;
 }
