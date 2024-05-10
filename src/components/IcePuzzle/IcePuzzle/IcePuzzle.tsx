@@ -36,6 +36,7 @@ export default function IcePuzzle() {
 
   useEffect(() => {
     if (!rect && renderMap) {
+      window.scrollTo(0, 0);
       setRect(document.getElementById("ice-puzzle")?.getBoundingClientRect());
     }
     if (rect && renderMap) {
@@ -146,7 +147,6 @@ export default function IcePuzzle() {
   }
 
   async function generateBoard() {
-    window.scrollTo(0, 0);
     const game = generator.Generate(width, height, bypassTimeout);
     map.current = game.board;
     currentJ.current = game.start.x;
