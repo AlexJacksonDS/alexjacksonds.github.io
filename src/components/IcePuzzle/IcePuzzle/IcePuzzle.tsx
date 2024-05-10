@@ -6,6 +6,7 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import "./IcePuzzle.scss";
 import { IcePuzzleGenerator, Tile } from "@/services/icePuzzle.service";
 import RangeSlider from "react-bootstrap-range-slider";
+import { isMobile } from "react-device-detect";
 
 export default function IcePuzzle() {
   const [generator, _] = useState(new IcePuzzleGenerator());
@@ -16,7 +17,7 @@ export default function IcePuzzle() {
   const [height, setHeight] = useState(10);
   const [bypassTimeout, setBypassTimeout] = useState(false);
 
-  const rawSize = Math.floor(500 / Math.max(width, height));
+  const [rawSize, setRawSize] = useState(Math.floor(500 / Math.max(width, height)));
   scale.current = rawSize > 50 ? 50 : rawSize;
 
   const [renderMap, setRenderMap] = useState(false);
@@ -42,6 +43,9 @@ export default function IcePuzzle() {
     }
     if (!isInit) {
       document.addEventListener("keyup", handleKeyPress);
+      if (isMobile) {
+        setRawSize(window.innerWidth);
+      }
 
       setIsInit(true);
 
@@ -153,10 +157,6 @@ export default function IcePuzzle() {
     setRenderMap(true);
   }
 
-  function Up() {
-    movePlayer(-1, 0);
-  }
-
   return (
     <>
       <Container>
@@ -218,16 +218,16 @@ export default function IcePuzzle() {
           <Container>Arrow keys or buttons to move</Container>
           <Container>
             <Row>
-              <Col xs={1}></Col>
-              <Col xs={1}>
+              <Col xs={4} lg={1}></Col>
+              <Col xs={4} lg={1}>
                 <Button onClick={() => handleKey("ArrowUp" )}>Up</Button>
               </Col>
-              <Col xs={1}></Col>
+              <Col xs={4} lg={1}></Col>
             </Row>
             <Row>
-              <Col xs={1}><Button onClick={() => handleKey("ArrowLeft" )}>Left</Button></Col>
-              <Col xs={1}><Button onClick={() => handleKey("ArrowDown" )}>Down</Button></Col>
-              <Col xs={1}><Button onClick={() => handleKey("ArrowRight" )}>Right</Button></Col>
+              <Col xs={4} lg={1}><Button onClick={() => handleKey("ArrowLeft" )}>Left</Button></Col>
+              <Col xs={4} lg={1}><Button onClick={() => handleKey("ArrowDown" )}>Down</Button></Col>
+              <Col xs={4} lg={1}><Button onClick={() => handleKey("ArrowRight" )}>Right</Button></Col>
             </Row>
           </Container>
           <Container>
