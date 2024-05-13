@@ -90,6 +90,11 @@ function UnauthenticatedCards() {
           <ImageCard title="Ice Puzzle" description="Sliding Ice Puzzles" image="icepuzzle.jpg"/>
         </Link>
       </Col>
+      <Col>
+        <Link href="/Minesweeper" style={{ textDecoration: "none" }}>
+          <ImageCard title="Minesweeper" description="Classic mine finding game" image="minesweeper.jpg"/>
+        </Link>
+      </Col>
     </>
   );
 }
