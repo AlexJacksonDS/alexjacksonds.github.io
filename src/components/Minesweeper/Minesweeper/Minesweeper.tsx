@@ -1,8 +1,23 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState, MouseEvent, useRef } from "react";
+import { Dispatch, SetStateAction, useState, MouseEvent, useRef, useEffect } from "react";
 import { Container, Form, FormGroup, Row, Col, Button } from "react-bootstrap";
 import "./Minesweeper.scss";
+import { isMobile } from "react-device-detect";
+
+class Tile {
+  isRevealed: boolean;
+  hasFlag: boolean;
+  hasQ: boolean;
+  value: number;
+
+  constructor() {
+    this.isRevealed = false;
+    this.hasFlag = false;
+    this.hasQ = false;
+    this.value = 0;
+  }
+}
 
 export default function Minesweeper() {
   const [width, setWidth] = useState(10);
@@ -12,29 +27,19 @@ export default function Minesweeper() {
   const [mineCount, setMineCount] = useState(10);
   const [mineCountString, setMineCountString] = useState("10");
 
-  const [renderMap, setRenderMap] = useState(false);
-
   const [gameGenerated, setGameGenerated] = useState(false);
   const [isGameFinished, setIsGameFinished] = useState(false);
   const [isLost, setIsLost] = useState(false);
 
   const [clicks, setClicks] = useState(0);
 
-  class Tile {
-    isRevealed: boolean;
-    hasFlag: boolean;
-    hasQ: boolean;
-    value: number;
-
-    constructor() {
-      this.isRevealed = false;
-      this.hasFlag = false;
-      this.hasQ = false;
-      this.value = 0;
-    }
-  }
-
   const board = useRef<Tile[][]>([]);
+
+  const [instructions, setInstructions] = useState("");
+
+  useEffect(() => {
+    setInstructions(isMobile ? "Tap to reveal, long press to flag" : "Left click to reveal, right click to flag");
+  });
 
   function handleInput(
     input: string,
@@ -95,6 +100,8 @@ export default function Minesweeper() {
     }
 
     setGameGenerated(true);
+    setIsLost(false);
+    setIsGameFinished(false);
     setClicks(0);
     board.current = newBoard;
   }
@@ -121,6 +128,7 @@ export default function Minesweeper() {
 
   function handleClick(e: MouseEvent<HTMLElement>, i: number, j: number) {
     e.preventDefault();
+    if (isGameFinished) return;
     if (e.nativeEvent.button === 0) {
       leftClickTile(i, j);
     } else {
@@ -198,6 +206,9 @@ export default function Minesweeper() {
   return (
     <Container>
       <Row className="pt-2">
+        <Col>{instructions}</Col>
+      </Row>
+      <Row className="pt-2">
         <Col>
           <FormGroup controlId="width">
             <Form.Label>Width</Form.Label>
@@ -244,16 +255,26 @@ export default function Minesweeper() {
       </Row>
       <Row className="pt-2">
         <Col>
-          <Button onClick={generateBoard} disabled={buttonsDisabled}>
-            Start Game
+          <Button variant="primary" onClick={generateBoard} disabled={buttonsDisabled}>
+            Start
           </Button>
-          <Button className="ms-2" onClick={() => setDefaults(9, 9, 10)} disabled={buttonsDisabled}>
+          <Button variant="secondary" className="ms-2" onClick={() => setDefaults(9, 9, 10)} disabled={buttonsDisabled}>
             Easy
           </Button>
-          <Button className="ms-2" onClick={() => setDefaults(16, 16, 40)} disabled={buttonsDisabled}>
+          <Button
+            variant="secondary"
+            className="ms-2"
+            onClick={() => setDefaults(16, 16, 40)}
+            disabled={buttonsDisabled}
+          >
             Normal
           </Button>
-          <Button className="ms-2" onClick={() => setDefaults(30, 16, 99)} disabled={buttonsDisabled}>
+          <Button
+            variant="secondary"
+            className="ms-2"
+            onClick={() => setDefaults(30, 16, 99)}
+            disabled={buttonsDisabled}
+          >
             Hard
           </Button>
         </Col>
@@ -261,32 +282,53 @@ export default function Minesweeper() {
       {gameGenerated ? (
         <Row className="pt-2">
           <Col>
-            {board.current.map((r, i) => (
-              <Row key={i} className="m-0">
-                {r.map((c, j) => (
-                  <Col
-                    key={j}
-                    style={{
-                      width: 40 + "px",
-                      maxWidth: 40 + "px",
-                      padding: 0,
-                    }}
-                  >
-                    <div
-                      className={"tile" + (c.isRevealed ? "" : " unrevealed")}
-                      style={{ width: 40 + "px" }}
-                      onClick={(e) => handleClick(e, i, j)}
-                      onContextMenu={(e) => handleClick(e, i, j)}
+            <div className="minesweeper">
+              {board.current.map((r, i) => (
+                <Row key={i} className="m-0">
+                  {r.map((c, j) => (
+                    <Col
+                      key={j}
+                      style={{
+                        width: 40 + "px",
+                        maxWidth: 40 + "px",
+                        padding: 0,
+                      }}
                     >
-                      {c.isRevealed ? c.value : c.hasFlag ? "F" : c.hasQ ? "?" : ""}
-                    </div>
-                  </Col>
-                ))}
-              </Row>
-            ))}
+                      <div
+                        className={
+                          "tile " +
+                          (c.isRevealed
+                            ? ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight"][c.value]
+                            : "unrevealed ")
+                        }
+                        onClick={(e) => handleClick(e, i, j)}
+                        onContextMenu={(e) => handleClick(e, i, j)}
+                      >
+                        {getCharacter(c)}
+                      </div>
+                    </Col>
+                  ))}
+                </Row>
+              ))}
+            </div>
           </Col>
         </Row>
       ) : null}
     </Container>
   );
+
+  function getCharacter(tile: Tile) {
+    if (tile.isRevealed) {
+      if (tile.value > 0) return tile.value.toString();
+    }
+
+    if (tile.value === -1 && isLost) {
+      return "\uD83D\uDCA3";
+    }
+
+    if (tile.hasFlag) return "\uD83D\uDEA9";
+    if (tile.hasQ) return "\u2753";
+
+    return "";
+  }
 }
