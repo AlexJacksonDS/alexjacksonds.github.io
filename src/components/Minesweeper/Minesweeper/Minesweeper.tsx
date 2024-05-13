@@ -30,6 +30,7 @@ export default function Minesweeper() {
   const [gameGenerated, setGameGenerated] = useState(false);
   const [isGameFinished, setIsGameFinished] = useState(false);
   const [isLost, setIsLost] = useState(false);
+  const [small, setSmall] = useState(true);
 
   const [clicks, setClicks] = useState(0);
 
@@ -64,11 +65,7 @@ export default function Minesweeper() {
   }
 
   function generateBoard() {
-    const mineLocations = new Array(width * height)
-      .fill(0)
-      .map((a, i) => (a = i))
-      .sort(() => Math.random() - 0.5)
-      .slice(0, mineCount);
+    const mineLocations = shuffle(new Array(width * height).fill(0).map((a, i) => (a = i))).slice(0, mineCount);
     const mineCoords = mineLocations.map((x) => {
       const y = Math.floor(x / height);
       return [y, x - y * height];
@@ -104,6 +101,20 @@ export default function Minesweeper() {
     setIsGameFinished(false);
     setClicks(0);
     board.current = newBoard;
+  }
+
+  function shuffle<T>(array: T[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
+
+      // swap elements array[i] and array[j]
+      // we use "destructuring assignment" syntax to achieve that
+      // you'll find more details about that syntax in later chapters
+      // same can be written as:
+      // let t = array[i]; array[i] = array[j]; array[j] = t
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
   }
 
   function getAdjacentValues(board: Tile[][], coords: number[]) {
@@ -254,7 +265,7 @@ export default function Minesweeper() {
         </Col>
       </Row>
       <Row className="pt-2">
-        <Col>
+        <Col xs={12} lg={4}>
           <Button variant="primary" onClick={generateBoard} disabled={buttonsDisabled}>
             Start
           </Button>
@@ -278,6 +289,15 @@ export default function Minesweeper() {
             Hard
           </Button>
         </Col>
+        <Col>
+          <Form.Check
+            type="switch"
+            id="toggle-small"
+            label="Small UI"
+            onChange={() => setSmall(!small)}
+            checked={small}
+          />
+        </Col>
       </Row>
       {gameGenerated ? (
         <Row className="pt-2">
@@ -289,8 +309,8 @@ export default function Minesweeper() {
                     <Col
                       key={j}
                       style={{
-                        width: 40 + "px",
-                        maxWidth: 40 + "px",
+                        width: small ? 10 : 40 + "px",
+                        maxWidth: small ? 10 : 40 + "px",
                         padding: 0,
                       }}
                     >
@@ -301,6 +321,12 @@ export default function Minesweeper() {
                             ? ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight"][c.value]
                             : "unrevealed ")
                         }
+                        style={{
+                          width: small ? 10 : 40 + "px",
+                          fontSize: small ? 5 : 20 + "px",
+                          borderWidth: small ? 1 : 3 + "px",
+                          padding: small ? 0 : "2px 10px",
+                        }}
                         onClick={(e) => handleClick(e, i, j)}
                         onContextMenu={(e) => handleClick(e, i, j)}
                       >
