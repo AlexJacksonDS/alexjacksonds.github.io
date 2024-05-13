@@ -1,7 +1,7 @@
 "use client";
 
 import { Dispatch, SetStateAction, useState, MouseEvent, useRef, useEffect } from "react";
-import { Container, Form, FormGroup, Row, Col, Button } from "react-bootstrap";
+import { Container, Form, FormGroup, Row, Col, Button, ToastContainer, Toast } from "react-bootstrap";
 import "./Minesweeper.scss";
 import { isMobile } from "react-device-detect";
 
@@ -33,6 +33,8 @@ export default function Minesweeper() {
   const [small, setSmall] = useState(false);
 
   const [clicks, setClicks] = useState(0);
+
+  const [show, setShow] = useState(false);
 
   const board = useRef<Tile[][]>([]);
 
@@ -105,13 +107,7 @@ export default function Minesweeper() {
 
   function shuffle<T>(array: T[]) {
     for (let i = array.length - 1; i > 0; i--) {
-      let j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
-
-      // swap elements array[i] and array[j]
-      // we use "destructuring assignment" syntax to achieve that
-      // you'll find more details about that syntax in later chapters
-      // same can be written as:
-      // let t = array[i]; array[i] = array[j]; array[j] = t
+      let j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
@@ -151,6 +147,7 @@ export default function Minesweeper() {
         .filter((t) => t.value !== -1)
         .every((t) => t.isRevealed)
     ) {
+      setShow(true);
       setIsGameFinished(true);
     }
     setClicks(clicks + 1);
@@ -213,6 +210,10 @@ export default function Minesweeper() {
     mineCount <= width * height &&
     (!gameGenerated || isGameFinished)
   );
+
+  function hideToast() {
+    setShow(false);
+  }
 
   return (
     <Container>
@@ -299,6 +300,17 @@ export default function Minesweeper() {
           />
         </Col>
       </Row>
+      {isGameFinished && !isLost ? (
+        <ToastContainer position="middle-center">
+          <Toast bg={"success"} show={show} onClick={hideToast} onClose={() => hideToast()} delay={3000} autohide>
+            <Toast.Header>
+              <strong className="me-auto">Minesweeper</strong>
+              <small className="text-muted">Just now</small>
+            </Toast.Header>
+            <Toast.Body>Victory!</Toast.Body>
+          </Toast>
+        </ToastContainer>
+      ) : null}
       {gameGenerated ? (
         <Row className="pt-2">
           <Col>
