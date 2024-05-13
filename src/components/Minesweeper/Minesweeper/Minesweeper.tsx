@@ -35,6 +35,7 @@ export default function Minesweeper() {
   const [clicks, setClicks] = useState(0);
 
   const [show, setShow] = useState(false);
+  const [showFail, setShowFail] = useState(false);
 
   const board = useRef<Tile[][]>([]);
 
@@ -69,16 +70,16 @@ export default function Minesweeper() {
   function generateBoard() {
     const mineLocations = shuffle(new Array(width * height).fill(0).map((a, i) => (a = i))).slice(0, mineCount);
     const mineCoords = mineLocations.map((x) => {
-      const y = Math.floor(x / height);
-      return [y, x - y * height];
+      const i = Math.floor(x / width);
+      return [i, x - i * width];
     });
 
-    const newBoardNulls: (Tile | null)[][] = Array(width)
+    const newBoardNulls: (Tile | null)[][] = Array(height)
       .fill(0)
-      .map(() => Array(height).fill(null));
+      .map(() => Array(width).fill(null));
 
-    for (let i = 0; i < width; i++) {
-      for (let j = 0; j < height; j++) {
+    for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
         newBoardNulls[i][j] = new Tile();
       }
     }
@@ -89,8 +90,8 @@ export default function Minesweeper() {
       newBoard[coords[0]][coords[1]].value = -1;
     }
 
-    for (let i = 0; i < width; i++) {
-      for (let j = 0; j < height; j++) {
+    for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
         if (newBoard[i][j].value != -1) {
           const adjs = getAdjacentValues(newBoard as Tile[][], [i, j]);
           newBoard[i][j].value = adjs.filter((adj) => adj.tile.value === -1).length;
@@ -160,6 +161,9 @@ export default function Minesweeper() {
     }
     if (tile.value === -1) {
       board.current[i][j].isRevealed = true;
+      if (clicks === 0) {
+        setShowFail(true);
+      }
       setIsGameFinished(true);
       setIsLost(true);
     } else {
@@ -212,6 +216,7 @@ export default function Minesweeper() {
   );
 
   function hideToast() {
+    setShowFail(false);
     setShow(false);
   }
 
@@ -300,17 +305,24 @@ export default function Minesweeper() {
           />
         </Col>
       </Row>
-      {isGameFinished && !isLost ? (
-        <ToastContainer position="middle-center">
-          <Toast bg={"success"} show={show} onClick={hideToast} onClose={() => hideToast()} delay={3000} autohide>
-            <Toast.Header>
-              <strong className="me-auto">Minesweeper</strong>
-              <small className="text-muted">Just now</small>
-            </Toast.Header>
-            <Toast.Body>Victory!</Toast.Body>
-          </Toast>
-        </ToastContainer>
-      ) : null}
+
+      <ToastContainer position="middle-center">
+        <Toast bg={"success"} show={show} onClick={hideToast} onClose={() => hideToast()} delay={3000} autohide>
+          <Toast.Header>
+            <strong className="me-auto">Minesweeper</strong>
+            <small className="text-muted">Just now</small>
+          </Toast.Header>
+          <Toast.Body>Victory!</Toast.Body>
+        </Toast>
+        <Toast bg={"danger"} show={showFail} onClick={hideToast} onClose={() => hideToast()} delay={3000} autohide>
+          <Toast.Header>
+            <strong className="me-auto">Minesweeper</strong>
+            <small className="text-muted">Just now</small>
+          </Toast.Header>
+          <Toast.Body>Unlucky first click</Toast.Body>
+        </Toast>
+      </ToastContainer>
+
       {gameGenerated ? (
         <Row className="pt-2">
           <Col>
