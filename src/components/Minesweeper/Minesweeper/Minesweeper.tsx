@@ -30,7 +30,7 @@ export default function Minesweeper() {
   const [gameGenerated, setGameGenerated] = useState(false);
   const [isGameFinished, setIsGameFinished] = useState(false);
   const [isLost, setIsLost] = useState(false);
-  const [small, setSmall] = useState(true);
+  const [small, setSmall] = useState(false);
 
   const [clicks, setClicks] = useState(0);
 
