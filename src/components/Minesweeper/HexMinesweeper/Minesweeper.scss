@@ -1,0 +1,80 @@
+@use "sass:math";
+
+.minesweeper {
+  overflow: auto;
+
+  & .row {
+    flex-wrap: nowrap;
+  }
+}
+
+.hex-container {
+  padding: 10px;
+  display: flex;
+  position: relative;
+  box-sizing: content-box;
+}
+
+.hexagon {
+  font-family: "MS Sans Serif";
+  background: #c0c0c0;
+  border-right: solid 1px black;
+  position: relative;
+  display: flex;
+  background-position: center;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  
+
+  &.unrevealed {
+    background: #999999;
+  }
+}
+
+.hexTop {
+  position: absolute;
+  z-index: 3;
+  overflow: hidden;
+  transform: scaleY(calc(1 / math.sqrt(3))) rotate(-45deg);
+  background: inherit;
+  border-top: solid 1px black;
+  border-right: solid 1px black;
+}
+
+.hexBottom {
+  position: absolute;
+  z-index: 3;
+  overflow: hidden;
+  transform: scaleY(calc(1 / math.sqrt(3))) rotate(-45deg);
+  background: inherit;
+}
+
+.symbol-container {
+  position: relative;
+  z-index: 4;
+}
+
+.one {
+  color: blue;
+}
+
+.two {
+  color: green;
+}
+
+.three {
+  color: red;
+}
+
+.four {
+  color: darkblue;
+}
+
+.five {
+  color: brown;
+}
+
+.six {
+  color: cyan;
+}
