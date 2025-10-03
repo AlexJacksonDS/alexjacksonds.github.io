@@ -1,19 +1,41 @@
+@use 'sass:math';
+
 .clipHex {
-    background: black;
+    background: #212529;
 }
 
 .clipLine {
     position: absolute;
-    background: cadetblue;
     z-index: 100;
+    cursor: pointer;
 
     &.sideLength {
-        width: percentage(1/3);
+        width: percentage(math.div(1, 3));
         height: 2%;
+
+        &.unconnected {
+            background: repeating-linear-gradient(
+                to right,
+                lightgray,
+                lightgray 1px,
+                #212529 1px,
+                #212529 4px
+              );
+        }
+    
+        &.unconnectedTwo {
+            background: repeating-linear-gradient(
+                to right,
+                saddlebrown,
+                saddlebrown 1px,
+                #212529 1px,
+                #212529 4px
+              );
+        }
     }
 
     &.narrow {
-        width: percentage(1/6);
+        width: percentage(math.div(1, 6));
 
         &.bottom {
             top: 50%;
@@ -22,22 +44,62 @@
 
     &.diag {
         clip-path: polygon(100% 5%, 5% 100%, 0% 100%, 0% 95%, 95% 0%, 100% 0%);
+
+        &.unconnected {
+            background: repeating-linear-gradient(
+                55deg,
+                lightgray,
+                lightgray 1px,
+                #212529 1px,
+                #212529 4px
+              );
+        }
+
+        &.unconnectedTwo {
+            background: repeating-linear-gradient(
+                55deg,
+                saddlebrown,
+                saddlebrown 1px,
+                #212529 1px,
+                #212529 4px
+              );
+        }
     }
 
     &.backDiag {
         clip-path: polygon(0% 5%, 95% 100%, 100% 100%, 100% 95%, 5% 0%, 0% 0%);
+
+        &.unconnected {
+            background: repeating-linear-gradient(
+                145deg,
+                lightgray,
+                lightgray 1px,
+                #212529 1px,
+                #212529 4px
+              );
+        }
+
+        &.unconnectedTwo {
+            background: repeating-linear-gradient(
+                145deg,
+                saddlebrown,
+                saddlebrown 1px,
+                #212529 1px,
+                #212529 4px
+              );
+        }
     }
 
     &.l1 {
-        left: percentage(1/6);
+        left: percentage(math.div(1, 6));
     }
 
     &.l2 {
-        left: percentage(1/3);
+        left: percentage(math.div(1, 3));
     }
 
     &.l3 {
-        left: percentage(1/2);
+        left: percentage(math.div(1, 2));
     }
 
     &.mid {
@@ -48,59 +110,52 @@
         background: purple;
     }
 
-    &.unconnected {
-        background: lightgray;
-    }
-
-    &.unconnectedTwo {
-        background: saddlebrown;
-    }
-
     &.invalid {
-        background: black;
+        background: #212529;
         z-index: 99;
     }
 }
 
-.miniBlock {
+.cityCircle {
     position: absolute;
-    height: 30%;
-    width: 20%;
+    height: 21%;
+    width: 14%;
     z-index: 101;
     background: white;
     border-radius: 50%;
     align-items: center;
     justify-content: center;
     display: flex;
+    font-size: small;
 
     &.l{
-        top: 35%;
-        left: -10%;
+        top: 39%;
+        left: -7%;
     }
 
     &.r{
-        top: 35%;
-        left: percentage(2/3) - 10%;
+        top: 39%;
+        left: percentage(math.div(2,3)) - 7%;
     }
 
     &.tl{
-        left: percentage(1/6) - 10%;
-        top: -2%;
+        left: percentage(math.div(1, 6)) - 7%;
+        top: -4%;
     }
 
     &.tr{
-        left: percentage(1/2) - 10%;
-        top: -2%;
+        left: percentage(math.div(1, 2)) - 7%;
+        top: -4%;
     }
 
     &.bl{
-        left: percentage(1/6) - 10%;
-        bottom: -8%;
+        left: percentage(math.div(1, 6)) - 7%;
+        bottom: -4%;
     }
 
     &.c{
-        top: 35%;
-        left: 23%;
+        top: 39%;
+        left: 26%;
     }
 
     &.green {
@@ -113,7 +168,7 @@
 
     &.yellow {
         background: yellow;
-        color: black;
+        color: #212529;
     }
 
     &.orange {
