@@ -14,8 +14,9 @@ export function generateStaticParams() {
   }));
 }
 
-export default function CartographersPage({ params }: { params: { slug: string } }) {
-  const isSpecial = params.slug.toLowerCase() === "special";
+export default async function CartographersPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const isSpecial = slug.toLowerCase() === "special";
 
   return <Cartographers isSpecialBoard={isSpecial} />;
 }
