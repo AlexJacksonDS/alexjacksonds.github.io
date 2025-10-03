@@ -1,0 +1,137 @@
+@use "sass:math";
+
+.minesweeper {
+  overflow: auto;
+
+  & .row {
+    flex-wrap: nowrap;
+  }
+}
+
+.hex-container {
+  padding: 10px;
+  display: flex;
+  position: relative;
+  box-sizing: content-box;
+  background: black;
+}
+
+.hexagon {
+  font-family: "MS Sans Serif";
+  background: #c0c0c0;
+  border-right: solid 1px red;
+  position: relative;
+  display: flex;
+  background-position: center;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  
+
+  &.unrevealed {
+    background: #999999;
+  }
+}
+
+.hexTop {
+  position: absolute;
+  z-index: 3;
+  overflow: hidden;
+  transform: scaleY(calc(1 / math.sqrt(3))) rotate(-45deg);
+  background: inherit;
+  border-top: solid 1px red;
+  border-right: solid 1px red;
+  border-left: solid 1px red;
+  border-bottom: solid 1px red;
+  
+}
+
+.hexTopLine {
+  position: absolute;
+  z-index: 3;
+  overflow: hidden;
+  transform: scaleY(calc(1 / math.sqrt(3))) rotate(-45deg);
+  background: inherit;
+  border-top: solid 1px red;
+  border-right: solid 1px red;
+  border-left: solid 1px red;
+  border-bottom: solid 1px red;
+  background: linear-gradient(to top left,
+  rgba(0,0,0,0) 0%,
+  rgba(0,0,0,0) calc(50% - 0.8px),
+  rgba(255,0,0,1) 50%,
+  rgba(0,0,0,0) calc(50% + 0.8px),
+  rgba(0,0,0,0) 100%);
+}
+
+.hexBottom {
+  position: absolute;
+  z-index: 3;
+  overflow: hidden;
+  transform: scaleY(calc(1 / math.sqrt(3))) rotate(-45deg);
+  background: inherit;
+  border-top: solid 1px red;
+  border-right: solid 1px red;
+}
+
+.hexBottomLine {
+  position: absolute;
+  z-index: 4;
+  overflow: hidden;
+  transform: scaleY(calc(1 / math.sqrt(3))) rotate(-45deg);
+  background: inherit;
+  border-top: solid 1px red;
+  border-right: solid 1px red;
+  background: linear-gradient(to top left,
+  rgba(0,0,0,0) 0%,
+  rgba(0,0,0,0) calc(50% - 0.8px),
+  rgba(255,0,0,1) 50%,
+  rgba(0,0,0,0) calc(50% + 0.8px),
+  rgba(0,0,0,0) 100%);
+}
+
+// .clipHex {
+//   width: 200px;
+//   height: 200px;
+//   background: cadetblue;
+//   clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
+// }
+
+// .clipHexInner {
+//   width: 190px;
+//   height: 190px;
+//   position: absolute;
+//   top: 5px;
+//   left: 5px;
+//   background: black;
+//   clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
+// }
+
+.symbol-container {
+  position: relative;
+  z-index: 4;
+}
+
+.one {
+  color: blue;
+}
+
+.two {
+  color: green;
+}
+
+.three {
+  color: red;
+}
+
+.four {
+  color: darkblue;
+}
+
+.five {
+  color: brown;
+}
+
+.six {
+  color: cyan;
+}

@@ -1,0 +1,126 @@
+.clipHex {
+    background: black;
+}
+
+.clipLine {
+    position: absolute;
+    background: cadetblue;
+    z-index: 100;
+
+    &.sideLength {
+        width: percentage(1/3);
+        height: 2%;
+    }
+
+    &.narrow {
+        width: percentage(1/6);
+
+        &.bottom {
+            top: 50%;
+        }
+    }
+
+    &.diag {
+        clip-path: polygon(100% 5%, 5% 100%, 0% 100%, 0% 95%, 95% 0%, 100% 0%);
+    }
+
+    &.backDiag {
+        clip-path: polygon(0% 5%, 95% 100%, 100% 100%, 100% 95%, 5% 0%, 0% 0%);
+    }
+
+    &.l1 {
+        left: percentage(1/6);
+    }
+
+    &.l2 {
+        left: percentage(1/3);
+    }
+
+    &.l3 {
+        left: percentage(1/2);
+    }
+
+    &.mid {
+        top: 49%;
+    }
+
+    &.connected {
+        background: purple;
+    }
+
+    &.unconnected {
+        background: lightgray;
+    }
+
+    &.unconnectedTwo {
+        background: saddlebrown;
+    }
+
+    &.invalid {
+        background: black;
+        z-index: 99;
+    }
+}
+
+.miniBlock {
+    position: absolute;
+    height: 30%;
+    width: 20%;
+    z-index: 101;
+    background: white;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+
+    &.l{
+        top: 35%;
+        left: -10%;
+    }
+
+    &.r{
+        top: 35%;
+        left: percentage(2/3) - 10%;
+    }
+
+    &.tl{
+        left: percentage(1/6) - 10%;
+        top: -2%;
+    }
+
+    &.tr{
+        left: percentage(1/2) - 10%;
+        top: -2%;
+    }
+
+    &.bl{
+        left: percentage(1/6) - 10%;
+        bottom: -8%;
+    }
+
+    &.c{
+        top: 35%;
+        left: 23%;
+    }
+
+    &.green {
+        background: green;
+    }
+
+    &.red {
+        background: red;
+    }
+
+    &.yellow {
+        background: yellow;
+        color: black;
+    }
+
+    &.orange {
+        background: darkorange;
+    }
+
+    &.blue {
+        background: blue;
+    }
+}

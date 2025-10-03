@@ -100,6 +100,11 @@ function UnauthenticatedCards() {
           <ImageCard title="Hex Minesweeper" description="Hexagonal mine finding game" image="hexminesweeper.jpg"/>
         </Link>
       </Col>
+      <Col>
+        <Link href="/Transamerica" style={{ textDecoration: "none" }}>
+          <ImageCard title="Transamerica" description="Train Game" image="hexminesweeper.jpg"/>
+        </Link>
+      </Col>
     </>
   );
 }
