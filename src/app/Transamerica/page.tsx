@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Transamerica from "@/components/Transamerica/Transamerica";
 
 export const metadata: Metadata = {
-  title: "Hex Minesweeper",
+  title: "TransAmerica",
   icons: "./rri-favicon.png",
 };
 
