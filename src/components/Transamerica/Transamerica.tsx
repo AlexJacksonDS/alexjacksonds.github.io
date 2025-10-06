@@ -5,7 +5,7 @@ import { Button, Container } from "react-bootstrap";
 import "./Transamerica.scss";
 import _ from "lodash";
 import Hex, { ConnectionState } from "./Hex/Hex";
-import { blankBoard, Tile } from "@/services/transamerica.service";
+import { blankBoard, isConnectedClick, connectSegment, Tile, isInvalidClick } from "@/services/transamerica.service";
 
 export default function Transamerica() {
   const [rowOffset, setRowOffset] = useState(0);
@@ -27,152 +27,23 @@ export default function Transamerica() {
     setColOffset(boardDetails.colOffset);
     setWidth(boardDetails.width);
     setheight(boardDetails.height);
+    setClicks(0);
     setHexCoords(boardDetails.hexCoords);
   }
 
-  function getAdjacentValues(board: Tile[][], coords: number[]) {
-    const boardHeight = board.length;
-    const boardWidth = board[0].length;
-    const adjTransforms = [
-      [
-        [0, 1],
-        [-1, 1],
-        [-1, 0],
-        [0, -1],
-        [1, 0],
-        [1, 1],
-      ],
-      // odd rows
-      [
-        [0, 1],
-        [-1, 0],
-        [-1, -1],
-        [0, -1],
-        [1, -1],
-        [1, 0],
-      ],
-    ];
-    const relevantTransforms = adjTransforms[Math.abs(coords[0]) % 2];
-    const adjCoords = relevantTransforms
-      .map((mod) => [coords[0] + mod[0], coords[1] + mod[1]])
-      .filter((coord) => coord[0] >= 0 && coord[0] < boardHeight && coord[1] >= 0 && coord[1] < boardWidth);
-
-    return adjCoords.map((coord) => ({ i: coord[0], j: coord[1], tile: board[coord[0]][coord[1]] }));
-  }
-
-  const outers = ["ot", "otr", "obr", "ob", "obl", "otl"];
-  const adjTransforms = [
-    [
-      [-2, 0],
-      [-1, 1],
-      [1, 1],
-      [2, 0],
-      [1, 0],
-      [-1, 0],
-    ],
-    [
-      [-2, 0],
-      [-1, 0],
-      [1, 0],
-      [2, 0],
-      [1, -1],
-      [-1, -1],
-    ],
-  ];
-
   function handleClick(e: MouseEvent, i: number, j: number, seg: string) {
     e.preventDefault();
-    const clickedConnectionState = board.current[i][j].connections.c.get(seg);
 
-    if (
-      clickedConnectionState === undefined ||
-      clickedConnectionState === ConnectionState.Connected ||
-      clickedConnectionState === ConnectionState.Invalid
-    ) {
+    if (isInvalidClick(i, j, seg, board)) {
       return;
     }
-    console.log(i + " " + j + " " + seg);
-    board.current[i][j].connections.c.set(seg, ConnectionState.Connected);
 
-    const indexOfSeg = outers.indexOf(seg);
-    if (indexOfSeg > -1) {
-      const coordTransform = adjTransforms[i%2][indexOfSeg];
-      console.log(coordTransform);
-      console.log(i + coordTransform[0] + " " + (j + coordTransform[1]) + " " + outers[(indexOfSeg + 3) % 6]);
-      board.current[i + coordTransform[0]][j + coordTransform[1]].connections.c.set(
-        outers[(indexOfSeg + 3) % 6],
-        ConnectionState.Connected
-      );
+    if (clicks === 0 || isConnectedClick(i, j, seg, board)) {
+      // Flip clicked
+      connectSegment(i, j, seg, board);
+      setClicks(clicks + 1);
     }
-
-    setClicks(clicks + 1);
   }
-
-  // function leftClickTile(i: number, j: number) {
-  //     const tile = board.current[i][j];
-  //     if (tile.hasFlag || tile.hasQ) {
-  //         return;
-  //     }
-  //     if (tile.value === -1) {
-  //         board.current[i][j].isRevealed = true;
-  //         if (clicks === 0) {
-  //             setShowFail(true);
-  //         }
-  //         setIsGameFinished(true);
-  //         setIsLost(true);
-  //     } else {
-  //         openSquares([i, j]);
-  //     }
-  // }
-
-  // function openSquares(startCoord: number[]) {
-  //     const visited: string[] = [];
-  //     const coordStack = [startCoord];
-
-  //     while (coordStack.length) {
-  //         let currentCoord = coordStack.pop();
-
-  //         if (currentCoord !== undefined) {
-  //             const stringCoord = `${currentCoord[0]}-${currentCoord[1]}`;
-  //             if (!visited.includes(stringCoord)) {
-  //                 visited.push(stringCoord);
-  //                 board.current[currentCoord[0]][currentCoord[1]].isRevealed = true;
-
-  //                 if (board.current[currentCoord[0]][currentCoord[1]].value === 0) {
-  //                     const adjs = getAdjacentValues(board.current, currentCoord);
-  //                     coordStack.push(...adjs.map((adj) => [adj.i, adj.j]));
-  //                 }
-  //             }
-  //         }
-  //     }
-  // }
-
-  // function rightClickTile(i: number, j: number) {
-  //     const tile = board.current[i][j];
-  //     if (tile.hasFlag) {
-  //         board.current[i][j].hasFlag = false;
-  //         board.current[i][j].hasQ = true;
-  //     } else if (tile.hasQ) {
-  //         board.current[i][j].hasFlag = false;
-  //         board.current[i][j].hasQ = false;
-  //     } else {
-  //         board.current[i][j].hasFlag = true;
-  //         board.current[i][j].hasQ = false;
-  //     }
-  // }
-
-  // const buttonsDisabled = !(
-  //     controlIsValid(widthString) &&
-  //     controlIsValid(heightString) &&
-  //     controlIsValid(mineCountString) &&
-  //     mineCount <= width * height &&
-  //     (!gameGenerated || isGameFinished)
-  // );
-
-  // function hideToast() {
-  //     setShowFail(false);
-  //     setShow(false);
-  // }
 
   const radius = 80;
   const hexContainerStyle = { height: radius * height, width: radius * width * 2.9 };

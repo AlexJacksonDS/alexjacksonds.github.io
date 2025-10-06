@@ -35,18 +35,6 @@ export class HexConnections {
     cityplace?: CityPlace
   ) {
     if (!random && ot && otl && otr && ob && obl && obr && il && itl && itr && ir && ibr && ibl) {
-    //   this.ot = ot;
-    //   this.otl = otl;
-    //   this.otr = otr;
-    //   this.ob = ob;
-    //   this.obl = obl;
-    //   this.obr = obr;
-    //   this.il = il;
-    //   this.itl = itl;
-    //   this.itr = itr;
-    //   this.ir = ir;
-    //   this.ibr = ibr;
-    //   this.ibl = ibl;
       this.c = new Map<string, ConnectionState>([
         ["ot", ot],
         ["otl", otl],
@@ -62,18 +50,6 @@ export class HexConnections {
         ["ibl", ibl],
       ]);
     } else {
-    //   this.ot = randEnumValue(ConnectionState);
-    //   this.otl = randEnumValue(ConnectionState);
-    //   this.otr = randEnumValue(ConnectionState);
-    //   this.ob = randEnumValue(ConnectionState);
-    //   this.obl = randEnumValue(ConnectionState);
-    //   this.obr = randEnumValue(ConnectionState);
-    //   this.il = randEnumValue(ConnectionState);
-    //   this.itl = randEnumValue(ConnectionState);
-    //   this.itr = randEnumValue(ConnectionState);
-    //   this.ir = randEnumValue(ConnectionState);
-    //   this.ibr = randEnumValue(ConnectionState);
-    //   this.ibl = randEnumValue(ConnectionState);
       this.c = new Map<string, ConnectionState>([]);
     }
     this.cityPlace = cityplace;
