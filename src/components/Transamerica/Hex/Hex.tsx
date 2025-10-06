@@ -3,18 +3,18 @@ import "./Hex.scss";
 import { randEnumValue } from "@/helpers/enumHelper";
 
 export class HexConnections {
-//   ot: ConnectionState;
-//   otl: ConnectionState;
-//   otr: ConnectionState;
-//   ob: ConnectionState;
-//   obl: ConnectionState;
-//   obr: ConnectionState;
-//   il: ConnectionState;
-//   itl: ConnectionState;
-//   itr: ConnectionState;
-//   ir: ConnectionState;
-//   ibr: ConnectionState;
-//   ibl: ConnectionState;
+  //   ot: ConnectionState;
+  //   otl: ConnectionState;
+  //   otr: ConnectionState;
+  //   ob: ConnectionState;
+  //   obl: ConnectionState;
+  //   obr: ConnectionState;
+  //   il: ConnectionState;
+  //   itl: ConnectionState;
+  //   itr: ConnectionState;
+  //   ir: ConnectionState;
+  //   ibr: ConnectionState;
+  //   ibl: ConnectionState;
   cityPlace?: CityPlace;
   c: Map<string, ConnectionState>;
 
@@ -143,33 +143,9 @@ export default function Hex({
           onClick={(e) => onClick(e, row, column, "il")}
         ></div>
         <div
-          className={"clipLine sideLength l1 " + getColourClass(connections.c.get("ot"))}
-          style={{ top: `${radius - innerRadius - 1}px` }}
-          onClick={(e) => onClick(e, row, column, "ot")}
-        ></div>
-        <div
-          className={"clipLine sideLength l1 " + getColourClass(connections.c.get("ob"))}
-          style={{ bottom: `${radius - innerRadius - 1}px` }}
-          onClick={(e) => onClick(e, row, column, "ob")}
-        ></div>
-        <div
-          className={"clipLine sideLength l2 mid " + getColourClass(connections.c.get("ir"))}
-          onClick={(e) => onClick(e, row, column, "ir")}
-        ></div>
-        <div
           className={"clipLine narrow backDiag l1 " + getColourClass(connections.c.get("itl"))}
           style={{ height: `${innerRadius + 1}px`, top: `${radius - innerRadius - 1}px` }}
           onClick={(e) => onClick(e, row, column, "itl")}
-        ></div>
-        <div
-          className={"clipLine narrow diag " + getColourClass(connections.c.get("otl"))}
-          style={{ height: `${innerRadius + 2}px`, top: `${radius - innerRadius - 1}px` }}
-          onClick={(e) => onClick(e, row, column, "otl")}
-        ></div>
-        <div
-          className={"clipLine narrow backDiag l3 " + getColourClass(connections.c.get("otr"))}
-          style={{ height: `${innerRadius + 2}px`, top: `${radius - innerRadius - 1}px` }}
-          onClick={(e) => onClick(e, row, column, "otr")}
         ></div>
         <div
           className={"clipLine narrow diag l2 " + getColourClass(connections.c.get("itr"))}
@@ -177,9 +153,8 @@ export default function Hex({
           onClick={(e) => onClick(e, row, column, "itr")}
         ></div>
         <div
-          className={"clipLine narrow diag bottom l1 " + getColourClass(connections.c.get("ibl"))}
-          style={{ height: `${innerRadius + 1}px` }}
-          onClick={(e) => onClick(e, row, column, "ibl")}
+          className={"clipLine sideLength l2 mid " + getColourClass(connections.c.get("ir"))}
+          onClick={(e) => onClick(e, row, column, "ir")}
         ></div>
         <div
           className={"clipLine narrow backDiag bottom l2 " + getColourClass(connections.c.get("ibr"))}
@@ -187,15 +162,41 @@ export default function Hex({
           onClick={(e) => onClick(e, row, column, "ibr")}
         ></div>
         <div
-          className={"clipLine narrow bottom backDiag " + getColourClass(connections.c.get("obl"))}
+          className={"clipLine narrow diag bottom l1 " + getColourClass(connections.c.get("ibl"))}
           style={{ height: `${innerRadius + 1}px` }}
-          onClick={(e) => onClick(e, row, column, "obl")}
+          onClick={(e) => onClick(e, row, column, "ibl")}
+        ></div>
+        <div
+          className={"clipLine sideLength l1 " + getColourClass(connections.c.get("ot"))}
+          style={{ top: `${radius - innerRadius - 1}px` }}
+          onClick={(e) => onClick(e, row, column, "ot")}
+        ></div>
+        <div
+          className={"clipLine narrow backDiag l3 " + getColourClass(connections.c.get("otr"))}
+          style={{ height: `${innerRadius + 2}px`, top: `${radius - innerRadius - 1}px` }}
+          onClick={(e) => onClick(e, row, column, "otr")}
         ></div>
         <div
           className={"clipLine narrow diag bottom l3 " + getColourClass(connections.c.get("obr"))}
           style={{ height: `${innerRadius + 1}px` }}
           onClick={(e) => onClick(e, row, column, "obr")}
         ></div>
+        <div
+          className={"clipLine sideLength l1 " + getColourClass(connections.c.get("ob"))}
+          style={{ bottom: `${radius - innerRadius - 1}px` }}
+          onClick={(e) => onClick(e, row, column, "ob")}
+        ></div>
+        <div
+          className={"clipLine narrow bottom backDiag " + getColourClass(connections.c.get("obl"))}
+          style={{ height: `${innerRadius + 1}px` }}
+          onClick={(e) => onClick(e, row, column, "obl")}
+        ></div>
+        <div
+          className={"clipLine narrow diag " + getColourClass(connections.c.get("otl"))}
+          style={{ height: `${innerRadius + 2}px`, top: `${radius - innerRadius - 1}px` }}
+          onClick={(e) => onClick(e, row, column, "otl")}
+        ></div>
+
         {connections.cityPlace ? (
           <div className={"cityCircle " + connections.cityPlace.colour + " " + connections.cityPlace.place}>
             {connections.cityPlace.city}
