@@ -125,7 +125,15 @@ export default function Wordle() {
             .flatMap((x) => x.letters)
             .filter((y) => y.state === State.Incorrect)
             .map((y) => y.letter.toUpperCase())
-            .filter((z) => z)}
+            .filter((z) => z)
+            .filter((x) =>
+              !guesses.current
+                .filter((x) => x.submitted)
+                .flatMap((x) => x.letters)
+                .filter((y) => y.state === State.Correct || y.state === State.Partial)
+                .map((y) => y.letter.toUpperCase())
+                .includes(x)
+            )}
           correctLetters={guesses.current
             .filter((x) => x.submitted)
             .flatMap((x) => x.letters)
