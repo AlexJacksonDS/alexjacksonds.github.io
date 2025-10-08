@@ -1,0 +1,62 @@
+@use 'sass:math';
+
+body {
+    height: 100vh;
+    width: 100vw;
+}
+
+.wordle-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100% - 56px);
+}
+
+.wordle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+
+    @media (max-width: 576px) {
+        justify-content: start;
+    }
+
+    @media (min-width: 576px) {
+        width: 90%;
+    }
+
+    @media (min-width: 768px) {
+        width: 70%;
+    }
+
+    @media (min-width: 850px) {
+        width: 60%;
+    }
+
+    @media (min-width: 992px) {
+        width: 50%;
+    }
+
+    @media (min-width: 1200px) {
+        width: 40%;
+    }
+
+    @media (min-width: 1400px) {
+        width: 30%;
+    }
+}
+
+.word-container {
+    display: block;
+    align-items: center;
+    width: 100%;
+    height: math.percentage(math.div(2, 3));
+
+    @media (max-width: 576px) {
+        height: unset;
+    }
+}

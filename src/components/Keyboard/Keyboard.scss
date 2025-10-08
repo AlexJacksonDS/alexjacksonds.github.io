@@ -1,0 +1,47 @@
+@use 'sass:math';
+
+.keyboard-container {
+    display: block;
+    align-items: center;
+    width: 100%;
+    height: math.percentage(math.div(1, 3));
+}
+
+.keyboard-row {
+    flex-direction: row;
+    display: flex;
+    height:  math.percentage(math.div(1, 3));
+    align-items: center;
+    justify-content: center;
+}
+
+.keyboard-letter {
+    width: calc(10% - 10px);
+    height: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: xx-large;
+    font-weight: bold;
+    margin: 5px;
+    background-color: grey;
+    border-radius: 5%;
+    cursor: pointer;
+    box-sizing: border-box;
+
+    &.special {
+        width: 70px;
+
+        &.enter {
+            font-size: large;
+        }
+    }
+
+    &.used {
+        background-color:rgb(54, 54, 54);
+    }
+
+    &.correct {
+        background-color: rgb(56, 151, 56);
+    }
+}

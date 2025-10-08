@@ -1,0 +1,13 @@
+@use 'sass:math';
+
+.word {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: percentage(math.div(1,6));
+
+    @media (max-width: 576px) {
+        height: unset;
+    }
+}
