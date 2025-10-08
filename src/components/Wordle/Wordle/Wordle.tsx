@@ -23,7 +23,7 @@ export default function Wordle() {
       }
       handleKey(e.key);
     };
-    
+
     window.scrollTo(0, 1);
     document.addEventListener("keydown", handleKeyDown);
 
@@ -150,7 +150,7 @@ export default function Wordle() {
               <small className="text-muted">Just now</small>
             </Toast.Header>
             <Toast.Body>
-              <p>Unlucky, the word was "{word.current}"</p>
+              <p>Unlucky, the word was &quot;{word.current}&quot;</p>
               <Button onClick={resetBoard}>Play Again?</Button>
             </Toast.Body>
           </Toast>
