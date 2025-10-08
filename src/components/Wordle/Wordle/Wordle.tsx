@@ -23,7 +23,8 @@ export default function Wordle() {
       }
       handleKey(e.key);
     };
-
+    
+    window.scrollTo(0, 1);
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
