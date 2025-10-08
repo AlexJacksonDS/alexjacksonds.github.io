@@ -11,6 +11,7 @@ export default function Wordle() {
   const [clicks, setClicks] = useState(0);
   const [show, setShow] = useState(false);
   const [showFail, setShowFail] = useState(false);
+  const [shakeIndex, setShakeIndex] = useState(-1);
 
   const word = useRef<string>(WORDS[Math.floor(Math.random() * WORDS.length)]);
 
@@ -48,6 +49,7 @@ export default function Wordle() {
       }
 
       guesses.current[6 - guessNum].letters[5 - letterNum].letter = key.toLowerCase();
+      setShakeIndex(-1);
     } else if (key === "Backspace") {
       const guessNum = guesses.current.filter((x) => !x.submitted).length;
       const letterNum = guesses.current.filter((x) => !x.submitted)[0].letters.filter((x) => x.letter === "").length;
@@ -57,6 +59,7 @@ export default function Wordle() {
       }
 
       guesses.current[6 - guessNum].letters[4 - letterNum].letter = "";
+      setShakeIndex(-1);
     } else if (key === "Enter") {
       const guessNum = guesses.current.filter((x) => !x.submitted).length;
 
@@ -65,6 +68,10 @@ export default function Wordle() {
         .join("")
         .trim();
       if (guess.length !== 5) {
+        setShakeIndex(6 - guessNum);
+        setTimeout(() => {
+          setShakeIndex(-1);
+        }, 500);
         return;
       }
 
@@ -91,6 +98,11 @@ export default function Wordle() {
           }
         }
         guesses.current[6 - guessNum].submitted = true;
+      } else {
+        setShakeIndex(6 - guessNum);
+        setTimeout(() => {
+          setShakeIndex(-1);
+        }, 500);
       }
 
       if (guess === word.current) {
@@ -115,7 +127,7 @@ export default function Wordle() {
       <div className="wordle">
         <div className="word-container">
           {guesses.current.map((x, i) => {
-            return <Word key={i} {...x} />;
+            return <Word key={i} word={x} shake={shakeIndex === i} />;
           })}
         </div>
         <Keyboard
@@ -126,13 +138,14 @@ export default function Wordle() {
             .filter((y) => y.state === State.Incorrect)
             .map((y) => y.letter.toUpperCase())
             .filter((z) => z)
-            .filter((x) =>
-              !guesses.current
-                .filter((x) => x.submitted)
-                .flatMap((x) => x.letters)
-                .filter((y) => y.state === State.Correct || y.state === State.Partial)
-                .map((y) => y.letter.toUpperCase())
-                .includes(x)
+            .filter(
+              (x) =>
+                !guesses.current
+                  .filter((x) => x.submitted)
+                  .flatMap((x) => x.letters)
+                  .filter((y) => y.state === State.Correct || y.state === State.Partial)
+                  .map((y) => y.letter.toUpperCase())
+                  .includes(x)
             )}
           correctLetters={guesses.current
             .filter((x) => x.submitted)
@@ -142,7 +155,7 @@ export default function Wordle() {
             .filter((z) => z)}
         />
         <ToastContainer position="middle-center">
-          <Toast bg={"success"} show={show} onClick={hideToast} onClose={() => hideToast()} delay={3000}>
+          <Toast bg={"success"} show={show} onClick={hideToast} onClose={() => hideToast()}>
             <Toast.Header>
               <strong className="me-auto">Wordle</strong>
               <small className="text-muted">Just now</small>
@@ -152,7 +165,7 @@ export default function Wordle() {
               <Button onClick={resetBoard}>Play Again?</Button>
             </Toast.Body>
           </Toast>
-          <Toast bg={"danger"} show={showFail} onClick={hideToast} onClose={() => hideToast()} delay={3000}>
+          <Toast bg={"danger"} show={showFail} onClick={hideToast} onClose={() => hideToast()}>
             <Toast.Header>
               <strong className="me-auto">Wordle</strong>
               <small className="text-muted">Just now</small>

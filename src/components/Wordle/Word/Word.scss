@@ -10,4 +10,31 @@
     @media (max-width: 576px) {
         height: unset;
     }
+
+    &.shake {
+        animation-name: shake;
+        animation-duration: 0.5s;
+    }
+}
+
+@keyframes shake {
+    0% {
+        transform: translate(0px);
+    }
+
+    25% {
+        transform: translate(-5px);
+    }
+
+    50% {
+        transform: translate(0px);
+    }
+
+    75% {
+        transform: translate(5px);
+    }
+
+    100% {
+        transform: translate(0px);
+    }
 }

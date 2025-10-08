@@ -1,5 +1,34 @@
 @use 'sass:math';
 
+@mixin letterAnimation($name, $endColour) {
+    @keyframes #{$name} {
+        0% {
+            background-color: #212529;
+            border: 5px solid lightslategray;
+        }
+
+        49% {
+            background-color: #212529;
+            border: 5px solid lightslategray;
+            transform: scaleY(0);
+        }
+
+        50% {
+            border: none;
+            background-color: $endColour;
+            transform: scaleY(0);
+        }
+
+        51% {
+            background-color: $endColour;
+        }
+    }
+}
+
+@include letterAnimation(correct, rgb(56, 151, 56));
+@include letterAnimation(partial, goldenrod);
+@include letterAnimation(incorrect, grey);
+
 .letter {
     display: flex;
     align-items: center;
@@ -11,10 +40,10 @@
     height: 95%;
 
     @media (max-width: 576px) {
-        width: percentage(math.div(1,6));
+        width: percentage(math.div(1, 6));
         height: unset;
     }
-    
+
     &.unsubmitted {
         background-color: #212529;
         border: 5px solid lightslategray;
@@ -22,13 +51,19 @@
 
     &.correct {
         background-color: rgb(56, 151, 56);
+        animation-name: correct;
+        animation-duration: 1s;
     }
 
     &.partial {
         background-color: goldenrod;
+        animation-name: partial;
+        animation-duration: 1s;
     }
 
     &.incorrect {
         background-color: grey;
+        animation-name: incorrect;
+        animation-duration: 1s;
     }
 }
