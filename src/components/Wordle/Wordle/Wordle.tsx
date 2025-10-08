@@ -1,78 +1,20 @@
 "use client";
 
-import { State, VALID_GUESSES, WORDS, WordState } from "@/types/wordle";
+import { State, VALID_GUESSES, WORDS, WordState, blankBoard } from "@/types/wordle";
 import { useEffect, useRef, useState } from "react";
 import Word from "../Word/Word";
 import "./Wordle.scss";
 import Keyboard from "../../Keyboard/Keyboard";
+import { ToastContainer, Toast, Button } from "react-bootstrap";
 
 export default function Wordle() {
   const [clicks, setClicks] = useState(0);
+  const [show, setShow] = useState(false);
+  const [showFail, setShowFail] = useState(false);
 
   const word = useRef<string>(WORDS[Math.floor(Math.random() * WORDS.length)]);
 
-  const guesses = useRef<WordState[]>([
-    {
-      letters: [
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-      ],
-      submitted: false,
-    },
-    {
-      letters: [
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-      ],
-      submitted: false,
-    },
-    {
-      letters: [
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-      ],
-      submitted: false,
-    },
-    {
-      letters: [
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-      ],
-      submitted: false,
-    },
-    {
-      letters: [
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-      ],
-      submitted: false,
-    },
-    {
-      letters: [
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-      ],
-      submitted: false,
-    },
-  ]);
+  const guesses = useRef<WordState[]>(blankBoard());
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -88,6 +30,12 @@ export default function Wordle() {
       document.removeEventListener("keydown", handleKeyDown);
     };
   });
+
+  function resetBoard() {
+    word.current = WORDS[Math.floor(Math.random() * WORDS.length)];
+    guesses.current = blankBoard();
+    hideToast();
+  }
 
   function handleKey(key: string) {
     if (/^[a-zA-Z]$/.test(key)) {
@@ -143,9 +91,22 @@ export default function Wordle() {
         }
         guesses.current[6 - guessNum].submitted = true;
       }
+
+      if (guess === word.current) {
+        setShow(true);
+      }
+
+      if (guesses.current[5].submitted === true && guess !== word.current) {
+        setShowFail(true);
+      }
     }
 
     setClicks(clicks + 1);
+  }
+
+  function hideToast() {
+    setShowFail(false);
+    setShow(false);
   }
 
   return (
@@ -171,6 +132,28 @@ export default function Wordle() {
             .map((y) => y.letter.toUpperCase())
             .filter((z) => z)}
         />
+        <ToastContainer position="middle-center">
+          <Toast bg={"success"} show={show} onClick={hideToast} onClose={() => hideToast()} delay={3000}>
+            <Toast.Header>
+              <strong className="me-auto">Wordle</strong>
+              <small className="text-muted">Just now</small>
+            </Toast.Header>
+            <Toast.Body>
+              <p>Victory!</p>
+              <Button onClick={resetBoard}>Play Again?</Button>
+            </Toast.Body>
+          </Toast>
+          <Toast bg={"danger"} show={showFail} onClick={hideToast} onClose={() => hideToast()} delay={3000}>
+            <Toast.Header>
+              <strong className="me-auto">Wordle</strong>
+              <small className="text-muted">Just now</small>
+            </Toast.Header>
+            <Toast.Body>
+              <p>Unlucky, the word was "{word.current}"</p>
+              <Button onClick={resetBoard}>Play Again?</Button>
+            </Toast.Body>
+          </Toast>
+        </ToastContainer>
       </div>
     </div>
   );
