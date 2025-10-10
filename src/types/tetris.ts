@@ -215,7 +215,6 @@ function removeFullLines(board: BlockSquare[][]): BlockSquare[][] {
       boardCopy.unshift(Array(Width).fill(BlockSquare.Empty));
     }
   }
-  console.log(boardCopy.length);
   return boardCopy;
 }
 
