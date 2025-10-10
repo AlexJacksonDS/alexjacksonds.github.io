@@ -13,7 +13,6 @@ export default function Tetris() {
     board: getFreshBoard(),
     activeBlock: undefined,
   });
-  const [t,setT] = useState(0);
 
   const divRef = useRef(null);
 
@@ -50,10 +49,6 @@ export default function Tetris() {
     };
   }, [game.isLost]);
 
-  useEffect(() => {
-    setT(screen.width);
-  })
-
   const handleKeyDown = (key: string) => {
     if (key === "a") {
       dispatch(Action.Left);
@@ -71,7 +66,6 @@ export default function Tetris() {
 
   return (
     <div className="game-container">
-        <div>{t}</div>
       <div className="tetris-container">
         <TetrisContext.Provider value={game}>
           <div ref={divRef} className="tetris-board" tabIndex={-1} onKeyDown={(e) => handleKeyDown(e.key)}>
