@@ -1,0 +1,39 @@
+.square {
+    aspect-ratio: 1 / 1;
+    outline: 1px solid #000000;
+    background: #000000;
+
+    display: block;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    width: 10%;
+
+    &.blue {
+        background-color: blue;
+    }
+
+    &.green {
+        background-color: green;
+    }
+
+    &.red {
+        background-color: red;
+    }
+
+    &.purple {
+        background-color: purple;
+    }
+
+    &.yellow {
+        background-color: goldenrod;
+    }
+
+    &.orange {
+        background-color: darkorange;
+    }
+
+    &.lightblue {
+        background-color: aqua;
+    }
+}
