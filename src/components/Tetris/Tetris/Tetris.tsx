@@ -67,6 +67,7 @@ export default function Tetris() {
 
   return (
     <div className="game-container">
+        <div>{screen.width + " " + screen.availWidth}</div>
       <div className="tetris-container">
         <TetrisContext.Provider value={game}>
           <div ref={divRef} className="tetris-board" tabIndex={-1} onKeyDown={(e) => handleKeyDown(e.key)}>
