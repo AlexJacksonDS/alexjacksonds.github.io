@@ -84,7 +84,6 @@ export enum Action {
   Left = "left",
   Right = "right",
   Rotate = "rotate",
-  //Drop = "drop"
 }
 
 export function updateGame(game: Game, action: Action): Game {
@@ -188,6 +187,9 @@ function drop(game: Game) {
             },
           };
         } else {
+          if (game.board[0].every((s) => s === BlockSquare.Empty)) {
+            game = placePartialBlockInBoard(game, game.activeBlock!.nextBlock);
+          }
           return {
             ...game,
             isLost: true,
@@ -230,6 +232,21 @@ function placeBlockInBoard(game: Game): Game {
     }
   }
 
+  return { ...game, board: boardCopy };
+}
+
+function placePartialBlockInBoard(game: Game, block: BlockSquare[][]): Game {
+  const boardCopy = [...game.board];
+  for (var i = block.length - 1; i >= 0; i--) {
+    for (var j = block[0].length - 1; j >= 0; j--) {
+      if (block[i][j] !== BlockSquare.Empty) {
+        boardCopy[0][Math.floor(Width / 2 - 2 / 2) + j] = block[i][j];
+      }
+    }
+    if (boardCopy[0].filter(s => s!==BlockSquare.Empty).length > 0) {
+        break;
+    }
+  }
   return { ...game, board: boardCopy };
 }
 
