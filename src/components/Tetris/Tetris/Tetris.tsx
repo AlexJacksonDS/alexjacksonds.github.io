@@ -1,19 +1,19 @@
 "use client";
 
 import { Action, BlockSquare, getFreshBoard, updateGame } from "@/types/tetris";
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import "./Tetris.scss";
 import Row from "../Row/Row";
 import { TetrisContext } from "../tetrisContext";
 import { Button } from "react-bootstrap";
 
 export default function Tetris() {
-  //const [board, setBoard] = useState(getFreshBoard());
   const [game, dispatch] = useReducer(updateGame, {
     isLost: false,
     board: getFreshBoard(),
     activeBlock: undefined,
   });
+  const [t,setT] = useState(0);
 
   const divRef = useRef(null);
 
@@ -50,6 +50,10 @@ export default function Tetris() {
     };
   }, [game.isLost]);
 
+  useEffect(() => {
+    setT(screen.width);
+  })
+
   const handleKeyDown = (key: string) => {
     if (key === "a") {
       dispatch(Action.Left);
@@ -67,7 +71,7 @@ export default function Tetris() {
 
   return (
     <div className="game-container">
-        <div>{screen.width + " " + screen.availWidth}</div>
+        <div>{t}</div>
       <div className="tetris-container">
         <TetrisContext.Provider value={game}>
           <div ref={divRef} className="tetris-board" tabIndex={-1} onKeyDown={(e) => handleKeyDown(e.key)}>
