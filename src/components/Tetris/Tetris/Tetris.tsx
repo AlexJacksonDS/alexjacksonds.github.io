@@ -1,7 +1,7 @@
 "use client";
 
 import { Action, BlockSquare, getFreshBoard, updateGame } from "@/types/tetris";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import "./Tetris.scss";
 import Row from "../Row/Row";
 import { TetrisContext } from "../tetrisContext";
@@ -68,6 +68,7 @@ export default function Tetris() {
 
   return (
     <div className="game-container">
+        <div>Score: {game.score} Lines Cleared: {game.linesCleared}</div>
       <div className="tetris-container">
         <TetrisContext.Provider value={game}>
           <div ref={divRef} className="tetris-board" tabIndex={-1} onKeyDown={(e) => handleKeyDown(e.key)}>
