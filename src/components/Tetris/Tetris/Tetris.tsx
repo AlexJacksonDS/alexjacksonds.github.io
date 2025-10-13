@@ -49,7 +49,7 @@ export default function Tetris() {
     return () => {
       window.clearInterval(interval);
     };
-  }, [game.isLost]);
+  }, [game.isLost, game.linesCleared]);
 
   const handleKeyDown = (key: string) => {
     if (key === "a") {
