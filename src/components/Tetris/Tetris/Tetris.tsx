@@ -12,6 +12,8 @@ export default function Tetris() {
     isLost: false,
     board: getFreshBoard(),
     activeBlock: undefined,
+    linesCleared: 0,
+    score: 0,
   });
 
   const divRef = useRef(null);
@@ -41,7 +43,7 @@ export default function Tetris() {
     if (!game.isLost) {
       interval = window.setInterval(() => {
         dispatch(Action.Tick);
-      }, 1000);
+      }, (0.8 - Math.floor(game.linesCleared / 10) * 0.007) ** Math.floor(game.linesCleared / 10) * 1000);
     }
 
     return () => {
@@ -60,8 +62,8 @@ export default function Tetris() {
       dispatch(Action.Rotate);
     }
     if (key === "s") {
-        dispatch(Action.Down);
-      }
+      dispatch(Action.Down);
+    }
   };
 
   return (

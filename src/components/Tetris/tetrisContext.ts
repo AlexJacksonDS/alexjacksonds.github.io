@@ -5,4 +5,6 @@ export const TetrisContext = createContext<Game>({
   isLost: false,
   board: getFreshBoard(),
   activeBlock: undefined,
+  linesCleared: 0,
+  score: 0
 });

@@ -76,6 +76,8 @@ export type Game = {
   isLost: boolean;
   board: BlockSquare[][];
   activeBlock: ActiveBlock | undefined;
+  score: number;
+  linesCleared: number;
 };
 
 export enum Action {
@@ -177,14 +179,17 @@ function drop(game: Game) {
       if (newPosition === game.activeBlock.position) {
         game = placeBlockInBoard(game);
         if (validateNewBlockPosition(game, initialPosition(), game.activeBlock!.nextBlock)) {
+          const { board, linesRemoved } = removeFullLines(game.board);
           return {
             ...game,
-            board: removeFullLines(game.board),
+            board: board,
             activeBlock: {
               position: initialPosition(),
               block: game.activeBlock!.nextBlock,
               nextBlock: blocks[Math.floor(Math.random() * blocks.length)],
             },
+            score: game.score + (linesRemoved === 4 ? 1000 :  linesRemoved * 100),
+            linesCleared: game.linesCleared + linesRemoved
           };
         } else {
           if (game.board[0].every((s) => s === BlockSquare.Empty)) {
@@ -209,15 +214,17 @@ function drop(game: Game) {
   return game;
 }
 
-function removeFullLines(board: BlockSquare[][]): BlockSquare[][] {
+function removeFullLines(board: BlockSquare[][]) {
   const boardCopy: BlockSquare[][] = JSON.parse(JSON.stringify(board));
+  let linesRemoved = 0;
   for (var i = 0; i < board.length; i++) {
     if (board[i].every((s) => s !== BlockSquare.Empty)) {
       boardCopy.splice(i, 1);
       boardCopy.unshift(Array(Width).fill(BlockSquare.Empty));
+      linesRemoved++;
     }
   }
-  return boardCopy;
+  return { board: boardCopy, linesRemoved };
 }
 
 function placeBlockInBoard(game: Game): Game {
@@ -243,8 +250,8 @@ function placePartialBlockInBoard(game: Game, block: BlockSquare[][]): Game {
         boardCopy[0][Math.floor(Width / 2 - 2 / 2) + j] = block[i][j];
       }
     }
-    if (boardCopy[0].filter(s => s!==BlockSquare.Empty).length > 0) {
-        break;
+    if (boardCopy[0].filter((s) => s !== BlockSquare.Empty).length > 0) {
+      break;
     }
   }
   return { ...game, board: boardCopy };
