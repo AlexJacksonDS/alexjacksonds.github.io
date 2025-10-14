@@ -1,6 +1,6 @@
 "use client";
 
-import { Action, getFreshBoard, updateGame } from "@/types/breakout";
+import { Action, getFreshBoard, getStartBricks, updateGame } from "@/types/breakout";
 import { useEffect, useReducer, useRef } from "react";
 import { BreakoutContext } from "./breakoutContext";
 import { Button } from "react-bootstrap";
@@ -16,19 +16,10 @@ export default function Breakout() {
     batWidth: 50,
     lives: 3,
     isLost: false,
+    bricks :getStartBricks()
   });
 
   const divRef = useRef(null);
-
-  function renderActiveBlockInBoard(): number[][] {
-    const boardCopy = JSON.parse(JSON.stringify(game.board));
-
-    for (let i = 0; i < 5; i++) {
-      boardCopy[199][game.batPos + i] = 1;
-    }
-
-    return boardCopy;
-  }
 
   useEffect(() => {
     (divRef.current as any).focus();
@@ -39,7 +30,7 @@ export default function Breakout() {
     if (!game.isLost) {
       interval = window.setInterval(() => {
         dispatch(Action.Tick);
-      }, 1000/30);
+      }, 1000/50);
     }
 
     return () => {

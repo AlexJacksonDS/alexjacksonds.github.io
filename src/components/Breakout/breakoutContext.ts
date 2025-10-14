@@ -8,5 +8,6 @@ export const BreakoutContext = createContext<Game>({
   lives: 3,
   isLost: false,
   batWidth: 10,
-  ballVector: [0,0]
+  ballVector: [0,0],
+  bricks: []
 });

@@ -23,10 +23,15 @@ export const BreakoutCanvas = memo(function BreakoutCanvas({ game }: { game: Gam
         // game.board.map((x, i) => {
         //   x.map((y, j) => {
         //     if (y === 1) {
-        //       context.fillRect(i * game.batWidth, y * 10 * j, game.batWidth - 1, 9);
+        //       context.fillRect(i * game.batWidth + 1, 10 * j + 1, game.batWidth - 1, 9);
         //     }
         //   });
         // });
+
+        // bricks
+        game.bricks.map(x => {
+            context.fillRect(x.tlX + 1, x.tlY + 1, game.batWidth - 1, 9);
+        })
       }
     }
   }, [game]);
