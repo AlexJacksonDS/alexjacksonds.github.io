@@ -25,7 +25,7 @@ export enum Action {
   Right = "right",
 }
 
-const batSpeed = 20;
+const batSpeed = 50;
 
 export function updateGame(game: Game, action: Action): Game {
   switch (action) {
@@ -79,9 +79,7 @@ function tick(game: Game): Game {
   if (ballTouchesTop(newBallPos)) {
     newBallVector = flipVector(false, game.ballVector);
   }
-  if (ballTouchesBottom(newBallPos)) {
-    newBallVector = flipVector(false, game.ballVector);
-  }
+  
 
   if (ballTouchesLeft(newBallPos)) {
     newBallVector = flipVector(true, game.ballVector);
@@ -89,6 +87,16 @@ function tick(game: Game): Game {
   if (ballTouchesRight(newBallPos)) {
     newBallVector = flipVector(true, game.ballVector);
   }
+
+  if (ballTouchesBottom(newBallPos)) {
+    return {
+        ...game,
+        ballPos: newBallPos,
+        ballVector: [0,0],
+        isLost: true
+      }
+  }
+
   return {
     ...game,
     ballPos: newBallPos,

@@ -12,7 +12,7 @@ export default function Breakout() {
     board: getFreshBoard(),
     ballPos: [250, 450],
     ballVector: [5,5],
-    batPos: 225,
+    batPos: 380,
     batWidth: 50,
     lives: 3,
     isLost: false,
