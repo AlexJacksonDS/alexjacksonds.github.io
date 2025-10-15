@@ -27,19 +27,35 @@ export enum Action {
 
 const batSpeed = 50;
 
-export function updateGame(game: Game, action: Action): Game {
-  switch (action) {
+export function updateGame(game: Game, action: { action: Action; dx?: number }): Game {
+  if (action.dx) {
+    return moveBatDx(game, action.dx);
+  }
+  switch (action.action) {
     case Action.Tick:
       return tick(game);
     case Action.Left:
-      return moveBat(game, action);
+      return moveBat(game, action.action);
     case Action.Right:
-      return moveBat(game, action);
+      return moveBat(game, action.action);
   }
 }
 
 function moveBat(game: Game, action: Action): Game {
   let newPos = game.batPos + (action === Action.Left ? -1 : 1) * batSpeed;
+  if (newPos < 0) {
+    newPos = 0;
+  } else if (newPos > width - game.batWidth) {
+    newPos = width - game.batWidth;
+  }
+  return {
+    ...game,
+    batPos: newPos,
+  };
+}
+
+function moveBatDx(game: Game, dx: number): Game {
+  let newPos = dx;
   if (newPos < 0) {
     newPos = 0;
   } else if (newPos > width - game.batWidth) {
@@ -79,7 +95,6 @@ function tick(game: Game): Game {
   if (ballTouchesTop(newBallPos)) {
     newBallVector = flipVector(false, game.ballVector);
   }
-  
 
   if (ballTouchesLeft(newBallPos)) {
     newBallVector = flipVector(true, game.ballVector);
@@ -90,11 +105,11 @@ function tick(game: Game): Game {
 
   if (ballTouchesBottom(newBallPos)) {
     return {
-        ...game,
-        ballPos: newBallPos,
-        ballVector: [0,0],
-        isLost: true
-      }
+      ...game,
+      ballPos: newBallPos,
+      ballVector: [0, 0],
+      isLost: true,
+    };
   }
 
   return {

@@ -6,17 +6,18 @@ import { BreakoutContext } from "./breakoutContext";
 import { Button } from "react-bootstrap";
 import "./Breakout.scss";
 import { BreakoutCanvas } from "./BreakoutCanvas";
+import { useDrag } from "@use-gesture/react";
 
 export default function Breakout() {
   const [game, dispatch] = useReducer(updateGame, {
     board: getFreshBoard(),
     ballPos: [250, 450],
-    ballVector: [5,5],
+    ballVector: [5, 5],
     batPos: 380,
     batWidth: 50,
     lives: 3,
     isLost: false,
-    bricks :getStartBricks()
+    bricks: getStartBricks(),
   });
 
   const divRef = useRef(null);
@@ -29,8 +30,8 @@ export default function Breakout() {
     let interval: number | undefined;
     if (!game.isLost) {
       interval = window.setInterval(() => {
-        dispatch(Action.Tick);
-      }, 1000/50);
+        dispatch({ action: Action.Tick });
+      }, 1000 / 50);
     }
 
     return () => {
@@ -38,12 +39,23 @@ export default function Breakout() {
     };
   }, [game.isLost]);
 
+  const bind = useDrag(
+    ({ down, movement: [mx, my], velocity }) => {
+      const THRESHOLD = 20;
+      const FORCE_THRESHOLD = 1;
+      if (mx) {
+        dispatch({ action: Action.Left, dx: mx });
+      }
+    },
+    { filterTaps: true, axis: "lock" }
+  );
+
   const handleKeyDown = (key: string) => {
     if (key === "a") {
-      dispatch(Action.Left);
+      dispatch({ action: Action.Left });
     }
     if (key === "d") {
-      dispatch(Action.Right);
+      dispatch({ action: Action.Right });
     }
   };
 
@@ -51,7 +63,13 @@ export default function Breakout() {
     <div className="game-container">
       <div className="breakout-container">
         <BreakoutContext.Provider value={game}>
-          <div ref={divRef} className="breakout-board" tabIndex={-1} onKeyDown={(e) => handleKeyDown(e.key)}>
+          <div
+            ref={divRef}
+            className="breakout-board"
+            tabIndex={-1}
+            onKeyDown={(e) => handleKeyDown(e.key)}
+            {...bind()}
+          >
             {/* {renderActiveBlockInBoard().map((x, i) => (
               <div className="breakout-row" key={i}>
                 {x.map((y, j) => (
