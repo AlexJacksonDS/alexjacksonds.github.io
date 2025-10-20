@@ -70,13 +70,6 @@ export default function Breakout() {
             onKeyDown={(e) => handleKeyDown(e.key)}
             {...bind()}
           >
-            {/* {renderActiveBlockInBoard().map((x, i) => (
-              <div className="breakout-row" key={i}>
-                {x.map((y, j) => (
-                  <div className={"breakout-square " + (y === 0 ? "black" : "white")} key={j}></div>
-                ))}
-              </div>
-            ))} */}
             <BreakoutCanvas game={game} />
           </div>
         </BreakoutContext.Provider>
