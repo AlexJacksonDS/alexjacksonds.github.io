@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const refresh = async () => {
     if (!token || !refreshToken) return "Failed";
-    const body = { accessToken: token, refreshToken };
+    const body = { accessToken: localStorage.getItem("token"), refreshToken: localStorage.getItem("refreshToken") };
     const response = await fetch("https://ajj-sig-test.azurewebsites.net/refresh", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

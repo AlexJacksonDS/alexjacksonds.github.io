@@ -1,7 +1,7 @@
 import { Terrain, Tile } from "@/types/cartographers";
 import "./Tile.scss";
 
-export default function Tile({ tile, small }: { tile: Tile; small?: boolean }) {
+export default function CartTile({ tile, small }: { tile: Tile; small?: boolean }) {
   const terrainKey = Object.keys(Terrain)[Object.values(Terrain).indexOf(tile.terrain)].toLowerCase();
 
   function getPrimarySymbol() {

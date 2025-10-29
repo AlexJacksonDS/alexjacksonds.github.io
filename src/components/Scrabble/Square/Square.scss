@@ -1,0 +1,44 @@
+.normal {
+    background-color: beige;
+}
+
+.dl {
+    background-color: lightblue;
+    color: black;
+}
+
+.tl {
+    background-color: blue;
+}
+
+.dw {
+    background-color: pink;
+    color: black;
+}
+
+.tw {
+    background-color: red;
+}
+
+.gridsquare {
+    aspect-ratio: 1 / 1;
+    max-width: 5vmin;
+    display: block;
+    font-size: 1.2vmin;
+    text-align: center;
+    align-items: center;
+    max-height: 5vmin;
+    margin: 1px;
+
+    & .tile {
+        max-width: 4.4vmin;
+        max-height: 4.4vmin;
+        min-width: unset;
+        width: 100%;
+    }
+
+    &.faux-borders {
+        padding: 5%;
+        display: grid;
+    }
+}

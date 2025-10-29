@@ -1,0 +1,37 @@
+.tile {
+    aspect-ratio: 1 / 1;
+    max-width: 4.8vmin;
+    min-width: 4.8vmin;
+    display: block;
+    font-size: 3vmin;
+    text-align: center;
+    align-items: center;
+    max-height: 4.8vmin;
+    background-color: white;
+    color: black;
+    justify-self: center;
+
+    & .letter {
+        position: relative;
+        top: 0;
+        left: 0;
+        max-height: 3.8vmin;
+    }
+
+    & .points {
+        position: relative;
+        bottom: 0.5vmin;
+        right: 0.5vmin;
+        float: right;
+        font-size: 1vmin;
+    }
+}
+
+.player-tiles {
+    width: 75vmin;
+}
+
+.center {
+    align-items: center;
+    justify-content: center;
+}

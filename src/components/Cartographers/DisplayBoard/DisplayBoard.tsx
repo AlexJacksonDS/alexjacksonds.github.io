@@ -2,7 +2,7 @@
 
 import { Board } from "@/types/cartographers";
 import { Col, Container, Row } from "react-bootstrap";
-import Tile from "../Tile/Tile";
+import CartTile from "../Tile/Tile";
 import { useContext } from "react";
 import { CartographersContext } from "../context";
 
@@ -20,7 +20,7 @@ export default function DisplayBoard({ board }: { board: Board }) {
           <Col className="d-flex justify-content-center">
             {x.map((y, j) => (
               <div key={`${i},${j}`} onClick={() => onClick(i, j)}>
-                <Tile tile={y} />
+                <CartTile tile={y} />
               </div>
             ))}
           </Col>

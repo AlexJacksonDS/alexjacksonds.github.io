@@ -1,6 +1,6 @@
 import { TerrainCard } from "@/types/cartographers";
 import { Col, Row } from "react-bootstrap";
-import Tile from "../Tile/Tile";
+import CartTile from "../Tile/Tile";
 import "./CurrentCard.scss";
 
 export default function CurrentCard({ card, isRuin }: { card?: TerrainCard; isRuin: boolean }) {
@@ -21,7 +21,7 @@ export default function CurrentCard({ card, isRuin }: { card?: TerrainCard; isRu
                     <Col className="d-flex justify-content-center">
                       {x.map((y, k) => (
                         <div key={`${j},${k}`}>
-                          <Tile tile={{ terrain: y, isRuin: false }} small={true} />
+                          <CartTile tile={{ terrain: y, isRuin: false }} small={true} />
                         </div>
                       ))}
                     </Col>

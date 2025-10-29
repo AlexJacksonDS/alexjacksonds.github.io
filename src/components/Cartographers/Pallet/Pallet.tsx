@@ -2,7 +2,7 @@
 
 import { Terrain } from "@/types/cartographers";
 import { Col, Row } from "react-bootstrap";
-import Tile from "../Tile/Tile";
+import CartTile from "../Tile/Tile";
 import { CartographersContext } from "../context";
 import { ReactNode, useContext } from "react";
 import "./Pallet.scss";
@@ -27,11 +27,11 @@ export default function Pallet({
       <Col onClick={() => onClick(terrain)} className="d-flex justify-content-center align-items-center">
         {selectedTerrain === terrain ? (
           <Highlight>
-            <Tile tile={{ terrain, isRuin: false }} />
+            <CartTile tile={{ terrain, isRuin: false }} />
           </Highlight>
         ) : (
           <div>
-            <Tile tile={{ terrain, isRuin: false }} />
+            <CartTile tile={{ terrain, isRuin: false }} />
           </div>
         )}
       </Col>
