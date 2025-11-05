@@ -1,16 +1,15 @@
 "use client";
 
-import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-import { useEffect, useState, KeyboardEvent, useRef } from "react";
+import { useState, KeyboardEvent } from "react";
 import { Col, Container, FormGroup, FormLabel, Row } from "react-bootstrap";
 import { OtherPlayer, Player, PlayerScore } from "../../types/hearts";
 import ScoreBoard from "../../components/Hearts/ScoreBoard/ScoreBoard";
 import CardPlayArea from "../../components/Hearts/CardPlayArea/CardPlayArea";
 import "./Hearts.scss";
+import { otherPlayersFour, otherPlayersThree } from "@/helpers/nextPlayerMaps";
+import useSignalR from "@/hooks/useSignalR";
 
 export default function Hearts() {
-  const connectionRef = useRef<HubConnection | undefined>();
-
   const [name, setName] = useState("");
   const [nameDisabled, setNameDisabled] = useState(false);
   const [gameId, setGameId] = useState("");
@@ -29,45 +28,37 @@ export default function Hearts() {
   const [topPlayer, setTopPlayer] = useState<OtherPlayer>();
   const [rightPlayer, setRightPlayer] = useState<OtherPlayer>();
 
-  useEffect(() => {
-    if (!connectionRef.current) {
-      connectionRef.current = new HubConnectionBuilder()
-        .withUrl(`${process.env.NEXT_PUBLIC_API}/hearts`, { withCredentials: false })
-        .build();
+  const signalRConnection = useSignalR("hearts", [
+    ["joinFailed", joinFailed],
+    ["state", handleNewState],
+    ["gameEnded", gameEnded],
+  ]);
 
-      connectionRef.current.on("joinFailed", () => {
-        setGameId("");
-        setGameIdDisabled(false);
-      });
+  function joinFailed() {
+    setGameId("");
+    setGameIdDisabled(false);
+  }
 
-      connectionRef.current.on("state", (state: any) => {
-        handleNewState(state);
-      });
-
-      connectionRef.current.on("gameEnded", () => {
-        if (connectionRef.current) {
-          connectionRef.current.send("leaveGame", gameId);
-        }
-        setGameId("");
-        setGameIdDisabled(false);
-        setConnectedToGame(false);
-        setIsStartable(false);
-        setIsHeartsBroken(false);
-        setHasPassOccured(false);
-        setPassDirection("");
-        setCardsToPass([]);
-        setScores([]);
-        setCurrentPlayer("");
-        setCurrentLead("");
-        setPlayer(undefined);
-        setLeftPlayer(undefined);
-        setTopPlayer(undefined);
-        setRightPlayer(undefined);
-      });
-
-      connectionRef.current.start().catch((err) => console.log(err));
+  function gameEnded() {
+    if (signalRConnection) {
+      signalRConnection.send("leaveGame", gameId);
     }
-  });
+    setGameId("");
+    setGameIdDisabled(false);
+    setConnectedToGame(false);
+    setIsStartable(false);
+    setIsHeartsBroken(false);
+    setHasPassOccured(false);
+    setPassDirection("");
+    setCardsToPass([]);
+    setScores([]);
+    setCurrentPlayer("");
+    setCurrentLead("");
+    setPlayer(undefined);
+    setLeftPlayer(undefined);
+    setTopPlayer(undefined);
+    setRightPlayer(undefined);
+  }
 
   const nameOnKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key != "Enter") return;
@@ -76,21 +67,25 @@ export default function Hearts() {
 
   const gameIdOnKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key != "Enter") return;
-    if (connectionRef.current) {
-      connectionRef.current.send("joinGame", name, gameId).then(() => setGameIdDisabled(true));
+    if (signalRConnection) {
+      signalRConnection
+        .send("joinGame", name, gameId)
+        .then(() => setGameIdDisabled(true));
     }
   };
 
   const startGame = () => {
-    if (connectionRef.current) {
-      connectionRef.current.send("startGame", gameId).then(() => setIsStartable(false));
+    if (signalRConnection) {
+      signalRConnection
+        .send("startGame", gameId)
+        .then(() => setIsStartable(false));
     }
   };
 
   const selectCard = (card: string) => {
     if (hasPassOccured && selectedCardIsValid(card)) {
-      if (connectionRef.current) {
-        connectionRef.current.send("takeTurn", gameId, card);
+      if (signalRConnection) {
+        signalRConnection.send("takeTurn", gameId, card);
       }
       return;
     }
@@ -107,8 +102,8 @@ export default function Hearts() {
 
   const passCards = () => {
     if (!hasPassOccured && cardsToPass.length === 3) {
-      if (connectionRef.current) {
-        connectionRef.current.send("passCards", gameId, cardsToPass);
+      if (signalRConnection) {
+        signalRConnection.send("passCards", gameId, cardsToPass);
         setCardsToPass([]);
       }
     }
@@ -137,7 +132,10 @@ export default function Hearts() {
       const leadSuit = currentLead.charAt(1);
 
       // Must follow suit
-      if (player?.hand.some((c) => c.charAt(1) === leadSuit) && card.charAt(1) !== leadSuit) {
+      if (
+        player?.hand.some((c) => c.charAt(1) === leadSuit) &&
+        card.charAt(1) !== leadSuit
+      ) {
         return false;
       }
 
@@ -147,7 +145,11 @@ export default function Hearts() {
       }
     } else {
       // Must not lead hearts unless forced
-      if (!isHeartsBroken && card.charAt(1) === "H" && player?.hand.some((c) => c.charAt(1) !== "H")) {
+      if (
+        !isHeartsBroken &&
+        card.charAt(1) === "H" &&
+        player?.hand.some((c) => c.charAt(1) !== "H")
+      ) {
         return false;
       }
     }
@@ -177,14 +179,20 @@ export default function Hearts() {
                 <input
                   className="form-control"
                   value={gameId}
-                  onInput={(e) => setGameId((e.target as HTMLInputElement).value)}
+                  onInput={(e) =>
+                    setGameId((e.target as HTMLInputElement).value)
+                  }
                   onKeyUp={(e) => gameIdOnKeyUp(e)}
                   disabled={gameIdDisabled}
                   placeholder="Enter to submit"
                 />
               </FormGroup>
             </Container>
-            <button className="btn btn-primary" onClick={startGame} hidden={!isStartable}>
+            <button
+              className="btn btn-primary"
+              onClick={startGame}
+              hidden={!isStartable}
+            >
               Start game
             </button>
           </Col>
@@ -197,7 +205,9 @@ export default function Hearts() {
           </Col>
         </Row>
         <Row className="pass-details">
-          <Col className="pass-display button-visible">{connectedToGame ? getPassDirectionString() : ""}</Col>
+          <Col className="pass-display button-visible">
+            {connectedToGame ? getPassDirectionString() : ""}
+          </Col>
           <Col className="pass-display button">
             <button
               className="btn btn-primary"
@@ -213,7 +223,11 @@ export default function Hearts() {
             {connectedToGame && player && leftPlayer && topPlayer ? (
               <CardPlayArea
                 currentPlayerId={currentPlayer}
-                cardsToHighlight={hasPassOccured && currentPlayer === player.id ? validCards() : cardsToPass}
+                cardsToHighlight={
+                  hasPassOccured && currentPlayer === player.id
+                    ? validCards()
+                    : cardsToPass
+                }
                 player={player}
                 leftPlayer={leftPlayer}
                 topPlayer={topPlayer}
@@ -256,20 +270,30 @@ export default function Hearts() {
       const otherPlayerPositions = otherPlayersThree.get(myPlayerOrder);
 
       if (otherPlayerPositions) {
-        const playerOnLeft = state.otherPlayerDetails.find((p: any) => p.playerOrder === otherPlayerPositions[0]);
+        const playerOnLeft = state.otherPlayerDetails.find(
+          (p: any) => p.playerOrder === otherPlayerPositions[0]
+        );
         setLeftPlayer(playerOnLeft);
-        const playerOnTop = state.otherPlayerDetails.find((p: any) => p.playerOrder === otherPlayerPositions[1]);
+        const playerOnTop = state.otherPlayerDetails.find(
+          (p: any) => p.playerOrder === otherPlayerPositions[1]
+        );
         setTopPlayer(playerOnTop);
       }
     } else if (state.otherPlayerDetails.length === 3) {
       const otherPlayerPositions = otherPlayersFour.get(myPlayerOrder);
       if (otherPlayerPositions) {
-        const playerOnLeft = state.otherPlayerDetails.find((p: any) => p.playerOrder === otherPlayerPositions[0]);
+        const playerOnLeft = state.otherPlayerDetails.find(
+          (p: any) => p.playerOrder === otherPlayerPositions[0]
+        );
         setLeftPlayer(playerOnLeft);
-        const playerOnTop = state.otherPlayerDetails.find((p: any) => p.playerOrder === otherPlayerPositions[1]);
+        const playerOnTop = state.otherPlayerDetails.find(
+          (p: any) => p.playerOrder === otherPlayerPositions[1]
+        );
         setTopPlayer(playerOnTop);
 
-        const playerOnRight = state.otherPlayerDetails.find((p: any) => p.playerOrder === otherPlayerPositions[2]);
+        const playerOnRight = state.otherPlayerDetails.find(
+          (p: any) => p.playerOrder === otherPlayerPositions[2]
+        );
         setRightPlayer(playerOnRight);
       }
     }
@@ -284,14 +308,3 @@ export default function Hearts() {
     setConnectedToGame(true);
   }
 }
-
-const otherPlayersThree = new Map<number, number[]>();
-otherPlayersThree.set(1, [2, 3]);
-otherPlayersThree.set(2, [3, 1]);
-otherPlayersThree.set(3, [1, 2]);
-
-const otherPlayersFour = new Map<number, number[]>();
-otherPlayersFour.set(1, [2, 3, 4]);
-otherPlayersFour.set(2, [3, 4, 1]);
-otherPlayersFour.set(3, [4, 1, 2]);
-otherPlayersFour.set(4, [1, 2, 3]);

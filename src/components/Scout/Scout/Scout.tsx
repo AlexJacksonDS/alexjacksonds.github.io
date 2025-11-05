@@ -19,21 +19,6 @@ import CentreCards from "../CentreCards/CentreCards";
 import ScoutPlayer from "../ScoutPlayer/ScoutPlayer";
 import OtherScoutPlayer from "../OtherScoutPlayer/OtherScoutPlayer";
 
-const otherPlayersTwo = new Map<number, number[]>();
-otherPlayersTwo.set(1, [2]);
-otherPlayersTwo.set(2, [1]);
-
-const otherPlayersThree = new Map<number, number[]>();
-otherPlayersThree.set(1, [2, 3]);
-otherPlayersThree.set(2, [3, 1]);
-otherPlayersThree.set(3, [1, 2]);
-
-const otherPlayersFour = new Map<number, number[]>();
-otherPlayersFour.set(1, [2, 3, 4]);
-otherPlayersFour.set(2, [3, 4, 1]);
-otherPlayersFour.set(3, [4, 1, 2]);
-otherPlayersFour.set(4, [1, 2, 3]);
-
 export default function Scout() {
   const [gameId, setGameId] = useState("");
   const [gameIdDisabled, setGameIdDisabled] = useState(false);
@@ -51,7 +36,7 @@ export default function Scout() {
   const [isScouting, setIsScouting] = useState(false);
   const [scoutIndex, setScoutIndex] = useState(0);
 
-  const signalRConnection = useSignalR("Scout", [
+  const signalRConnection = useSignalR("scout", [
     ["joinFailed", joinFailed],
     ["state", handleNewState],
     ["invalidMove", resetAfterInvalidMove],

@@ -1,0 +1,12 @@
+export const otherPlayersTwo = new Map<number, number[]>();
+otherPlayersTwo.set(1, [2]);
+otherPlayersTwo.set(2, [1]);
+export const otherPlayersThree = new Map<number, number[]>();
+otherPlayersThree.set(1, [2, 3]);
+otherPlayersThree.set(2, [3, 1]);
+otherPlayersThree.set(3, [1, 2]);
+export const otherPlayersFour = new Map<number, number[]>();
+otherPlayersFour.set(1, [2, 3, 4]);
+otherPlayersFour.set(2, [3, 4, 1]);
+otherPlayersFour.set(3, [4, 1, 2]);
+otherPlayersFour.set(4, [1, 2, 3]);
