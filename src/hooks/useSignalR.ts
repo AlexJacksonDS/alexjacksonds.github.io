@@ -117,7 +117,7 @@ export default function useSignalR(path: string, handlers: SignalRHandler[]) {
         setSignalRHub(null);
       };
     }
-  }, [path, userData, optionsRef.current.enabled]);
+  }, [path, userData, optionsRef.current.enabled, handlers, router]);
 
   return signalRHub;
 }

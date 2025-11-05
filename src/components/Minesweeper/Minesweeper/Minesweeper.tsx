@@ -43,7 +43,7 @@ export default function Minesweeper() {
 
   useEffect(() => {
     setInstructions(isMobile ? "Tap to reveal, long press to flag" : "Left click to reveal, right click to flag");
-  });
+  }, []);
 
   function handleInput(
     input: string,
