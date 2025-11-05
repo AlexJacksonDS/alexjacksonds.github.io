@@ -1,11 +1,7 @@
 "use client";
 
 import { GameState } from "@/types/catInTheBox";
-import {
-  useState,
-  KeyboardEvent,
-  ChangeEvent,
-} from "react";
+import { useState, KeyboardEvent, ChangeEvent } from "react";
 import {
   Button,
   Col,
@@ -22,6 +18,7 @@ import PlayedCards from "../PlayedCards/PlayedCards";
 import OtherPlayerDetails from "../OtherPlayerDetails/OtherPlayerDetails";
 import PlayerDetails from "../PlayerDetails/PlayerDetails";
 import useSignalR from "@/hooks/useSignalR";
+import GameIdForm from "@/components/GameIdForm/GameIdForm";
 
 export default function CatInTheBox() {
   const [gameId, setGameId] = useState("");
@@ -268,30 +265,15 @@ export default function CatInTheBox() {
 
   return (
     <Container className="catInTheBox">
-      <Row>
-        <Col>
-          <Container hidden={connectedToGame}>
-            <FormGroup>
-              <FormLabel>Game ID: </FormLabel>
-              <input
-                className="form-control"
-                value={gameId}
-                onInput={(e) => setGameId((e.target as HTMLInputElement).value)}
-                onKeyUp={(e) => gameIdOnKeyUp(e)}
-                disabled={gameIdDisabled}
-                placeholder="Enter to submit"
-              />
-            </FormGroup>
-          </Container>
-          <button
-            className="btn btn-primary"
-            onClick={startGame}
-            hidden={!gameState?.isStartable}
-          >
-            Start game
-          </button>
-        </Col>
-      </Row>
+      <GameIdForm
+        connectedToGame={connectedToGame}
+        gameId={gameId}
+        setGameId={setGameId}
+        gameIdOnKeyUp={gameIdOnKeyUp}
+        gameIdDisabled={gameIdDisabled}
+        startGame={startGame}
+        isStartable={gameState?.isStartable ?? false}
+      />
       {gameState && gameState.isStarted ? (
         <Row>
           {errorString ? (

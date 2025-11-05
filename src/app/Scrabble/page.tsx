@@ -13,6 +13,7 @@ import ScrabbleOtherPlayer from "@/components/Scrabble/OtherPlayer/OtherPlayer";
 import { DndProvider } from "react-dnd-multi-backend";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import { DropResult } from "@/types/railRoadInk";
+import GameIdForm from "@/components/GameIdForm/GameIdForm";
 
 const otherPlayersTwo = new Map<number, number[]>();
 otherPlayersTwo.set(1, [2]);
@@ -30,8 +31,6 @@ otherPlayersFour.set(3, [4, 1, 2]);
 otherPlayersFour.set(4, [1, 2, 3]);
 
 export default function Scrabble() {
-  const [name, setName] = useState("");
-  const [nameDisabled, setNameDisabled] = useState(false);
   const [gameId, setGameId] = useState("");
   const [gameIdDisabled, setGameIdDisabled] = useState(false);
   const [connectedToGame, setConnectedToGame] = useState(false);
@@ -120,16 +119,10 @@ export default function Scrabble() {
     setConnectedToGame(false);
     gameState.current = undefined;
   }
-
-  function nameOnKeyUp(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key != "Enter") return;
-    setNameDisabled(true);
-  }
-
   function gameIdOnKeyUp(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key != "Enter") return;
-    if (signalRConnection && name && gameId) {
-      signalRConnection.send("joinGame", name, gameId).then(() => {
+    if (signalRConnection && gameId) {
+      signalRConnection.send("joinGame", gameId).then(() => {
         setGameIdDisabled(true);
         setConnectedToGame(true);
       });
@@ -200,37 +193,15 @@ export default function Scrabble() {
   return (
     <main>
       <Container>
-        <Row>
-          <Col>
-            <Container hidden={connectedToGame}>
-              <FormGroup>
-                <FormLabel>Username: </FormLabel>
-                <input
-                  className="form-control"
-                  value={name}
-                  onInput={(e) => setName((e.target as HTMLInputElement).value)}
-                  onKeyUp={(e) => nameOnKeyUp(e)}
-                  disabled={nameDisabled}
-                  placeholder="Enter to submit"
-                />
-              </FormGroup>
-              <FormGroup>
-                <FormLabel>Game ID: </FormLabel>
-                <input
-                  className="form-control"
-                  value={gameId}
-                  onInput={(e) => setGameId((e.target as HTMLInputElement).value)}
-                  onKeyUp={(e) => gameIdOnKeyUp(e)}
-                  disabled={gameIdDisabled}
-                  placeholder="Enter to submit"
-                />
-              </FormGroup>
-            </Container>
-            <button className="btn btn-primary" onClick={startGame} hidden={!isStartable}>
-              Start game
-            </button>
-          </Col>
-        </Row>
+        <GameIdForm
+          connectedToGame={connectedToGame}
+          gameId={gameId}
+          setGameId={setGameId}
+          gameIdOnKeyUp={gameIdOnKeyUp}
+          gameIdDisabled={gameIdDisabled}
+          startGame={startGame}
+          isStartable={isStartable}
+        />
         <Row>
           <Col>
             <Container hidden={!connectedToGame}>

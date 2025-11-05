@@ -18,6 +18,7 @@ import ScoreBoard from "@/components/Hearts/ScoreBoard/ScoreBoard";
 import CentreCards from "../CentreCards/CentreCards";
 import ScoutPlayer from "../ScoutPlayer/ScoutPlayer";
 import OtherScoutPlayer from "../OtherScoutPlayer/OtherScoutPlayer";
+import GameIdForm from "@/components/GameIdForm/GameIdForm";
 
 export default function Scout() {
   const [gameId, setGameId] = useState("");
@@ -183,32 +184,15 @@ export default function Scout() {
   return (
     <main>
       <Container>
-        <Row>
-          <Col>
-            <Container hidden={gameState !== undefined}>
-              <FormGroup>
-                <FormLabel>Game ID: </FormLabel>
-                <input
-                  className="form-control"
-                  value={gameId}
-                  onInput={(e) =>
-                    setGameId((e.target as HTMLInputElement).value)
-                  }
-                  onKeyUp={(e) => gameIdOnKeyUp(e)}
-                  disabled={gameIdDisabled}
-                  placeholder="Enter to submit"
-                />
-              </FormGroup>
-            </Container>
-            <button
-              className="btn btn-primary"
-              onClick={startGame}
-              hidden={!gameState?.isStartable}
-            >
-              Start game
-            </button>
-          </Col>
-        </Row>
+        <GameIdForm
+          connectedToGame={gameState !== undefined}
+          gameId={gameId}
+          setGameId={setGameId}
+          gameIdOnKeyUp={gameIdOnKeyUp}
+          gameIdDisabled={gameIdDisabled}
+          startGame={startGame}
+          isStartable={gameState?.isStartable ?? false}
+        />
         <Row>
           <Col>
             <Container>

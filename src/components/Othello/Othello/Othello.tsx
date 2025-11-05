@@ -14,6 +14,7 @@ import {
 } from "../../../services/othello.service";
 import { OthelloBoard as Board, OthelloTurn } from "../../../types/othello";
 import useSignalR from "@/hooks/useSignalR";
+import GameIdForm from "@/components/GameIdForm/GameIdForm";
 
 export default function Othello() {
   const [gameId, setGameId] = useState("");
@@ -86,25 +87,13 @@ export default function Othello() {
   return (
     <main>
       <Container>
-        <Row>
-          <Col>
-            <Container hidden={connectedToGame}>
-              <FormGroup>
-                <FormLabel>Game ID: </FormLabel>
-                <input
-                  className="form-control"
-                  value={gameId}
-                  onInput={(e) =>
-                    setGameId((e.target as HTMLInputElement).value)
-                  }
-                  onKeyUp={(e) => gameIdOnKeyUp(e)}
-                  disabled={gameIdDisabled}
-                  placeholder="Enter to submit"
-                />
-              </FormGroup>
-            </Container>
-          </Col>
-        </Row>
+        <GameIdForm
+          connectedToGame={connectedToGame}
+          gameId={gameId}
+          setGameId={setGameId}
+          gameIdOnKeyUp={gameIdOnKeyUp}
+          gameIdDisabled={gameIdDisabled}
+        />
         <Row className="g-0-bottom">
           <Col className="g-0">
             <Container className="faux-borders-thin">

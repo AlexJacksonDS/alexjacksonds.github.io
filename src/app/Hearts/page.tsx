@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, KeyboardEvent } from "react";
+import { useState, KeyboardEvent, Dispatch, SetStateAction } from "react";
 import { Col, Container, FormGroup, FormLabel, Row } from "react-bootstrap";
 import { OtherPlayer, Player, PlayerScore } from "../../types/hearts";
 import ScoreBoard from "../../components/Hearts/ScoreBoard/ScoreBoard";
@@ -8,10 +8,9 @@ import CardPlayArea from "../../components/Hearts/CardPlayArea/CardPlayArea";
 import "./Hearts.scss";
 import { otherPlayersFour, otherPlayersThree } from "@/helpers/nextPlayerMaps";
 import useSignalR from "@/hooks/useSignalR";
+import GameIdForm from "@/components/GameIdForm/GameIdForm";
 
 export default function Hearts() {
-  const [name, setName] = useState("");
-  const [nameDisabled, setNameDisabled] = useState(false);
   const [gameId, setGameId] = useState("");
   const [gameIdDisabled, setGameIdDisabled] = useState(false);
   const [connectedToGame, setConnectedToGame] = useState(false);
@@ -60,16 +59,11 @@ export default function Hearts() {
     setRightPlayer(undefined);
   }
 
-  const nameOnKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key != "Enter") return;
-    setNameDisabled(true);
-  };
-
   const gameIdOnKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key != "Enter") return;
     if (signalRConnection) {
       signalRConnection
-        .send("joinGame", name, gameId)
+        .send("joinGame", gameId)
         .then(() => setGameIdDisabled(true));
     }
   };
@@ -160,43 +154,15 @@ export default function Hearts() {
   return (
     <main>
       <Container>
-        <Row>
-          <Col>
-            <Container hidden={connectedToGame}>
-              <FormGroup>
-                <FormLabel>Username: </FormLabel>
-                <input
-                  className="form-control"
-                  value={name}
-                  onInput={(e) => setName((e.target as HTMLInputElement).value)}
-                  onKeyUp={(e) => nameOnKeyUp(e)}
-                  disabled={nameDisabled}
-                  placeholder="Enter to submit"
-                />
-              </FormGroup>
-              <FormGroup>
-                <FormLabel>Game ID: </FormLabel>
-                <input
-                  className="form-control"
-                  value={gameId}
-                  onInput={(e) =>
-                    setGameId((e.target as HTMLInputElement).value)
-                  }
-                  onKeyUp={(e) => gameIdOnKeyUp(e)}
-                  disabled={gameIdDisabled}
-                  placeholder="Enter to submit"
-                />
-              </FormGroup>
-            </Container>
-            <button
-              className="btn btn-primary"
-              onClick={startGame}
-              hidden={!isStartable}
-            >
-              Start game
-            </button>
-          </Col>
-        </Row>
+        <GameIdForm
+          connectedToGame={connectedToGame}
+          gameId={gameId}
+          setGameId={setGameId}
+          gameIdOnKeyUp={gameIdOnKeyUp}
+          gameIdDisabled={gameIdDisabled}
+          startGame={startGame}
+          isStartable={isStartable}
+        />
         <Row>
           <Col>
             <Container hidden={!connectedToGame}>
@@ -308,3 +274,5 @@ export default function Hearts() {
     setConnectedToGame(true);
   }
 }
+
+

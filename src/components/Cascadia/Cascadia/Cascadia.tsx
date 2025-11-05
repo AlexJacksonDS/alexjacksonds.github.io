@@ -37,6 +37,7 @@ import OtherPlayZone from "../OtherPlayZone/OtherPlayZone";
 import ScoreBoard from "../ScoreBoard/ScoreBoard";
 import ScoringCard from "../ScoringCard/ScoringCard";
 import useSignalR from "@/hooks/useSignalR";
+import GameIdForm from "@/components/GameIdForm/GameIdForm";
 
 export default function Cascadia() {
   const [gameId, setGameId] = useState("");
@@ -285,30 +286,15 @@ export default function Cascadia() {
 
   return (
     <Container className="cascadia">
-      <Row>
-        <Col>
-          <Container hidden={connectedToGame}>
-            <FormGroup>
-              <FormLabel>Game ID: </FormLabel>
-              <input
-                className="form-control"
-                value={gameId}
-                onInput={(e) => setGameId((e.target as HTMLInputElement).value)}
-                onKeyUp={(e) => gameIdOnKeyUp(e)}
-                disabled={gameIdDisabled}
-                placeholder="Enter to submit"
-              />
-            </FormGroup>
-          </Container>
-          <button
-            className="btn btn-primary"
-            onClick={startGame}
-            hidden={!gameState?.isStartable}
-          >
-            Start game
-          </button>
-        </Col>
-      </Row>
+      <GameIdForm
+        connectedToGame={connectedToGame}
+        gameId={gameId}
+        setGameId={setGameId}
+        gameIdOnKeyUp={gameIdOnKeyUp}
+        gameIdDisabled={gameIdDisabled}
+        startGame={startGame}
+        isStartable={gameState?.isStartable ?? false}
+      />
       {gameState && gameState.isStarted ? (
         <DndProvider options={HTML5toTouch}>
           <DragHandlerContext.Provider
