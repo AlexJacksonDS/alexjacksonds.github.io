@@ -32,7 +32,7 @@ export default function Hearts() {
   useEffect(() => {
     if (!connectionRef.current) {
       connectionRef.current = new HubConnectionBuilder()
-        .withUrl("https://ajj-sig-test.azurewebsites.net/hearts", { withCredentials: false })
+        .withUrl(`${process.env.NEXT_PUBLIC_API}/hearts`, { withCredentials: false })
         .build();
 
       connectionRef.current.on("joinFailed", () => {

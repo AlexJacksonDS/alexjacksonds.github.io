@@ -37,6 +37,7 @@ export default function useSignalR(path: string, handlers: SignalRHandler[]) {
         withCredentials: false,
         accessTokenFactory: async () => userData.getToken(),
       },
+      logging: LogLevel.Error
     },
   });
 
@@ -48,6 +49,7 @@ export default function useSignalR(path: string, handlers: SignalRHandler[]) {
           withCredentials: false,
           accessTokenFactory: async () => userData.getToken(),
         },
+        logging: LogLevel.Error
       },
     };
   }, [userData]);
@@ -67,8 +69,8 @@ export default function useSignalR(path: string, handlers: SignalRHandler[]) {
 
       if (optionsRef.current.httpTransportTypeOrOptions)
         // @ts-expect-error: We don't need to adhere to the overloads. https://github.com/microsoft/TypeScript/issues/14107
-        hubConnectionSetup.withUrl(`https://ajj-sig-test.azurewebsites.net/${path}`, optionsRef.current.httpTransportTypeOrOptions);
-      else hubConnectionSetup.withUrl(`https://ajj-sig-test.azurewebsites.net/${path}`);
+        hubConnectionSetup.withUrl(`${process.env.NEXT_PUBLIC_API}/${path}`, optionsRef.current.httpTransportTypeOrOptions);
+      else hubConnectionSetup.withUrl(`${process.env.NEXT_PUBLIC_API}/${path}`);
 
       if (optionsRef.current.automaticReconnect) {
         if (optionsRef.current.automaticReconnect === true) hubConnectionSetup.withAutomaticReconnect();

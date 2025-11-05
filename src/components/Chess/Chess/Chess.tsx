@@ -39,7 +39,7 @@ export default function Chess() {
       if (userData.isLoggedIn && userData.token && userData.accessTokenExpiry) {
         if (!connectionRef.current) {
           connectionRef.current = new HubConnectionBuilder()
-            .withUrl("https://ajj-sig-test.azurewebsites.net/fen", {
+            .withUrl(`${process.env.NEXT_PUBLIC_API}/fen`, {
               withCredentials: false,
               accessTokenFactory: async () => getToken(),
             })

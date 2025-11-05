@@ -19,7 +19,7 @@ export default function BoggleSolverPage() {
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      const response = await fetch("https://ajj-sig-test.azurewebsites.net/boggle", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/boggle`, {
         method: "POST",
         body: formData,
       });
@@ -36,7 +36,7 @@ export default function BoggleSolverPage() {
   const correctGrid = async () => {
     if (diceString) {
       const data = { boggleString: diceString };
-      const response = await fetch("https://ajj-sig-test.azurewebsites.net/bogglestring", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/bogglestring`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

@@ -1,0 +1,19 @@
+.card-display-container {
+  justify-content: center;
+}
+
+.card-display {
+  position: relative;
+  flex-grow: 0;
+  border: 2px solid #212529;
+
+  &.highlighted {
+    border-color: green;
+    cursor:pointer;
+  }
+}
+
+.placeholder-card {
+  border-style: dashed;
+  border-color: lightgray;
+}

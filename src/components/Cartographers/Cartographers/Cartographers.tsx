@@ -84,7 +84,7 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
     console.log(cards);
     if (cards && cards[0] && cards[1]) {
       const data = { cardOne: cards[0], cardTwo: cards[1], tiles: board };
-      const response = await fetch("https://ajj-sig-test.azurewebsites.net/cartographersscore", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/cartographersscore`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

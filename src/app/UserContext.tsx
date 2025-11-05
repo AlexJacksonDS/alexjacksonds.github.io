@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, ReactNode, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useEffect,
+} from "react";
 import * as jose from "jose";
 import { useRouter } from "next/navigation";
 
@@ -11,7 +17,11 @@ interface UserData {
   token: string | null;
   refreshToken: string | null;
   accessTokenExpiry: number;
-  register: (username: string, password: string, confirmPassword: string) => Promise<boolean>;
+  register: (
+    username: string,
+    password: string,
+    confirmPassword: string
+  ) => Promise<boolean>;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<string>;
@@ -50,14 +60,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUserId(localStorage.getItem("userId"));
     setToken(localStorage.getItem("token"));
     setRefreshToken(localStorage.getItem("refreshToken"));
-    setAccessTokenExpiry(parseInt(localStorage.getItem("accessTokenExpiry") ?? "0"));
+    setAccessTokenExpiry(
+      parseInt(localStorage.getItem("accessTokenExpiry") ?? "0")
+    );
     setIsLoggedIn(!!localStorage.getItem("userId"));
     setIsReady(true);
   }, []);
 
-  const register = async (username: string, password: string, confirmPassword: string) => {
-    const body = { gameUser: { userName: username }, password, confirmPassword };
-    const response = await fetch("https://ajj-sig-test.azurewebsites.net/register", {
+  const register = async (
+    username: string,
+    password: string,
+    confirmPassword: string
+  ) => {
+    const body = {
+      gameUser: { userName: username },
+      password,
+      confirmPassword,
+    };
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -68,7 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (username: string, password: string) => {
     const body = { userName: username, password };
-    const response = await fetch("https://ajj-sig-test.azurewebsites.net/token", {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API}/token`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -101,15 +121,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const refresh = async () => {
     if (!token || !refreshToken) return "Failed";
-    const body = { accessToken: localStorage.getItem("token"), refreshToken: localStorage.getItem("refreshToken") };
-    const response = await fetch("https://ajj-sig-test.azurewebsites.net/refresh", {
+    const body = {
+      accessToken: localStorage.getItem("token"),
+      refreshToken: localStorage.getItem("refreshToken"),
+    };
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API}/refresh`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
     if (response.ok) {
-      const res: { token: string; refreshToken: string } = await response.json();
+      const res: { token: string; refreshToken: string } =
+        await response.json();
       localStorage.setItem("token", res.token);
       const tokenDetails = jose.decodeJwt(res.token);
       localStorage.setItem("accessTokenExpiry", `${tokenDetails.exp}`);
