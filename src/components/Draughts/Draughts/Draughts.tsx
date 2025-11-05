@@ -1,8 +1,7 @@
 "use client";
 
-import { useContext, useEffect, useRef, useState, KeyboardEvent } from "react";
+import { useState, KeyboardEvent } from "react";
 import { Col, Container, FormGroup, FormLabel, Row } from "react-bootstrap";
-import { useRouter } from "next/navigation";
 import { DraughtsBoard as Board, DraughtsTurn } from "../../../types/draughts";
 import DraughtsBoard from "..//DraughtsBoard/DraughtsBoard";
 import "./Draughts.scss";
@@ -16,15 +15,9 @@ import {
   makeMove,
 } from "../../../services/draughts.service";
 import { getSquareCode } from "../../../helpers/squareHelper";
-import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-import { UserContext } from "@/app/UserContext";
+import useSignalR from "@/hooks/useSignalR";
 
 export default function Draughts() {
-  const [isInit, setIsInit] = useState(false);
-  const userData = useContext(UserContext);
-  const router = useRouter();
-  const connectionRef = useRef<HubConnection | undefined>();
-
   const [gameId, setGameId] = useState("");
   const [gameIdDisabled, setGameIdDisabled] = useState(false);
   const [connectedToGame, setConnectedToGame] = useState(false);
@@ -36,60 +29,44 @@ export default function Draughts() {
   const [possibleMoves, setPossibleMoves] = useState<string[]>([]);
   const boardStatus = boardState(board);
 
-  useEffect(() => {
-    if (userData.isReady && !userData.token) {
-      router.push("/");
-    }
+  const signalRConnection = useSignalR("fen", [
+    ["joinFailed", joinFailed],
+    ["fen", handleFen],
+  ]);
 
-    if (!isInit) {
-      if (userData.isLoggedIn && userData.token && userData.accessTokenExpiry) {
-        if (!connectionRef.current) {
-          connectionRef.current = new HubConnectionBuilder()
-            .withUrl(`${process.env.NEXT_PUBLIC_API}/fen`, {
-              withCredentials: false,
-              accessTokenFactory: async () => getToken(),
-            })
-            .build();
-
-          connectionRef.current.on("joinFailed", () => {
-            setGameId("");
-            setGameIdDisabled(false);
-          });
-
-          connectionRef.current.on("fen", (fen: string) => {
-            handleFen(fen);
-          });
-
-          connectionRef.current.start().catch((err) => console.log(err));
-          setIsInit(true);
-        }
-      }
-    }
-  }, [userData, isInit, router, gameId]);
-
-  async function getToken() {
-    if (userData.accessTokenExpiry < Math.floor(new Date().getTime() / 1000)) {
-      const newToken = await userData.refresh();
-      return newToken;
-    }
-    return userData.token ?? "";
+  function joinFailed() {
+    setGameId("");
+    setGameIdDisabled(false);
   }
 
-  const handleFen = (fen: string) => {
+  function handleFen(fen: string) {
     const split = fen.split(" ");
     setCurrentTurn(split[1] === "1" ? 1 : 2);
     setBoard(boardFromString(split[0]));
-  };
+  }
 
   function handleClick(i: number, j: number) {
-    if (connectionRef.current) {
-      if (!boardStatus.isWon && (currentTurn === myColour || myColour === undefined)) {
+    if (signalRConnection) {
+      if (
+        !boardStatus.isWon &&
+        (currentTurn === myColour || myColour === undefined)
+      ) {
         if (currentTurn === board[i][j] || currentTurn + 2 === board[i][j]) {
           const moveSquares = getMovesForSquare(board, currentTurn, i, j);
           setSelectedSquare(getSquareCode(i, j));
           setPossibleMoves(moveSquares);
-        } else if (selectedSquare && possibleMoves && isPossibleMove(getSquareCode(i, j), possibleMoves)) {
-          const { tempBoard, nextTurn } = makeMove(board, i, j, selectedSquare, currentTurn);
+        } else if (
+          selectedSquare &&
+          possibleMoves &&
+          isPossibleMove(getSquareCode(i, j), possibleMoves)
+        ) {
+          const { tempBoard, nextTurn } = makeMove(
+            board,
+            i,
+            j,
+            selectedSquare,
+            currentTurn
+          );
           setSelectedSquare(undefined);
           setPossibleMoves([]);
           setBoard(tempBoard);
@@ -98,7 +75,11 @@ export default function Draughts() {
             setMyColour(currentTurn);
           }
 
-          connectionRef.current.send("takeTurn", gameId, `${boardToString(tempBoard)} ${nextTurn}`);
+          signalRConnection.send(
+            "takeTurn",
+            gameId,
+            `${boardToString(tempBoard)} ${nextTurn}`
+          );
         }
       }
     }
@@ -106,11 +87,13 @@ export default function Draughts() {
 
   const gameIdOnKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key != "Enter") return;
-    if (connectionRef.current) {
-      connectionRef.current.send("joinGame", gameId, boardToString(board)).then(() => {
-        setGameIdDisabled(true);
-        setConnectedToGame(true);
-      });
+    if (signalRConnection) {
+      signalRConnection
+        .send("joinGame", gameId, boardToString(board))
+        .then(() => {
+          setGameIdDisabled(true);
+          setConnectedToGame(true);
+        });
     }
   };
 
@@ -125,7 +108,9 @@ export default function Draughts() {
                 <input
                   className="form-control"
                   value={gameId}
-                  onInput={(e) => setGameId((e.target as HTMLInputElement).value)}
+                  onInput={(e) =>
+                    setGameId((e.target as HTMLInputElement).value)
+                  }
                   onKeyUp={(e) => gameIdOnKeyUp(e)}
                   disabled={gameIdDisabled}
                   placeholder="Enter to submit"
@@ -158,8 +143,12 @@ export default function Draughts() {
         </Row>
         <Row className="black-background g-0-top text-center">
           <Col>
-            {!boardStatus.isWon ? <div>Current turn: {currentTurn === 2 ? "White" : "Black"}</div> : null}
-            {boardStatus.isWon ? <div>{boardStatus.blackCount > 0 ? "Black" : "White"} wins</div> : null}
+            {!boardStatus.isWon ? (
+              <div>Current turn: {currentTurn === 2 ? "White" : "Black"}</div>
+            ) : null}
+            {boardStatus.isWon ? (
+              <div>{boardStatus.blackCount > 0 ? "Black" : "White"} wins</div>
+            ) : null}
           </Col>
         </Row>
       </Container>
