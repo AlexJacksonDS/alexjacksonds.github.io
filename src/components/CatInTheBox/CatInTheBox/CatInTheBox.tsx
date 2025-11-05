@@ -1,27 +1,33 @@
 "use client";
 
 import { GameState } from "@/types/catInTheBox";
-import { useEffect, useRef, useState, KeyboardEvent, useContext, ChangeEvent } from "react";
-import { Button, Col, Container, FormGroup, FormLabel, Row, Toast, ToastContainer } from "react-bootstrap";
+import {
+  useState,
+  KeyboardEvent,
+  ChangeEvent,
+} from "react";
+import {
+  Button,
+  Col,
+  Container,
+  FormGroup,
+  FormLabel,
+  Row,
+  Toast,
+  ToastContainer,
+} from "react-bootstrap";
 import _ from "lodash";
 import "./CatInTheBox.scss";
-import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
-import { UserContext } from "@/app/UserContext";
-import { useRouter } from "next/navigation";
 import PlayedCards from "../PlayedCards/PlayedCards";
 import OtherPlayerDetails from "../OtherPlayerDetails/OtherPlayerDetails";
 import PlayerDetails from "../PlayerDetails/PlayerDetails";
+import useSignalR from "@/hooks/useSignalR";
 
 export default function CatInTheBox() {
-  const userData = useContext(UserContext);
-  const router = useRouter();
-  const connectionRef = useRef<HubConnection | undefined>();
-
   const [gameId, setGameId] = useState("");
   const [gameIdDisabled, setGameIdDisabled] = useState(false);
   const [connectedToGame, setConnectedToGame] = useState(false);
 
-  const [isInit, setIsInit] = useState(false);
   const [gameState, setGameState] = useState<GameState | undefined>(undefined);
   const [myTurn, setMyTurn] = useState(false);
   const [errorString, setErrorString] = useState("");
@@ -34,60 +40,32 @@ export default function CatInTheBox() {
   const [warningMessage, setWarningMessage] = useState("");
 
   const betValues =
-    gameState?.otherPlayerDetails.length && gameState.otherPlayerDetails.length > 2 ? [1, 2, 3] : [1, 3, 4];
+    gameState?.otherPlayerDetails.length &&
+    gameState.otherPlayerDetails.length > 2
+      ? [1, 2, 3]
+      : [1, 3, 4];
 
-  useEffect(() => {
-    if (userData.isReady && !userData.token) {
-      router.push("/");
+  const signalRConnection = useSignalR("scout", [
+    ["joinFailed", joinFailed],
+    ["state", handleNewState],
+    ["invalidMove", resetAfterInvalidMove],
+    ["gameEnded", gameEnded],
+  ]);
+
+  function joinFailed() {
+    setGameId("");
+    setGameIdDisabled(false);
+  }
+
+  function gameEnded() {
+    if (signalRConnection) {
+      signalRConnection.send("leaveGame", gameId);
     }
-
-    if (!isInit) {
-      if (userData.isLoggedIn && userData.token && userData.accessTokenExpiry) {
-        if (!connectionRef.current) {
-          connectionRef.current = new HubConnectionBuilder()
-            .withUrl(`${process.env.NEXT_PUBLIC_API}/catinthebox`, {
-              withCredentials: false,
-              accessTokenFactory: async () => getToken(),
-            })
-            .build();
-
-          connectionRef.current.on("joinFailed", () => {
-            setGameId("");
-            setGameIdDisabled(false);
-          });
-
-          connectionRef.current.on("state", (state: any) => {
-            handleNewState(state);
-          });
-
-          connectionRef.current.on("invalidMove", (message: string, state: any) => {
-            resetAfterInvalidMove(message, state);
-          });
-
-          connectionRef.current.on("gameEnded", () => {
-            if (connectionRef.current) {
-              connectionRef.current.send("leaveGame", gameId);
-            }
-            setGameId("");
-            setGameIdDisabled(false);
-            setConnectedToGame(false);
-            setGameState(undefined);
-            setMyTurn(false);
-          });
-
-          connectionRef.current.start().catch((err) => console.log(err));
-          setIsInit(true);
-        }
-      }
-    }
-  }, [userData, isInit, router, gameId]);
-
-  async function getToken() {
-    if (userData.accessTokenExpiry < Math.floor(new Date().getTime() / 1000)) {
-      const newToken = await userData.refresh();
-      return newToken;
-    }
-    return userData.token ?? "";
+    setGameId("");
+    setGameIdDisabled(false);
+    setConnectedToGame(false);
+    setGameState(undefined);
+    setMyTurn(false);
   }
 
   function resetAfterInvalidMove(message: string, state: GameState) {
@@ -114,7 +92,10 @@ export default function CatInTheBox() {
         return;
       }
       const playerLegalMoves = getLegalMoves();
-      if (playerLegalMoves.length !== 0 && !playerLegalMoves.find((x) => x.card === card && x.colour === colour)) {
+      if (
+        playerLegalMoves.length !== 0 &&
+        !playerLegalMoves.find((x) => x.card === card && x.colour === colour)
+      ) {
         return;
       } else {
         setCard(card);
@@ -124,9 +105,19 @@ export default function CatInTheBox() {
           gameState.currentLead.colour !== colour &&
           playerHasColour(gameState.currentLead.colour)
         ) {
-          setWarningMessage(`Warning: This will declare you have no ${colourToString(gameState.currentLead.colour)}s`);
-        } else if (gameState.currentLead === null && !gameState.isRedBroken && colour === 1) {
-          setWarningMessage(`Warning: This will declare you have no blues, yellows or greens`);
+          setWarningMessage(
+            `Warning: This will declare you have no ${colourToString(
+              gameState.currentLead.colour
+            )}s`
+          );
+        } else if (
+          gameState.currentLead === null &&
+          !gameState.isRedBroken &&
+          colour === 1
+        ) {
+          setWarningMessage(
+            `Warning: This will declare you have no blues, yellows or greens`
+          );
         } else {
           setWarningMessage("");
         }
@@ -142,9 +133,16 @@ export default function CatInTheBox() {
     for (const key in gameState.playedCards) {
       for (const key2 in (gameState.playedCards as any)[key]) {
         if (((gameState.playedCards as any)[key] as any)[key2] === 6) {
-          if (gameState.myDetails.currentHand.map((x) => x.toString()).includes(key2)) {
+          if (
+            gameState.myDetails.currentHand
+              .map((x) => x.toString())
+              .includes(key2)
+          ) {
             if ((gameState.myDetails as any)[`has${key}`]) {
-              legalMoves.push({ card: parseInt(key2), colour: keyToColour(key) });
+              legalMoves.push({
+                card: parseInt(key2),
+                colour: keyToColour(key),
+              });
             }
           }
         }
@@ -220,8 +218,8 @@ export default function CatInTheBox() {
   }
 
   function saveRound() {
-    if (connectionRef.current && card && colour && myTurn) {
-      connectionRef.current.send("takeTurn", gameId, { card, colour });
+    if (signalRConnection && card && colour && myTurn) {
+      signalRConnection.send("takeTurn", gameId, { card, colour });
       setCard(0);
       setColour(0);
       setWarningMessage("");
@@ -234,23 +232,23 @@ export default function CatInTheBox() {
   }
 
   function submitBet() {
-    if (connectionRef.current && bet && myTurn) {
-      connectionRef.current.send("placeBet", gameId, bet);
+    if (signalRConnection && bet && myTurn) {
+      signalRConnection.send("placeBet", gameId, bet);
       setBet(1);
     }
   }
 
   function discardCard() {
-    if (connectionRef.current && card) {
-      connectionRef.current.send("discardCard", gameId, card);
+    if (signalRConnection && card) {
+      signalRConnection.send("discardCard", gameId, card);
       setCard(0);
     }
   }
 
   const gameIdOnKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key != "Enter") return;
-    if (connectionRef.current) {
-      connectionRef.current.send("joinGame", gameId).then(() => {
+    if (signalRConnection) {
+      signalRConnection.send("joinGame", gameId).then(() => {
         setGameIdDisabled(true);
         setConnectedToGame(true);
       });
@@ -258,8 +256,8 @@ export default function CatInTheBox() {
   };
 
   const startGame = () => {
-    if (connectionRef.current) {
-      connectionRef.current.send("startGame", gameId);
+    if (signalRConnection) {
+      signalRConnection.send("startGame", gameId);
     }
   };
 
@@ -268,7 +266,7 @@ export default function CatInTheBox() {
     setErrorString("");
   }
 
-  return isInit ? (
+  return (
     <Container className="catInTheBox">
       <Row>
         <Col>
@@ -285,7 +283,11 @@ export default function CatInTheBox() {
               />
             </FormGroup>
           </Container>
-          <button className="btn btn-primary" onClick={startGame} hidden={!gameState?.isStartable}>
+          <button
+            className="btn btn-primary"
+            onClick={startGame}
+            hidden={!gameState?.isStartable}
+          >
             Start game
           </button>
         </Col>
@@ -294,7 +296,14 @@ export default function CatInTheBox() {
         <Row>
           {errorString ? (
             <ToastContainer position="middle-center">
-              <Toast bg={"danger"} show={show} onClick={hideToast} onClose={() => hideToast()} delay={3000} autohide>
+              <Toast
+                bg={"danger"}
+                show={show}
+                onClick={hideToast}
+                onClose={() => hideToast()}
+                delay={3000}
+                autohide
+              >
                 <Toast.Header>
                   <strong className="me-auto">CatInTheBox</strong>
                   <small className="text-muted">Just now</small>
@@ -315,7 +324,11 @@ export default function CatInTheBox() {
               <Col xs={2}>
                 {gameState.currentLead ? (
                   <>
-                    <div className={"hand-card card-colour-" + gameState.currentLead.colour}>
+                    <div
+                      className={
+                        "hand-card card-colour-" + gameState.currentLead.colour
+                      }
+                    >
                       {gameState.currentLead.card}
                     </div>
                     <div>Current Lead</div>
@@ -334,16 +347,25 @@ export default function CatInTheBox() {
                   {!gameState.allDiscarded && card ? (
                     <div className="hand-card">{card}</div>
                   ) : (
-                    <div className="hand-card card-placeholder">Click card to discard</div>
+                    <div className="hand-card card-placeholder">
+                      Click card to discard
+                    </div>
                   )}
-                  <Button className="save-button" onClick={discardCard} disabled={gameState.allDiscarded || !card}>
+                  <Button
+                    className="save-button"
+                    onClick={discardCard}
+                    disabled={gameState.allDiscarded || !card}
+                  >
                     Discard
                   </Button>
                 </Col>
               ) : null}
               {gameState.allDiscarded && !gameState.allBet ? (
                 <Col>
-                  <select onChange={onBetChange} disabled={gameState.allBet || !myTurn}>
+                  <select
+                    onChange={onBetChange}
+                    disabled={gameState.allBet || !myTurn}
+                  >
                     {betValues.map((c) => (
                       <option key={c} value={c}>
                         {c}
@@ -353,7 +375,9 @@ export default function CatInTheBox() {
                   <Button
                     className="save-button"
                     onClick={submitBet}
-                    disabled={gameState.allBet || !gameState.allDiscarded || !myTurn}
+                    disabled={
+                      gameState.allBet || !gameState.allDiscarded || !myTurn
+                    }
                   >
                     Submit Bet
                   </Button>
@@ -362,12 +386,20 @@ export default function CatInTheBox() {
               {gameState.allBet && myTurn ? (
                 <Col>
                   {colour && card ? (
-                    <div className={"hand-card card-colour-" + colour}>{card}</div>
+                    <div className={"hand-card card-colour-" + colour}>
+                      {card}
+                    </div>
                   ) : (
-                    <div className="hand-card card-placeholder">Click Board cell to play</div>
+                    <div className="hand-card card-placeholder">
+                      Click Board cell to play
+                    </div>
                   )}
                   {warningMessage ? <div>{warningMessage}</div> : null}
-                  <Button className="save-button" disabled={!card || !colour} onClick={saveRound}>
+                  <Button
+                    className="save-button"
+                    disabled={!card || !colour}
+                    onClick={saveRound}
+                  >
                     Submit turn
                   </Button>
                 </Col>
@@ -375,7 +407,10 @@ export default function CatInTheBox() {
             </Row>
             <Row className="pt-2">
               <Col>
-                <PlayerDetails playerDetails={gameState.myDetails} handleClick={clickCard} />
+                <PlayerDetails
+                  playerDetails={gameState.myDetails}
+                  handleClick={clickCard}
+                />
               </Col>
             </Row>
           </Col>
@@ -398,5 +433,5 @@ export default function CatInTheBox() {
         </Row>
       ) : null}
     </Container>
-  ) : null;
+  );
 }
