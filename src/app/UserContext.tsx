@@ -9,6 +9,7 @@ import {
 } from "react";
 import * as jose from "jose";
 import { useRouter } from "next/navigation";
+import { jsonPost } from "../helpers/jsonPostHelper";
 
 interface UserData {
   isReady: boolean;
@@ -77,22 +78,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password,
       confirmPassword,
     };
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API}/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    const response = await jsonPost("register", body);
 
     return response.ok;
   };
 
   const login = async (username: string, password: string) => {
     const body = { userName: username, password };
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API}/token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    const response = await jsonPost("token", body);
 
     if (response.ok) {
       const res = await response.json();
@@ -125,11 +118,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       accessToken: localStorage.getItem("token"),
       refreshToken: localStorage.getItem("refreshToken"),
     };
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API}/refresh`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    const response = await jsonPost("refresh", body);
 
     if (response.ok) {
       const res: { token: string; refreshToken: string } =
@@ -202,3 +191,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     </UserContext.Provider>
   );
 };
+
+

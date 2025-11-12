@@ -3,6 +3,7 @@ import { getCharacter } from "@/services/minesweeper.service";
 import { Tile } from "@/types/minesweeper";
 import { MutableRefObject, MouseEvent } from "react";
 import _ from "lodash";
+import { getOffsets } from "@/helpers/hexHelper";
 
 export default function HexBoard(props: {
   board: MutableRefObject<Tile[][]>;
@@ -21,11 +22,10 @@ export default function HexBoard(props: {
     }
   }
 
-  const rowOffset =
-    _.max(hexCoords.filter((x) => x[0] < 0).map((x) => Math.abs(x[0]))) ?? 0;
-  const colOffset =
-    _.max(hexCoords.filter((x) => x[1] < 0).map((x) => Math.abs(x[1]))) ?? 0;
+  const { rowOffset, colOffset } = getOffsets(hexCoords);
+
   const radius = props.small ? 15 : 30;
+
   return (
     <div className="hex-container">
       {hexCoords.map((x) => {

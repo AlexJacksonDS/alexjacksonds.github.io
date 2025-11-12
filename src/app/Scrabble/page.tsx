@@ -24,11 +24,6 @@ import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import { DropResult } from "@/types/railRoadInk";
 import GameIdForm from "@/components/GameIdForm/GameIdForm";
 import ErrorToast from "@/components/ErrorToast/ErrorToast";
-import {
-  otherPlayersFour,
-  otherPlayersThree,
-  otherPlayersTwo,
-} from "@/helpers/nextPlayerMaps";
 
 export default function Scrabble() {
   const [gameId, setGameId] = useState("");
@@ -40,9 +35,7 @@ export default function Scrabble() {
   const [currentPlayer, setCurrentPlayer] = useState("");
   const [clicks, setClicks] = useState(0);
   const [player, setPlayer] = useState<Player>();
-  const [leftPlayer, setLeftPlayer] = useState<OtherPlayer>();
-  const [topPlayer, setTopPlayer] = useState<OtherPlayer>();
-  const [rightPlayer, setRightPlayer] = useState<OtherPlayer>();
+  const [otherPlayers, setOtherPlayers] = useState<OtherPlayer[]>([]);
   const gameState = useRef<any | undefined>(undefined);
   const [errorString, setErrorString] = useState("");
   const [show, setShow] = useState(false);
@@ -66,48 +59,8 @@ export default function Scrabble() {
   }
 
   function handleNewState(state: any) {
-    const myPlayerOrder: number = state.player.playerOrder;
-    if (state.otherPlayerDetails.length === 1) {
-      const otherPlayerPositions = otherPlayersTwo.get(myPlayerOrder);
-
-      if (otherPlayerPositions) {
-        const playerOnTop = state.otherPlayerDetails.find(
-          (p: any) => p.playerOrder === otherPlayerPositions[0]
-        );
-        setTopPlayer(playerOnTop);
-      }
-    } else if (state.otherPlayerDetails.length === 2) {
-      const otherPlayerPositions = otherPlayersThree.get(myPlayerOrder);
-
-      if (otherPlayerPositions) {
-        const playerOnLeft = state.otherPlayerDetails.find(
-          (p: any) => p.playerOrder === otherPlayerPositions[0]
-        );
-        setLeftPlayer(playerOnLeft);
-        const playerOnTop = state.otherPlayerDetails.find(
-          (p: any) => p.playerOrder === otherPlayerPositions[1]
-        );
-        setTopPlayer(playerOnTop);
-      }
-    } else if (state.otherPlayerDetails.length === 3) {
-      const otherPlayerPositions = otherPlayersFour.get(myPlayerOrder);
-      if (otherPlayerPositions) {
-        const playerOnLeft = state.otherPlayerDetails.find(
-          (p: any) => p.playerOrder === otherPlayerPositions[0]
-        );
-        setLeftPlayer(playerOnLeft);
-        const playerOnTop = state.otherPlayerDetails.find(
-          (p: any) => p.playerOrder === otherPlayerPositions[1]
-        );
-        setTopPlayer(playerOnTop);
-
-        const playerOnRight = state.otherPlayerDetails.find(
-          (p: any) => p.playerOrder === otherPlayerPositions[2]
-        );
-        setRightPlayer(playerOnRight);
-      }
-    }
     board.current = state.board;
+    setOtherPlayers(state.otherPlayerDetails);
     setPlayer(state.player);
     setCurrentPlayer(state.currentPlayer);
     setIsStartable(state.isStartable);
@@ -227,7 +180,10 @@ export default function Scrabble() {
         </Row>
         <Row>
           <Col>
-            {connectedToGame && player && topPlayer && board.current ? (
+            {connectedToGame &&
+            player &&
+            otherPlayers.length > 0 &&
+            board.current ? (
               <DndProvider options={HTML5toTouch}>
                 <Board {...{ board: board.current }} />
                 {currentPlayer && !isEnded ? (
@@ -252,19 +208,11 @@ export default function Scrabble() {
                       </Container>
                     </Row>
                     <Row>
-                      {leftPlayer ? (
-                        <Col>
-                          <ScrabbleOtherPlayer player={leftPlayer} />
+                      {otherPlayers.map((p, i) => (
+                        <Col key={i}>
+                          <ScrabbleOtherPlayer player={p} />
                         </Col>
-                      ) : undefined}
-                      <Col>
-                        <ScrabbleOtherPlayer player={topPlayer} />
-                      </Col>
-                      {rightPlayer ? (
-                        <Col>
-                          <ScrabbleOtherPlayer player={rightPlayer} />
-                        </Col>
-                      ) : undefined}
+                      ))}
                     </Row>
                   </>
                 ) : undefined}

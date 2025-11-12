@@ -1,39 +1,12 @@
 "use client";
 
-import { Orientations, Tile } from "@/types/railRoadInk";
+import { Tile } from "@/types/railRoadInk";
 import "./TrackPiece.scss";
+import { shiftConnections } from "@/helpers/railRoadInk";
 
 export default function TrackPiece({ tile }: { tile: Tile }) {
   const isRailOnly = !tile.tileType.isJunction && !tile.tileType.defaultConnections.includes("r");
-  const connections = shiftConnections();
-
-  function shiftConnections() {
-    const connections = [...tile.tileType.defaultConnections];
-    let shift: number;
-    switch (tile.orientation) {
-      case Orientations.UP:
-        shift = 0;
-        break;
-      case Orientations.RIGHT:
-        shift = 3;
-        break;
-      case Orientations.DOWN:
-        shift = 2;
-        break;
-      case Orientations.LEFT:
-        shift = 1;
-        break;
-      default:
-        shift = 0;
-    }
-    const rotatedConnections = connections.slice(shift, 4).concat(connections.slice(0, shift));
-    if (tile.inverted) {
-      const temp = rotatedConnections[1];
-      rotatedConnections[1] = rotatedConnections[3];
-      rotatedConnections[3] = temp;
-    }
-    return rotatedConnections;
-  }
+  const connections = shiftConnections(tile);
 
   function getConnection(key: string, i: number) {
     const locations = ["top", "right", "bottom", "left"];

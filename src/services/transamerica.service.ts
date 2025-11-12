@@ -1,7 +1,7 @@
 import { CityPlace, Colour, ConnectionState, HexConnections, Place } from "@/components/Transamerica/Hex/Hex";
-import _ from "lodash";
 import { ConnectionState as CS } from "@/components/Transamerica/Hex/Hex";
 import { MutableRefObject } from "react";
+import { getOffsets } from "@/helpers/hexHelper";
 
 export class Tile {
   connections: HexConnections;
@@ -149,12 +149,6 @@ export function blankBoard() {
     height: height,
     width: width,
   };
-}
-
-function getOffsets(hexCoords: number[][]) {
-  const rowOffset = _.max(hexCoords.filter((x) => x[0] < 0).map((x) => Math.abs(x[0]))) ?? 0;
-  const colOffset = _.max(hexCoords.filter((x) => x[1] < 0).map((x) => Math.abs(x[1]))) ?? 0;
-  return { rowOffset, colOffset };
 }
 
 function getHexCoords() {

@@ -1,0 +1,22 @@
+.pile {
+  & .card-list {
+    position: relative;
+    flex-grow: 0;
+    & .card-list {
+      margin-top: calc(-7vw * calc(39 / 28));
+    }
+  }
+
+  & .normal {
+    width: 7vw;
+    aspect-ratio: 28 / 39;
+  }
+}
+
+.placeholder {
+  display: flex;
+  border: 1px dashed white;
+  background-color: unset;
+  cursor: default;
+  align-items: center;
+}

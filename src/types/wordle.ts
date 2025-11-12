@@ -16,68 +16,20 @@ export enum State {
 }
 
 export function blankBoard() {
-  return [
-    {
-      letters: [
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-      ],
-      submitted: false,
-    },
-    {
-      letters: [
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-      ],
-      submitted: false,
-    },
-    {
-      letters: [
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-      ],
-      submitted: false,
-    },
-    {
-      letters: [
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-      ],
-      submitted: false,
-    },
-    {
-      letters: [
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-      ],
-      submitted: false,
-    },
-    {
-      letters: [
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-        { letter: "", state: State.Unsubmitted },
-      ],
-      submitted: false,
-    },
-  ];
+  return Array(6)
+    .fill(null)
+    .map(() => {
+      return {
+        letters: [
+          { letter: "", state: State.Unsubmitted },
+          { letter: "", state: State.Unsubmitted },
+          { letter: "", state: State.Unsubmitted },
+          { letter: "", state: State.Unsubmitted },
+          { letter: "", state: State.Unsubmitted },
+        ],
+        submitted: false,
+      };
+    });
 }
 
 export const WORDS = [

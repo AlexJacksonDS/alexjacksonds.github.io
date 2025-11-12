@@ -2,7 +2,11 @@
 
 import { Col, Container, Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import { dealFreecell, isMoveLegal, makeMove } from "@/services/freecell.service";
+import {
+  dealFreecell,
+  isMoveLegal,
+  makeMove,
+} from "@/services/freecell.service";
 import "./Freecell.scss";
 import { GameState } from "@/types/freecell";
 import { DndProvider } from "react-dnd-multi-backend";
@@ -12,6 +16,8 @@ import DraggableStack from "@/components/Draggable/DraggableCardStack/DraggableC
 import Placeholder from "@/components/Draggable/CardPlaceholder/Placeholder";
 import { VictoryCanvas } from "../../components/Draggable/VictoryCanvas/VictoryCanvas";
 import { DropResult } from "@/types/draggableCards";
+import DroppableGoalPiles from "@/components/Draggable/DroppableGoalPiles/DroppableGoalPiles";
+import SolitairePlayArea from "@/components/Draggable/SolitairePlayArea/SolitairePlayArea";
 
 export default function Freecell() {
   const [isDealt, setIsDealt] = useState(false);
@@ -38,7 +44,12 @@ export default function Freecell() {
     const cardIds = stackDetails[1].split(",");
 
     if (isMoveLegal(gameState, dropResult.dropZoneId, sourceZone, cardIds)) {
-      const newGameState = makeMove(gameState, sourceZone, dropResult.dropZoneId, cardIds);
+      const newGameState = makeMove(
+        gameState,
+        sourceZone,
+        dropResult.dropZoneId,
+        cardIds
+      );
       setIsWon([...newGameState.piles.values()].every((p) => p.length === 13));
       setGameState(newGameState);
     }
@@ -72,50 +83,12 @@ export default function Freecell() {
                         </Col>
                       );
                     })}
-                    <Col></Col>
-                    {[...gameState.piles.keys()].map((key) => {
-                      const pile = gameState.piles.get(key)!;
-                      return (
-                        <Col key={key} className="pile">
-                          <DroppableCardList dropZoneId={key}>
-                            {pile.length !== 0 ? (
-                              <DraggableStack
-                                cards={pile}
-                                stackId={key}
-                                isDeck={false}
-                                handleStackMove={handleStackMove}
-                              />
-                            ) : (
-                              <Placeholder />
-                            )}
-                          </DroppableCardList>
-                        </Col>
-                      );
-                    })}
                   </Row>
                 </Col>
+                <Col lg={2}></Col>
+                <DroppableGoalPiles piles={gameState.piles} handleStackMove={handleStackMove} />
               </Row>
-              <Row className="play-area">
-                {[...gameState.columns.keys()].map((key) => {
-                  const column = gameState.columns.get(key)!;
-                  return (
-                    <Col key={key} className="column">
-                      <DroppableCardList dropZoneId={key}>
-                        {column.length !== 0 ? (
-                          <DraggableStack
-                            cards={column}
-                            stackId={key}
-                            isDeck={false}
-                            handleStackMove={handleStackMove}
-                          />
-                        ) : (
-                          <Placeholder />
-                        )}
-                      </DroppableCardList>
-                    </Col>
-                  );
-                })}
-              </Row>
+              <SolitairePlayArea columns={gameState.columns} handleStackMove={handleStackMove} />
             </>
           ) : null}
         </DndProvider>

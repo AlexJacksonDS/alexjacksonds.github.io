@@ -3,6 +3,7 @@
 import { ChangeEvent, useState } from "react";
 import { Card, Col, Container, ListGroup, Row } from "react-bootstrap";
 import "./BoggleSolver.scss";
+import { jsonPost } from "@/helpers/jsonPostHelper";
 
 export default function BoggleSolverPage() {
   const [file, setFile] = useState<File | undefined>(undefined);
@@ -36,11 +37,7 @@ export default function BoggleSolverPage() {
   const correctGrid = async () => {
     if (diceString) {
       const data = { boggleString: diceString };
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/bogglestring`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const response = await jsonPost("bogglestring", data);
 
       if (response.ok) {
         const res: BoggleResults = await response.json();

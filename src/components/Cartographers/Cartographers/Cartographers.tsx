@@ -4,9 +4,23 @@ import { CartographersContext } from "../context";
 import DisplayBoard from "../DisplayBoard/DisplayBoard";
 import { Dispatch, SetStateAction, useState } from "react";
 import "./Cartographers.scss";
-import { Board, Terrain, defaultBoard, specialBoard } from "@/types/cartographers";
+import {
+  Board,
+  Terrain,
+  defaultBoard,
+  specialBoard,
+} from "@/types/cartographers";
 import Pallet from "../Pallet/Pallet";
-import { Button, Col, Container, Form, FormGroup, Modal, Row } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  FormGroup,
+  Modal,
+  Row,
+} from "react-bootstrap";
+import { jsonPost } from "@/helpers/jsonPostHelper";
 
 interface CartographersResult {
   scoreOne: number;
@@ -14,8 +28,14 @@ interface CartographersResult {
   monsterScore: number;
 }
 
-export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boolean }) {
-  const [board, setBoard] = useState(isSpecialBoard ? specialBoard : defaultBoard);
+export default function Cartographers({
+  isSpecialBoard,
+}: {
+  isSpecialBoard?: boolean;
+}) {
+  const [board, setBoard] = useState(
+    isSpecialBoard ? specialBoard : defaultBoard
+  );
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
   const [brushTerrain, setBrushTerrain] = useState(Terrain.Empty);
   const [coins, setCoins] = useState(0);
@@ -84,11 +104,7 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
     console.log(cards);
     if (cards && cards[0] && cards[1]) {
       const data = { cardOne: cards[0], cardTwo: cards[1], tiles: board };
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/cartographersscore`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const response = await jsonPost("cartographersscore", data);
 
       if (response.ok) {
         const res: CartographersResult = await response.json();
@@ -143,16 +159,28 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
   }
 
   return (
-    <CartographersContext.Provider value={{ handlePalletClick, handleTileClick }}>
+    <CartographersContext.Provider
+      value={{ handlePalletClick, handleTileClick }}
+    >
       <Container className="cartographers">
         <Pallet
           selectedTerrain={brushTerrain}
-          allowedTerrainTypes={[Terrain.Forest, Terrain.Field, Terrain.Water, Terrain.Town, Terrain.Monster]}
+          allowedTerrainTypes={[
+            Terrain.Forest,
+            Terrain.Field,
+            Terrain.Water,
+            Terrain.Town,
+            Terrain.Monster,
+          ]}
         />
         <DisplayBoard board={board} />
         <Row>
           <Col>
-            <button className="form-control btn btn-primary" type="submit" onClick={undo}>
+            <button
+              className="form-control btn btn-primary"
+              type="submit"
+              onClick={undo}
+            >
               Undo
             </button>
           </Col>
@@ -164,12 +192,18 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
                 <h3 className="pt-1">Coins: {coins}</h3>
               </Col>
               <Col xs={3}>
-                <Button className="button-fill-col" onClick={() => setCoins(coins + 1)}>
+                <Button
+                  className="button-fill-col"
+                  onClick={() => setCoins(coins + 1)}
+                >
                   +
                 </Button>
               </Col>
               <Col xs={3}>
-                <Button className="button-fill-col" onClick={() => setCoins(coins - 1 < 0 ? 0 : coins - 1)}>
+                <Button
+                  className="button-fill-col"
+                  onClick={() => setCoins(coins - 1 < 0 ? 0 : coins - 1)}
+                >
                   -
                 </Button>
               </Col>
@@ -198,22 +232,10 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
           </Col>
         </Row>
         <Row>
-          <Col className="border" xs={12} md={6} lg={3}>
-            <p>Card A</p>
-            <ScoringCardDropdown setCard={setCardA} value={cardA} />
-          </Col>
-          <Col className="border" xs={12} md={6} lg={3}>
-            <p>Card B</p>
-            <ScoringCardDropdown setCard={setCardB} value={cardB} />
-          </Col>
-          <Col className="border" xs={12} md={6} lg={3}>
-            <p>Card C</p>
-            <ScoringCardDropdown setCard={setCardC} value={cardC} />
-          </Col>
-          <Col className="border" xs={12} md={6} lg={3}>
-            <p>Card D</p>
-            <ScoringCardDropdown setCard={setCardD} value={cardD} />
-          </Col>
+          <ScoringCardForm set={setCardA} value={cardA} letter={"A"} />
+          <ScoringCardForm set={setCardB} value={cardB} letter={"B"} />
+          <ScoringCardForm set={setCardC} value={cardC} letter={"C"} />
+          <ScoringCardForm set={setCardD} value={cardD} letter={"D"} />
         </Row>
         <Row>
           <Col>
@@ -265,7 +287,9 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
             <Modal.Header closeButton>
               <Modal.Title>Score Round</Modal.Title>
             </Modal.Header>
-            <Modal.Body>Score this round and move to the next season</Modal.Body>
+            <Modal.Body>
+              Score this round and move to the next season
+            </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleClose}>
                 Close
@@ -279,6 +303,19 @@ export default function Cartographers({ isSpecialBoard }: { isSpecialBoard?: boo
       </Container>
     </CartographersContext.Provider>
   );
+
+  function ScoringCardForm(props: {
+    set: Dispatch<SetStateAction<string>>;
+    value: string;
+    letter: string;
+  }) {
+    return (
+      <Col className="border" xs={12} md={6} lg={3}>
+        <p>Card {props.letter}</p>
+        <ScoringCardDropdown setCard={props.set} value={props.value} />
+      </Col>
+    );
+  }
 }
 
 function RoundScores({
@@ -316,14 +353,22 @@ function RoundScores({
         <Row>
           <Col>Coins: {coinScore}</Col>
           <Col>Monster: {monsterScore}</Col>
-          <Col>Total: {firstCardScore + secondCardScore + coinScore + monsterScore}</Col>
+          <Col>
+            Total: {firstCardScore + secondCardScore + coinScore + monsterScore}
+          </Col>
         </Row>
       </Container>
     </Col>
   );
 }
 
-function ScoringCardDropdown({ setCard, value }: { setCard: Dispatch<SetStateAction<string>>; value: string }) {
+function ScoringCardDropdown({
+  setCard,
+  value,
+}: {
+  setCard: Dispatch<SetStateAction<string>>;
+  value: string;
+}) {
   return (
     <Form.Select
       aria-label="Default select example"
