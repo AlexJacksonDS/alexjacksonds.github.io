@@ -4,7 +4,7 @@ import { DraughtsBoard } from '../../../types/draughts';
 import DraughtsSquare from '../DraughtsSquare/DraughtsSquare';
 import './DraughtsBoard.scss';
 
-export default function DraughtsBoard(props: {
+export default function DraughtsBoardDisplay(props: {
     board: DraughtsBoard;
     selectedSquare?: string;
     possibleMoves: string[];

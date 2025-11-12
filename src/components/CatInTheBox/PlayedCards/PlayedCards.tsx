@@ -2,7 +2,7 @@ import { ColourCards, PlayedCards, PlayerColour } from "@/types/catInTheBox";
 import { Col, Container, Row } from "react-bootstrap";
 import "./PlayedCards.scss";
 
-export default function PlayedCards({
+export default function PlayedCardsDisplay({
   playedCards,
   isBasicBoard,
   handleClick,

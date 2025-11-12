@@ -4,7 +4,7 @@ import "./OfferRow.scss";
 import DraggableToken from "../DraggableToken/DraggableToken";
 import AnimalToken from "../AnimalToken/AnimalToken";
 
-export default function OfferRow({ offerRow }: { offerRow: OfferRow }) {
+export default function OfferRowDisplay({ offerRow }: { offerRow: OfferRow }) {
   return (
     <div className="offer-row">
       {offerRow.tiles.map((x, i) =>

@@ -2,7 +2,7 @@ import { OtherPlayerDetails } from "@/types/catInTheBox";
 import { Row, Col } from "react-bootstrap";
 import "./OtherPlayerDetails.scss";
 
-export default function OtherPlayerDetails({ playerDetails }: { playerDetails: OtherPlayerDetails }) {
+export default function OtherPlayerDetailsDisplay({ playerDetails }: { playerDetails: OtherPlayerDetails }) {
   return (
     <div className={"mt-2 other-player-container colour-" + playerDetails.playerColour}>
       <Row>
