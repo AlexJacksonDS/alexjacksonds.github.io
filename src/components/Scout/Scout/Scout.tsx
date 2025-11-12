@@ -76,7 +76,7 @@ export default function Scout() {
 
   function gameIdOnKeyUp(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key != "Enter") return;
-    if (signalRConnection && gameId) {
+    if (signalRConnection && gameId && signalRConnection.state === HubConnectionState.Connected) {
       signalRConnection.send("joinGame", gameId).then(() => {
         setGameIdDisabled(true);
       });
@@ -84,13 +84,13 @@ export default function Scout() {
   }
 
   function startGame() {
-    if (signalRConnection) {
+    if (signalRConnection && signalRConnection.state === HubConnectionState.Connected) {
       signalRConnection.send("startGame", gameId);
     }
   }
 
   function scout() {
-    if (signalRConnection) {
+    if (signalRConnection && signalRConnection.state === HubConnectionState.Connected) {
       signalRConnection
         .send("scout", gameId, scoutCard, scoutIndex, isScoutAndShow)
         .then(() => {
@@ -102,7 +102,7 @@ export default function Scout() {
   }
 
   function show() {
-    if (signalRConnection) {
+    if (signalRConnection && signalRConnection.state === HubConnectionState.Connected) {
       if (highlightedCards.length === 0) {
         return;
       }
@@ -120,7 +120,7 @@ export default function Scout() {
   }
 
   function selectOrientation(flipped: boolean) {
-    if (signalRConnection) {
+    if (signalRConnection && signalRConnection.state === HubConnectionState.Connected) {
       signalRConnection.send("selectOrientation", gameId, flipped);
     }
   }
