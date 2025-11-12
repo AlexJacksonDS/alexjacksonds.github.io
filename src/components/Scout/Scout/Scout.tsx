@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, KeyboardEvent, useRef } from "react";
+import { useState, KeyboardEvent } from "react";
 import {
   Button,
   Col,
   Container,
-  FormGroup,
-  FormLabel,
   Row,
   Toast,
   ToastContainer,
@@ -19,6 +17,7 @@ import CentreCards from "../CentreCards/CentreCards";
 import ScoutPlayer from "../ScoutPlayer/ScoutPlayer";
 import OtherScoutPlayer from "../OtherScoutPlayer/OtherScoutPlayer";
 import GameIdForm from "@/components/GameIdForm/GameIdForm";
+import { HubConnectionState } from "@microsoft/signalr";
 
 export default function Scout() {
   const [gameId, setGameId] = useState("");
@@ -68,12 +67,11 @@ export default function Scout() {
   }
 
   function gameEnded() {
-    if (signalRConnection) {
+    if (signalRConnection && signalRConnection.state === HubConnectionState.Connected) {
       signalRConnection.send("leaveGame", gameId);
     }
     setGameId("");
     setGameIdDisabled(false);
-    setGameState(undefined);
   }
 
   function gameIdOnKeyUp(e: KeyboardEvent<HTMLInputElement>) {
@@ -235,8 +233,6 @@ export default function Scout() {
                         <Button onClick={() => show()}>Show</Button>
                       </Col>
                       <Col>
-                        {gameState.player.hasScoutAndShowed ? "t" : "f"}
-                        {(gameState.currentTable.length === 0).toString()}
                         <Button
                           onClick={() => setIsScoutAndShow(true)}
                           disabled={

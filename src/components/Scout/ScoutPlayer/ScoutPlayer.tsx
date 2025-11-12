@@ -108,7 +108,7 @@ export default function ScoutPlayer(props: {
       .map((c) => {
         return {
           ...c,
-          isFlipped: flipped ? !c.isFlipped : c.isFlipped,
+          isFlipped: flipped && !props.player.hasSelectedOrientation ? !c.isFlipped : c.isFlipped,
         };
       })
       .map((card, index) => (
