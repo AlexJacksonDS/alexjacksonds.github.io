@@ -6,10 +6,19 @@ import { useRef, useState, KeyboardEvent } from "react";
 import "./Cartographers.scss";
 import { Board, State, Terrain } from "@/types/cartographers";
 import Pallet from "../Pallet/Pallet";
-import { Button, Col, Container, Form, FormGroup, FormLabel, Row, Toast, ToastContainer } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  FormGroup,
+  FormLabel,
+  Row,
+} from "react-bootstrap";
 import ScoreCards from "../ScoreCards/ScoreCards";
 import CurrentCard from "../CurrentCard/CurrentCard";
 import useSignalR from "@/hooks/useSignalR";
+import ErrorToast from "@/components/ErrorToast/ErrorToast";
 
 export default function MultiCartographers() {
   const signalRConnection = useSignalR("cartographers", [
@@ -106,7 +115,12 @@ export default function MultiCartographers() {
 
   function saveRound() {
     if (signalRConnection && gameState.current && board) {
-      signalRConnection.send("takeTurn", gameId, gameState.current.player.boardPlayer.id, board);
+      signalRConnection.send(
+        "takeTurn",
+        gameId,
+        gameState.current.player.boardPlayer.id,
+        board
+      );
     }
   }
 
@@ -144,7 +158,9 @@ export default function MultiCartographers() {
   }
 
   return (
-    <CartographersContext.Provider value={{ handlePalletClick, handleTileClick }}>
+    <CartographersContext.Provider
+      value={{ handlePalletClick, handleTileClick }}
+    >
       <Container className="cartographers">
         <Row>
           <Col>
@@ -154,7 +170,9 @@ export default function MultiCartographers() {
                 <input
                   className="form-control"
                   value={gameId}
-                  onInput={(e) => setGameId((e.target as HTMLInputElement).value)}
+                  onInput={(e) =>
+                    setGameId((e.target as HTMLInputElement).value)
+                  }
                   onKeyUp={(e) => gameIdOnKeyUp(e)}
                   disabled={gameIdDisabled}
                   placeholder="Enter to submit"
@@ -189,34 +207,45 @@ export default function MultiCartographers() {
         ) : null}
         <Row>
           {errorString ? (
-            <ToastContainer position="middle-center">
-              <Toast bg={"danger"} show={show} onClick={hideToast} onClose={() => hideToast()} delay={3000} autohide>
-                <Toast.Header>
-                  <strong className="me-auto">Cascadia</strong>
-                  <small className="text-muted">Just now</small>
-                </Toast.Header>
-                <Toast.Body>{errorString}</Toast.Body>
-              </Toast>
-            </ToastContainer>
+            <ErrorToast
+              name="Cartographers"
+              showError={show}
+              onClose={hideToast}
+              errorString={errorString}
+            />
           ) : null}
         </Row>
         {gameState.current && board ? (
           <>
             <Row>
               <Col xs={3}>
-                <CurrentCard card={gameState.current.terrainCard} isRuin={gameState.current.isRuinTurn} />
+                <CurrentCard
+                  card={gameState.current.terrainCard}
+                  isRuin={gameState.current.isRuinTurn}
+                />
               </Col>
               <Col xs={2}>
-                <p>Current Season: {getSeason(gameState.current.roundNumber)}</p>
+                <p>
+                  Current Season: {getSeason(gameState.current.roundNumber)}
+                </p>
                 <p>Round progress: {gameState.current.roundSum}</p>
               </Col>
               <Col>
                 <Pallet
                   selectedTerrain={brushTerrain}
-                  allowedTerrainTypes={[Terrain.Forest, Terrain.Field, Terrain.Water, Terrain.Town, Terrain.Monster]}
+                  allowedTerrainTypes={[
+                    Terrain.Forest,
+                    Terrain.Field,
+                    Terrain.Water,
+                    Terrain.Town,
+                    Terrain.Monster,
+                  ]}
                 />
               </Col>
-              <Col xs={1} className="d-flex justify-content-center align-items-center">
+              <Col
+                xs={1}
+                className="d-flex justify-content-center align-items-center"
+              >
                 <Button className="mb-4" onClick={saveRound}>
                   Submit turn
                 </Button>
@@ -225,7 +254,11 @@ export default function MultiCartographers() {
             <DisplayBoard board={board} />
             <Row>
               <Col>
-                <button className="form-control btn btn-primary" type="submit" onClick={undo}>
+                <button
+                  className="form-control btn btn-primary"
+                  type="submit"
+                  onClick={undo}
+                >
                   Undo
                 </button>
               </Col>
@@ -242,7 +275,11 @@ export default function MultiCartographers() {
               <Col xs={12} lg={1} className="border">
                 <FormGroup className="mb-2">
                   <Form.Label>Coin Tracker</Form.Label>
-                  <Form.Control type="number" readOnly={true} value={gameState.current.player.coinTrack} />
+                  <Form.Control
+                    type="number"
+                    readOnly={true}
+                    value={gameState.current.player.coinTrack}
+                  />
                 </FormGroup>
               </Col>
               <RoundScores
@@ -340,7 +377,9 @@ function RoundScores({
       <Row>
         <ScoreControl score={coinScore} label="Coins" />
         <ScoreControl score={monsterScore} label="Monsters" />
-        <Col>Total: {firstCardScore + secondCardScore + coinScore + monsterScore}</Col>
+        <Col>
+          Total: {firstCardScore + secondCardScore + coinScore + monsterScore}
+        </Col>
       </Row>
     </Col>
   );
@@ -351,7 +390,12 @@ function ScoreControl({ score, label }: { score: number; label: string }) {
     <Col xs={6} lg={4}>
       <FormGroup className="mb-2">
         <Form.Label>{label}</Form.Label>
-        <input className="form-control" type="text" readOnly={true} value={score} />
+        <input
+          className="form-control"
+          type="text"
+          readOnly={true}
+          value={score}
+        />
       </FormGroup>
     </Col>
   );

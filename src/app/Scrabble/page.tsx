@@ -1,7 +1,16 @@
 "use client";
 
 import { useState, KeyboardEvent, useRef } from "react";
-import { Button, Col, Container, FormGroup, FormLabel, Row, Toast, ToastContainer } from "react-bootstrap";
+import {
+  Button,
+  Col,
+  Container,
+  FormGroup,
+  FormLabel,
+  Row,
+  Toast,
+  ToastContainer,
+} from "react-bootstrap";
 import { OtherPlayer, Player, PlayerScore, Tile } from "../../types/scrabble";
 import ScoreBoard from "../../components/Hearts/ScoreBoard/ScoreBoard";
 import "./Scrabble.scss";
@@ -14,21 +23,12 @@ import { DndProvider } from "react-dnd-multi-backend";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import { DropResult } from "@/types/railRoadInk";
 import GameIdForm from "@/components/GameIdForm/GameIdForm";
-
-const otherPlayersTwo = new Map<number, number[]>();
-otherPlayersTwo.set(1, [2]);
-otherPlayersTwo.set(2, [1]);
-
-const otherPlayersThree = new Map<number, number[]>();
-otherPlayersThree.set(1, [2, 3]);
-otherPlayersThree.set(2, [3, 1]);
-otherPlayersThree.set(3, [1, 2]);
-
-const otherPlayersFour = new Map<number, number[]>();
-otherPlayersFour.set(1, [2, 3, 4]);
-otherPlayersFour.set(2, [3, 4, 1]);
-otherPlayersFour.set(3, [4, 1, 2]);
-otherPlayersFour.set(4, [1, 2, 3]);
+import ErrorToast from "@/components/ErrorToast/ErrorToast";
+import {
+  otherPlayersFour,
+  otherPlayersThree,
+  otherPlayersTwo,
+} from "@/helpers/nextPlayerMaps";
 
 export default function Scrabble() {
   const [gameId, setGameId] = useState("");
@@ -46,9 +46,10 @@ export default function Scrabble() {
   const gameState = useRef<any | undefined>(undefined);
   const [errorString, setErrorString] = useState("");
   const [show, setShow] = useState(false);
-  const [toSubmit, setToSubmit] = useState<{ coords: number[]; tile: Tile }[]>([]);
+  const [toSubmit, setToSubmit] = useState<{ coords: number[]; tile: Tile }[]>(
+    []
+  );
   const board = useRef<Square[][] | undefined>();
-  const [stateBoard, setStateBoard] = useState<Square[][] | undefined>();
   const [showLetterInput, setShowLetterInput] = useState(false);
   const [wildLetter, setWildLetter] = useState("");
 
@@ -70,32 +71,43 @@ export default function Scrabble() {
       const otherPlayerPositions = otherPlayersTwo.get(myPlayerOrder);
 
       if (otherPlayerPositions) {
-        const playerOnTop = state.otherPlayerDetails.find((p: any) => p.playerOrder === otherPlayerPositions[0]);
+        const playerOnTop = state.otherPlayerDetails.find(
+          (p: any) => p.playerOrder === otherPlayerPositions[0]
+        );
         setTopPlayer(playerOnTop);
       }
     } else if (state.otherPlayerDetails.length === 2) {
       const otherPlayerPositions = otherPlayersThree.get(myPlayerOrder);
 
       if (otherPlayerPositions) {
-        const playerOnLeft = state.otherPlayerDetails.find((p: any) => p.playerOrder === otherPlayerPositions[0]);
+        const playerOnLeft = state.otherPlayerDetails.find(
+          (p: any) => p.playerOrder === otherPlayerPositions[0]
+        );
         setLeftPlayer(playerOnLeft);
-        const playerOnTop = state.otherPlayerDetails.find((p: any) => p.playerOrder === otherPlayerPositions[1]);
+        const playerOnTop = state.otherPlayerDetails.find(
+          (p: any) => p.playerOrder === otherPlayerPositions[1]
+        );
         setTopPlayer(playerOnTop);
       }
     } else if (state.otherPlayerDetails.length === 3) {
       const otherPlayerPositions = otherPlayersFour.get(myPlayerOrder);
       if (otherPlayerPositions) {
-        const playerOnLeft = state.otherPlayerDetails.find((p: any) => p.playerOrder === otherPlayerPositions[0]);
+        const playerOnLeft = state.otherPlayerDetails.find(
+          (p: any) => p.playerOrder === otherPlayerPositions[0]
+        );
         setLeftPlayer(playerOnLeft);
-        const playerOnTop = state.otherPlayerDetails.find((p: any) => p.playerOrder === otherPlayerPositions[1]);
+        const playerOnTop = state.otherPlayerDetails.find(
+          (p: any) => p.playerOrder === otherPlayerPositions[1]
+        );
         setTopPlayer(playerOnTop);
 
-        const playerOnRight = state.otherPlayerDetails.find((p: any) => p.playerOrder === otherPlayerPositions[2]);
+        const playerOnRight = state.otherPlayerDetails.find(
+          (p: any) => p.playerOrder === otherPlayerPositions[2]
+        );
         setRightPlayer(playerOnRight);
       }
     }
     board.current = state.board;
-    setStateBoard(state.board);
     setPlayer(state.player);
     setCurrentPlayer(state.currentPlayer);
     setIsStartable(state.isStartable);
@@ -133,7 +145,9 @@ export default function Scrabble() {
     if (board.current) {
       if (!/[A-Za-z]/.test(wildLetter)) return;
       var toSubmitCopy = [...toSubmit];
-      var playedTile = toSubmitCopy.filter((x) => x.tile.actualLetter === "?")[0];
+      var playedTile = toSubmitCopy.filter(
+        (x) => x.tile.actualLetter === "?"
+      )[0];
       toSubmitCopy.splice(toSubmitCopy.indexOf(playedTile), 1);
       toSubmitCopy.push({
         ...playedTile,
@@ -142,7 +156,9 @@ export default function Scrabble() {
           actualLetter: wildLetter.toUpperCase(),
         },
       });
-      board.current[playedTile.coords[0]][playedTile.coords[1]].tile!.actualLetter = wildLetter.toUpperCase();
+      board.current[playedTile.coords[0]][
+        playedTile.coords[1]
+      ].tile!.actualLetter = wildLetter.toUpperCase();
       setShowLetterInput(false);
     }
   }
@@ -257,15 +273,12 @@ export default function Scrabble() {
           </Col>
         </Row>
         {errorString ? (
-          <ToastContainer position="middle-center">
-            <Toast bg={"danger"} show={show} onClose={() => resetTurn()} delay={3000} autohide>
-              <Toast.Header>
-                <strong className="me-auto">Scrabble</strong>
-                <small className="text-muted">Just now</small>
-              </Toast.Header>
-              <Toast.Body>{errorString}</Toast.Body>
-            </Toast>
-          </ToastContainer>
+          <ErrorToast
+            name="Scrabble"
+            showError={show}
+            onClose={resetTurn}
+            errorString={errorString}
+          />
         ) : null}
 
         <ToastContainer position="middle-center">
@@ -280,7 +293,9 @@ export default function Scrabble() {
                 <input
                   className="form-control"
                   value={wildLetter}
-                  onInput={(e) => setWildLetter((e.target as HTMLInputElement).value)}
+                  onInput={(e) =>
+                    setWildLetter((e.target as HTMLInputElement).value)
+                  }
                 />
                 <Button onClick={setPlayedWildLetter}>Submit</Button>
               </FormGroup>

@@ -6,7 +6,7 @@ import DroppableHex from "../DroppableHex/DroppableHex";
 import DraggableTile from "../DraggableTile/DraggableTile";
 import DraggableToken from "../DraggableToken/DraggableToken";
 import DroppableTokenZone from "../DroppableTokenZone/DroppableTokenZone";
-import { OffsetHex } from "../OffsetHex/OffsetHex";
+import { OffsetHex } from "../../OffsetHex/OffsetHex";
 import AnimalToken from "../AnimalToken/AnimalToken";
 
 export default function PlayZone({

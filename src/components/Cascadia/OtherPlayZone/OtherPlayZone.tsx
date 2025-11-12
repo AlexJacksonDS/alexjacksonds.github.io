@@ -2,7 +2,7 @@ import { GamePlayedTile, PlayedToken } from "@/types/cascadia";
 import Tile from "../Tile/Tile";
 import _ from "lodash";
 import "./OtherPlayZone.scss";
-import { OffsetHex } from "../OffsetHex/OffsetHex";
+import { OffsetHex } from "../../OffsetHex/OffsetHex";
 import AnimalToken from "../AnimalToken/AnimalToken";
 
 export default function OtherPlayZone({

@@ -16,16 +16,7 @@ import {
 import PlayZone from "../PlayZone/PlayZone";
 import OfferRowDisplay from "../OfferRow/OfferRow";
 import { useState, KeyboardEvent } from "react";
-import {
-  Button,
-  Col,
-  Container,
-  FormGroup,
-  FormLabel,
-  Row,
-  Toast,
-  ToastContainer,
-} from "react-bootstrap";
+import { Button, Col, Container, FormGroup, Row } from "react-bootstrap";
 import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import { DndProvider } from "react-dnd-multi-backend";
 import _ from "lodash";
@@ -38,6 +29,7 @@ import ScoreBoard from "../ScoreBoard/ScoreBoard";
 import ScoringCard from "../ScoringCard/ScoringCard";
 import useSignalR from "@/hooks/useSignalR";
 import GameIdForm from "@/components/GameIdForm/GameIdForm";
+import ErrorToast from "@/components/ErrorToast/ErrorToast";
 
 export default function Cascadia() {
   const [gameId, setGameId] = useState("");
@@ -326,22 +318,12 @@ export default function Cascadia() {
             </Row>
             <Row>
               {errorString ? (
-                <ToastContainer position="middle-center">
-                  <Toast
-                    bg={"danger"}
-                    show={show}
-                    onClick={hideToast}
-                    onClose={() => hideToast()}
-                    delay={3000}
-                    autohide
-                  >
-                    <Toast.Header>
-                      <strong className="me-auto">Cascadia</strong>
-                      <small className="text-muted">Just now</small>
-                    </Toast.Header>
-                    <Toast.Body>{errorString}</Toast.Body>
-                  </Toast>
-                </ToastContainer>
+                <ErrorToast
+                  name="Cascadia"
+                  showError={show}
+                  onClose={hideToast}
+                  errorString={errorString}
+                />
               ) : null}
             </Row>
             <Row>

@@ -1,25 +1,29 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState, MouseEvent, useRef, useEffect } from "react";
-import { Container, Form, FormGroup, Row, Col, Button, ToastContainer, Toast } from "react-bootstrap";
-import "./Minesweeper.scss";
+import {
+  Dispatch,
+  SetStateAction,
+  useState,
+  MouseEvent,
+  useRef,
+  useEffect,
+} from "react";
+import {
+  Container,
+  Form,
+  FormGroup,
+  Row,
+  Col,
+  Button,
+  ToastContainer,
+  Toast,
+} from "react-bootstrap";
 import { isMobile } from "react-device-detect";
+import { Tile } from "@/types/minesweeper";
+import { generateBoard, openSquares } from "@/services/minesweeper.service";
+import MinesweeperBoard from "../MinesweeperBoard/MinesweeperBoard";
 
-class Tile {
-  isRevealed: boolean;
-  hasFlag: boolean;
-  hasQ: boolean;
-  value: number;
-
-  constructor() {
-    this.isRevealed = false;
-    this.hasFlag = false;
-    this.hasQ = false;
-    this.value = 0;
-  }
-}
-
-export default function Minesweeper() {
+export default function Minesweeper(props: { isHex: boolean }) {
   const [width, setWidth] = useState(10);
   const [widthString, setWidthString] = useState("10");
   const [height, setHeight] = useState(10);
@@ -42,7 +46,11 @@ export default function Minesweeper() {
   const [instructions, setInstructions] = useState("");
 
   useEffect(() => {
-    setInstructions(isMobile ? "Tap to reveal, long press to flag" : "Left click to reveal, right click to flag");
+    setInstructions(
+      isMobile
+        ? "Tap to reveal, long press to flag"
+        : "Left click to reveal, right click to flag"
+    );
   }, []);
 
   function handleInput(
@@ -55,7 +63,9 @@ export default function Minesweeper() {
   }
 
   function controlIsValid(string: string) {
-    return string.length > 0 && !Number.isNaN(Number(string)) && Number(string) > 0;
+    return (
+      string.length > 0 && !Number.isNaN(Number(string)) && Number(string) > 0
+    );
   }
 
   function setDefaults(width: number, height: number, mineCount: number) {
@@ -65,73 +75,15 @@ export default function Minesweeper() {
     setHeightString(height.toString());
     setMineCount(mineCount);
     setMineCountString(mineCount.toString());
+    setGameGenerated(false);
   }
 
-  function generateBoard() {
-    const mineLocations = shuffle(new Array(width * height).fill(0).map((a, i) => (a = i))).slice(0, mineCount);
-    const mineCoords = mineLocations.map((x) => {
-      const i = Math.floor(x / width);
-      return [i, x - i * width];
-    });
-
-    const newBoardNulls: (Tile | null)[][] = Array(height)
-      .fill(0)
-      .map(() => Array(width).fill(null));
-
-    for (let i = 0; i < height; i++) {
-      for (let j = 0; j < width; j++) {
-        newBoardNulls[i][j] = new Tile();
-      }
-    }
-
-    const newBoard = newBoardNulls as Tile[][];
-
-    for (const coords of mineCoords) {
-      newBoard[coords[0]][coords[1]].value = -1;
-    }
-
-    for (let i = 0; i < height; i++) {
-      for (let j = 0; j < width; j++) {
-        if (newBoard[i][j].value != -1) {
-          const adjs = getAdjacentValues(newBoard as Tile[][], [i, j]);
-          newBoard[i][j].value = adjs.filter((adj) => adj.tile.value === -1).length;
-        }
-      }
-    }
-
+  function startGame() {
     setGameGenerated(true);
     setIsLost(false);
     setIsGameFinished(false);
     setClicks(0);
-    board.current = newBoard;
-  }
-
-  function shuffle<T>(array: T[]) {
-    for (let i = array.length - 1; i > 0; i--) {
-      let j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
-
-  function getAdjacentValues(board: Tile[][], coords: number[]) {
-    const boardHeight = board.length;
-    const boardWidth = board[0].length;
-    const adjModifiers = [
-      [-1, 0],
-      [1, 0],
-      [0, -1],
-      [0, 1],
-      [-1, -1],
-      [1, -1],
-      [1, 1],
-      [-1, 1],
-    ];
-    const adjCoords = adjModifiers
-      .map((mod) => [coords[0] + mod[0], coords[1] + mod[1]])
-      .filter((coord) => coord[0] >= 0 && coord[0] < boardHeight && coord[1] >= 0 && coord[1] < boardWidth);
-
-    return adjCoords.map((coord) => ({ i: coord[0], j: coord[1], tile: board[coord[0]][coord[1]] }));
+    board.current = generateBoard(width, height, mineCount, props.isHex);
   }
 
   function handleClick(e: MouseEvent<HTMLElement>, i: number, j: number) {
@@ -167,29 +119,7 @@ export default function Minesweeper() {
       setIsGameFinished(true);
       setIsLost(true);
     } else {
-      openSquares([i, j]);
-    }
-  }
-
-  function openSquares(startCoord: number[]) {
-    const visited: string[] = [];
-    const coordStack = [startCoord];
-
-    while (coordStack.length) {
-      let currentCoord = coordStack.pop();
-
-      if (currentCoord !== undefined) {
-        const stringCoord = `${currentCoord[0]}-${currentCoord[1]}`;
-        if (!visited.includes(stringCoord)) {
-          visited.push(stringCoord);
-          board.current[currentCoord[0]][currentCoord[1]].isRevealed = true;
-
-          if (board.current[currentCoord[0]][currentCoord[1]].value === 0) {
-            const adjs = getAdjacentValues(board.current, currentCoord);
-            coordStack.push(...adjs.map((adj) => [adj.i, adj.j]));
-          }
-        }
-      }
+      openSquares(board, [i, j], props.isHex);
     }
   }
 
@@ -232,11 +162,15 @@ export default function Minesweeper() {
             <Form.Control
               type="numeric"
               value={widthString}
-              onChange={(e) => handleInput(e.target.value, setWidthString, setWidth)}
+              onChange={(e) =>
+                handleInput(e.target.value, setWidthString, setWidth)
+              }
               isValid={controlIsValid(widthString)}
               isInvalid={!controlIsValid(widthString)}
             />
-            <Form.Control.Feedback type="invalid">Please enter a positive integer</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">
+              Please enter a positive integer
+            </Form.Control.Feedback>
           </FormGroup>
         </Col>
         <Col>
@@ -245,11 +179,15 @@ export default function Minesweeper() {
             <Form.Control
               type="numeric"
               value={heightString}
-              onChange={(e) => handleInput(e.target.value, setHeightString, setHeight)}
+              onChange={(e) =>
+                handleInput(e.target.value, setHeightString, setHeight)
+              }
               isValid={controlIsValid(heightString)}
               isInvalid={!controlIsValid(heightString)}
             />
-            <Form.Control.Feedback type="invalid">Please enter a positive integer</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">
+              Please enter a positive integer
+            </Form.Control.Feedback>
           </FormGroup>
         </Col>
         <Col>
@@ -258,9 +196,15 @@ export default function Minesweeper() {
             <Form.Control
               type="numeric"
               value={mineCountString}
-              onChange={(e) => handleInput(e.target.value, setMineCountString, setMineCount)}
-              isValid={controlIsValid(mineCountString) && mineCount <= width * height}
-              isInvalid={!controlIsValid(mineCountString) || mineCount > width * height}
+              onChange={(e) =>
+                handleInput(e.target.value, setMineCountString, setMineCount)
+              }
+              isValid={
+                controlIsValid(mineCountString) && mineCount <= width * height
+              }
+              isInvalid={
+                !controlIsValid(mineCountString) || mineCount > width * height
+              }
             />
             <Form.Control.Feedback type="invalid">
               {mineCount <= width * height
@@ -272,10 +216,19 @@ export default function Minesweeper() {
       </Row>
       <Row className="pt-2">
         <Col xs={12} lg={4}>
-          <Button variant="primary" onClick={generateBoard} disabled={buttonsDisabled}>
+          <Button
+            variant="primary"
+            onClick={startGame}
+            disabled={buttonsDisabled}
+          >
             Start
           </Button>
-          <Button variant="secondary" className="ms-2" onClick={() => setDefaults(9, 9, 10)} disabled={buttonsDisabled}>
+          <Button
+            variant="secondary"
+            className="ms-2"
+            onClick={() => setDefaults(9, 9, 10)}
+            disabled={buttonsDisabled}
+          >
             Easy
           </Button>
           <Button
@@ -307,14 +260,28 @@ export default function Minesweeper() {
       </Row>
 
       <ToastContainer position="middle-center">
-        <Toast bg={"success"} show={show} onClick={hideToast} onClose={() => hideToast()} delay={3000} autohide>
+        <Toast
+          bg={"success"}
+          show={show}
+          onClick={hideToast}
+          onClose={() => hideToast()}
+          delay={3000}
+          autohide
+        >
           <Toast.Header>
             <strong className="me-auto">Minesweeper</strong>
             <small className="text-muted">Just now</small>
           </Toast.Header>
           <Toast.Body>Victory!</Toast.Body>
         </Toast>
-        <Toast bg={"danger"} show={showFail} onClick={hideToast} onClose={() => hideToast()} delay={3000} autohide>
+        <Toast
+          bg={"danger"}
+          show={showFail}
+          onClick={hideToast}
+          onClose={() => hideToast()}
+          delay={3000}
+          autohide
+        >
           <Toast.Header>
             <strong className="me-auto">Minesweeper</strong>
             <small className="text-muted">Just now</small>
@@ -324,61 +291,14 @@ export default function Minesweeper() {
       </ToastContainer>
 
       {gameGenerated ? (
-        <Row className="pt-2">
-          <Col>
-            <div className="minesweeper">
-              {board.current.map((r, i) => (
-                <Row key={i} className="m-0">
-                  {r.map((c, j) => (
-                    <Col
-                      key={j}
-                      style={{
-                        width: small ? 10 : 40 + "px",
-                        maxWidth: small ? 10 : 40 + "px",
-                        padding: 0,
-                      }}
-                    >
-                      <div
-                        className={
-                          "tile " +
-                          (c.isRevealed
-                            ? ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight"][c.value]
-                            : "unrevealed ")
-                        }
-                        style={{
-                          width: small ? 10 : 40 + "px",
-                          fontSize: small ? 5 : 20 + "px",
-                          borderWidth: small ? 1 : 3 + "px",
-                          padding: small ? 0 : "2px 10px",
-                        }}
-                        onClick={(e) => handleClick(e, i, j)}
-                        onContextMenu={(e) => handleClick(e, i, j)}
-                      >
-                        {getCharacter(c)}
-                      </div>
-                    </Col>
-                  ))}
-                </Row>
-              ))}
-            </div>
-          </Col>
-        </Row>
+        <MinesweeperBoard
+          board={board}
+          handleClick={handleClick}
+          small={small}
+          isLost={isLost}
+          isHex={props.isHex}
+        />
       ) : null}
     </Container>
   );
-
-  function getCharacter(tile: Tile) {
-    if (tile.isRevealed) {
-      if (tile.value > 0) return tile.value.toString();
-    }
-
-    if (tile.value === -1 && isLost) {
-      return "\uD83D\uDCA3";
-    }
-
-    if (tile.hasFlag) return "\uD83D\uDEA9";
-    if (tile.hasQ) return "\u2753";
-
-    return "";
-  }
 }

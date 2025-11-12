@@ -1,14 +1,7 @@
 "use client";
 
 import { useState, KeyboardEvent } from "react";
-import {
-  Button,
-  Col,
-  Container,
-  Row,
-  Toast,
-  ToastContainer,
-} from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import "./Scout.scss";
 import useSignalR from "@/hooks/useSignalR";
 import { GameState, ScoutCard } from "@/types/scout";
@@ -18,6 +11,7 @@ import ScoutPlayer from "../ScoutPlayer/ScoutPlayer";
 import OtherScoutPlayer from "../OtherScoutPlayer/OtherScoutPlayer";
 import GameIdForm from "@/components/GameIdForm/GameIdForm";
 import { HubConnectionState } from "@microsoft/signalr";
+import ErrorToast from "@/components/ErrorToast/ErrorToast";
 
 export default function Scout() {
   const [gameId, setGameId] = useState("");
@@ -67,7 +61,10 @@ export default function Scout() {
   }
 
   function gameEnded() {
-    if (signalRConnection && signalRConnection.state === HubConnectionState.Connected) {
+    if (
+      signalRConnection &&
+      signalRConnection.state === HubConnectionState.Connected
+    ) {
       signalRConnection.send("leaveGame", gameId);
     }
     setGameId("");
@@ -76,7 +73,11 @@ export default function Scout() {
 
   function gameIdOnKeyUp(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key != "Enter") return;
-    if (signalRConnection && gameId && signalRConnection.state === HubConnectionState.Connected) {
+    if (
+      signalRConnection &&
+      gameId &&
+      signalRConnection.state === HubConnectionState.Connected
+    ) {
       signalRConnection.send("joinGame", gameId).then(() => {
         setGameIdDisabled(true);
       });
@@ -84,13 +85,19 @@ export default function Scout() {
   }
 
   function startGame() {
-    if (signalRConnection && signalRConnection.state === HubConnectionState.Connected) {
+    if (
+      signalRConnection &&
+      signalRConnection.state === HubConnectionState.Connected
+    ) {
       signalRConnection.send("startGame", gameId);
     }
   }
 
   function scout() {
-    if (signalRConnection && signalRConnection.state === HubConnectionState.Connected) {
+    if (
+      signalRConnection &&
+      signalRConnection.state === HubConnectionState.Connected
+    ) {
       signalRConnection
         .send("scout", gameId, scoutCard, scoutIndex, isScoutAndShow)
         .then(() => {
@@ -102,7 +109,10 @@ export default function Scout() {
   }
 
   function show() {
-    if (signalRConnection && signalRConnection.state === HubConnectionState.Connected) {
+    if (
+      signalRConnection &&
+      signalRConnection.state === HubConnectionState.Connected
+    ) {
       if (highlightedCards.length === 0) {
         return;
       }
@@ -120,7 +130,10 @@ export default function Scout() {
   }
 
   function selectOrientation(flipped: boolean) {
-    if (signalRConnection && signalRConnection.state === HubConnectionState.Connected) {
+    if (
+      signalRConnection &&
+      signalRConnection.state === HubConnectionState.Connected
+    ) {
       signalRConnection.send("selectOrientation", gameId, flipped);
     }
   }
@@ -273,21 +286,12 @@ export default function Scout() {
           </Col>
         </Row>
         {errorString ? (
-          <ToastContainer position="middle-center">
-            <Toast
-              bg={"danger"}
-              show={showError}
-              onClose={() => resetTurn()}
-              delay={3000}
-              autohide
-            >
-              <Toast.Header>
-                <strong className="me-auto">Scout</strong>
-                <small className="text-muted">Just now</small>
-              </Toast.Header>
-              <Toast.Body>{errorString}</Toast.Body>
-            </Toast>
-          </ToastContainer>
+          <ErrorToast
+            name="Scout"
+            showError={showError}
+            onClose={resetTurn}
+            errorString={errorString}
+          />
         ) : null}
       </Container>
     </main>

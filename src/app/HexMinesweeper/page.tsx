@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import HexMinesweeper from "@/components/Minesweeper/HexMinesweeper/HexMinesweeper";
+import Minesweeper from "@/components/Minesweeper/Minesweeper/Minesweeper";
 
 export const metadata: Metadata = {
   title: "Hex Minesweeper",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function HexMinesweeperPage() {
-  return <HexMinesweeper />;
+  return <Minesweeper isHex={true}/>;
 }
